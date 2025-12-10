@@ -481,8 +481,47 @@
             const [quotaStatus, setQuotaStatus] = useState({ type: 'normal', text: 'API 額度正常' });
 
             const [transportModes, setTransportModes] = useState({});
-            const [calcJpy, setCalcJpy] = useState('');
-            const [calcTwd, setCalcTwd] = useState('');
+            
+            // --- NEW: Scientific Calculator State ---
+            const [calcInput, setCalcInput] = useState("");
+            const [calcResult, setCalcResult] = useState("");
+
+            const handleCalcPress = (val) => {
+                if (val === 'AC') {
+                    setCalcInput("");
+                    setCalcResult("");
+                } else if (val === 'DEL') {
+                    setCalcInput(prev => prev.slice(0, -1));
+                } else if (val === '=') {
+                    try {
+                        // Replace visual operator '^' with JS operator '**' for calculation
+                        // Handle potential security risks by only allowing safe characters if this were a real app,
+                        // but for this client-side demo, we replace logic.
+                        if (!calcInput) return;
+                        
+                        let expression = calcInput.replace(/\^/g, '**');
+                        // Use Function constructor to evaluate safely
+                        const result = new Function('return ' + expression)();
+                        
+                        if (!isFinite(result) || isNaN(result)) {
+                            setCalcResult("Error");
+                        } else {
+                            // Format to avoid long decimals
+                            const formatted = Math.round(result * 100000000) / 100000000;
+                            setCalcResult(String(formatted));
+                        }
+                    } catch (e) {
+                        setCalcResult("Error");
+                    }
+                } else {
+                    // Reset result if user starts typing a new number after a calculation? 
+                    // Or allow chaining. Here we allow appending to input.
+                    // If result is showing and user types operator, we could append. 
+                    // For simplicity, we just append to input.
+                    setCalcInput(prev => prev + val);
+                }
+            };
+
             const [activeTipSpotId, setActiveTipSpotId] = useState(null);
             const [aiTips, setAiTips] = useState({});
             const [isTipLoading, setIsTipLoading] = useState(false);
@@ -1561,14 +1600,62 @@
                         {/* 統計分頁 */}
                         {activeTab === 'stats' && (
                             <div className="animate-in fade-in slide-in-from-bottom-6 duration-700 space-y-8">
+                                {/* Scientific Calculator */}
                                 <div className="glass-panel rounded-[2rem] p-8 shadow-lg border border-slate-700">
-                                    <h3 className="text-2xl font-black text-slate-200 mb-8 flex items-center gap-3"><span className="bg-[#FF6B6B] p-2 rounded-xl text-white rotate-2 shadow-lg"><Icons.ArrowRightLeft size={20} /></span>簡易計算機 (國內用)</h3>
-                                    <div className="grid md:grid-cols-2 gap-8 items-center">
-                                        <div className="relative"><label className="absolute -top-3 left-4 bg-[#0f172a] px-3 py-0.5 rounded-full border border-[#FF9F1C] text-xs font-bold text-[#FF9F1C]">預算 (TWD)</label><input type="number" value={calcJpy} onChange={(e) => handleCalcChange('jpy', e.target.value)} className="w-full bg-[#1e293b] rounded-3xl p-6 text-3xl font-mono font-bold text-slate-200 outline-none border-2 border-transparent focus:border-[#FF9F1C] transition-all text-center" placeholder="0" /></div>
-                                        <div className="relative"><label className="absolute -top-3 left-4 bg-[#0f172a] px-3 py-0.5 rounded-full border border-slate-500 text-xs font-bold text-slate-400">實際 (TWD)</label><input type="number" value={calcTwd} onChange={(e) => handleCalcChange('twd', e.target.value)} className="w-full bg-[#334155] rounded-3xl p-6 text-3xl font-mono font-bold text-slate-200 outline-none border-2 border-transparent focus:border-slate-400 transition-all text-center" placeholder="0" /></div>
+                                    <h3 className="text-2xl font-black text-slate-200 mb-6 flex items-center gap-3">
+                                        <span className="bg-[#FF6B6B] p-2 rounded-xl text-white rotate-2 shadow-lg">
+                                            <Icons.Calculator size={20} />
+                                        </span>
+                                        工程計算機
+                                    </h3>
+                                    
+                                    {/* Display Screen */}
+                                    <div className="bg-[#0f172a] rounded-2xl p-4 mb-6 border border-slate-600 shadow-inner">
+                                        <div className="text-right min-h-[1.5rem] text-sm text-slate-400 font-mono break-all tracking-wider">
+                                            {calcInput || "0"}
+                                        </div>
+                                        <div className="text-right text-3xl font-bold font-mono text-[#FFCB77] mt-1 break-all">
+                                            {calcResult || (calcInput ? "=" : "")}
+                                        </div>
                                     </div>
-                                    <div className="mt-6 text-center"><span className="bg-slate-800 text-slate-400 font-mono text-xs px-3 py-1 rounded-full font-bold border border-slate-700">1 TWD ≈ 1 TWD</span></div>
+
+                                    {/* Keypad Grid */}
+                                    <div className="grid grid-cols-4 gap-3">
+                                        {/* Row 1 */}
+                                        <button onClick={() => handleCalcPress('AC')} className="bg-slate-700 text-red-300 font-bold p-4 rounded-xl hover:bg-slate-600 shadow-md">AC</button>
+                                        <button onClick={() => handleCalcPress('(')} className="bg-slate-800 text-slate-300 font-bold p-4 rounded-xl hover:bg-slate-700 shadow-md">(</button>
+                                        <button onClick={() => handleCalcPress(')')} className="bg-slate-800 text-slate-300 font-bold p-4 rounded-xl hover:bg-slate-700 shadow-md">)</button>
+                                        <button onClick={() => handleCalcPress('DEL')} className="bg-slate-700 text-slate-300 font-bold p-4 rounded-xl hover:bg-slate-600 shadow-md">⌫</button>
+
+                                        {/* Row 2 */}
+                                        <button onClick={() => handleCalcPress('^')} className="bg-slate-800 text-[#4ECDC4] font-bold p-4 rounded-xl hover:bg-slate-700 shadow-md text-lg">^</button>
+                                        <button onClick={() => handleCalcPress('7')} className="bg-[#1e293b] text-white font-bold p-4 rounded-xl hover:bg-[#334155] shadow-md text-xl">7</button>
+                                        <button onClick={() => handleCalcPress('8')} className="bg-[#1e293b] text-white font-bold p-4 rounded-xl hover:bg-[#334155] shadow-md text-xl">8</button>
+                                        <button onClick={() => handleCalcPress('9')} className="bg-[#1e293b] text-white font-bold p-4 rounded-xl hover:bg-[#334155] shadow-md text-xl">9</button>
+
+                                        {/* Row 3 */}
+                                        <button onClick={() => handleCalcPress('/')} className="bg-slate-800 text-[#4ECDC4] font-bold p-4 rounded-xl hover:bg-slate-700 shadow-md text-xl">÷</button>
+                                        <button onClick={() => handleCalcPress('4')} className="bg-[#1e293b] text-white font-bold p-4 rounded-xl hover:bg-[#334155] shadow-md text-xl">4</button>
+                                        <button onClick={() => handleCalcPress('5')} className="bg-[#1e293b] text-white font-bold p-4 rounded-xl hover:bg-[#334155] shadow-md text-xl">5</button>
+                                        <button onClick={() => handleCalcPress('6')} className="bg-[#1e293b] text-white font-bold p-4 rounded-xl hover:bg-[#334155] shadow-md text-xl">6</button>
+
+                                        {/* Row 4 */}
+                                        <button onClick={() => handleCalcPress('*')} className="bg-slate-800 text-[#4ECDC4] font-bold p-4 rounded-xl hover:bg-slate-700 shadow-md text-xl">×</button>
+                                        <button onClick={() => handleCalcPress('1')} className="bg-[#1e293b] text-white font-bold p-4 rounded-xl hover:bg-[#334155] shadow-md text-xl">1</button>
+                                        <button onClick={() => handleCalcPress('2')} className="bg-[#1e293b] text-white font-bold p-4 rounded-xl hover:bg-[#334155] shadow-md text-xl">2</button>
+                                        <button onClick={() => handleCalcPress('3')} className="bg-[#1e293b] text-white font-bold p-4 rounded-xl hover:bg-[#334155] shadow-md text-xl">3</button>
+
+                                        {/* Row 5 */}
+                                        <button onClick={() => handleCalcPress('-')} className="bg-slate-800 text-[#4ECDC4] font-bold p-4 rounded-xl hover:bg-slate-700 shadow-md text-xl">-</button>
+                                        <button onClick={() => handleCalcPress('0')} className="bg-[#1e293b] text-white font-bold p-4 rounded-xl hover:bg-[#334155] shadow-md text-xl">0</button>
+                                        <button onClick={() => handleCalcPress('.')} className="bg-[#1e293b] text-white font-bold p-4 rounded-xl hover:bg-[#334155] shadow-md text-xl">.</button>
+                                        <button onClick={() => handleCalcPress('+')} className="bg-slate-800 text-[#4ECDC4] font-bold p-4 rounded-xl hover:bg-slate-700 shadow-md text-xl">+</button>
+
+                                        {/* Row 6: Equals button spanning full width */}
+                                        <button onClick={() => handleCalcPress('=')} className="col-span-4 bg-[#FF6B6B] text-slate-900 font-bold p-4 rounded-xl hover:bg-[#ff5252] shadow-lg active:scale-[0.98] transition-transform text-xl">=</button>
+                                    </div>
                                 </div>
+
                                 <div className="space-y-4">
                                     <h3 className="text-xl font-black text-slate-200 ml-2 flex items-center gap-2"><Icons.Star className="text-[#FFCB77]" fill="#FFCB77" /> 每日花費</h3>
                                     {dailyStats.map((day) => (
