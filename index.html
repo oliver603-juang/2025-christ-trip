@@ -1138,9 +1138,11 @@
                         <p style="font-size: 12px; color: #666; margin-top: 20px;">本信件由旅遊規劃 App 自動發送。</p>
                     `;
 
+                    // 修正：補上 "email" 參數，以符合您 EmailJS 後台設定的 {{email}}
                     const params = {
-                        to_email: emailInput,
-                        recipient: emailInput,
+                        email: emailInput,       // <--- 關鍵修正：對應後台的 {{email}}
+                        to_email: emailInput,    // 保留備用
+                        recipient: emailInput,   // 保留備用
                         subject: `旅遊花費報表_${new Date().toLocaleDateString()}`,
                         message: htmlMessage
                     };
