@@ -158,7 +158,11 @@
             Navigation2: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><polygon points="12 2 19 21 12 17 5 21 12 2"/></svg>,
             Camera: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>,
             // Added for new buttons
-            ShoppingBasket: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="m5 11 4-7"/><path d="m19 11-4-7"/><path d="M2 11h20"/><path d="m3.5 11 1.6 7.4a2 2 0 0 0 2 1.6h9.8c.9 0 1.8-.7 2-1.6l1.7-7.4"/><path d="m9 11 1 9"/><path d="m4.5 11 .1 8.1"/><path d="m19.5 11-.1 8.1"/><path d="m15 11-1 9"/></svg>
+            ShoppingBasket: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="m5 11 4-7"/><path d="m19 11-4-7"/><path d="M2 11h20"/><path d="m3.5 11 1.6 7.4a2 2 0 0 0 2 1.6h9.8c.9 0 1.8-.7 2-1.6l1.7-7.4"/><path d="m9 11 1 9"/><path d="m4.5 11 .1 8.1"/><path d="m19.5 11-.1 8.1"/><path d="m15 11-1 9"/></svg>,
+            // New Image Icon
+            Image: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>,
+            // New Newspaper Icon
+            Newspaper: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8"/><path d="M15 18h-5"/><path d="M10 6h8v4h-8V6Z"/></svg>
         };
 
         const WeatherIcon = ({ type }) => {
@@ -441,6 +445,9 @@
             const [infoRegion, setInfoRegion] = useState("taoyuan"); // Default to Taoyuan
             const [aiSouvenirs, setAiSouvenirs] = useState(null);
             const [isAiSouvenirLoading, setIsAiSouvenirLoading] = useState(false);
+            // New State for AI News
+            const [aiNews, setAiNews] = useState(null);
+            const [isAiNewsLoading, setIsAiNewsLoading] = useState(false);
             
             // ... (Ticket counts state) ...
             const [spotTicketCounts, setSpotTicketCounts] = useState(() => {
@@ -652,6 +659,45 @@
                 }
             };
 
+            // NEW FUNCTION: Fetch AI News
+            const fetchAiNews = async (lat, lon) => {
+                setIsAiNewsLoading(true);
+                setAiNews(null);
+                try {
+                    const prompt = `我現在在台灣的座標: 緯度 ${lat}, 經度 ${lon}。請分析這個地點(請自行判斷行政區)，並列出 4 個與此地高度相關的「新聞關鍵字」或「關注焦點」。
+                    包含：
+                    1. 在地熱門議題 (如: 內湖塞車、竹科發展)
+                    2. 近期或季節性焦點 (如: 陽明山花季、颱風影響)
+                    3. 歷史重大事件或特色 (如: 921地震園區、歷史古蹟)
+                    
+                    請直接回傳一個 JSON Array，格式如下，不要有 Markdown 標記或其他文字：
+                    [
+                        {"title": "顯示標題(例如:內湖交通)", "query": "搜尋關鍵字(例如:內湖 塞車 新聞)"},
+                        {"title": "顯示標題", "query": "搜尋關鍵字"},
+                        {"title": "顯示標題", "query": "搜尋關鍵字"},
+                        {"title": "顯示標題", "query": "搜尋關鍵字"}
+                    ]`;
+                    
+                    let text = await generateGeminiContent(prompt);
+                    text = text.replace(/```json/g, '').replace(/```/g, '').trim();
+                    const data = JSON.parse(text);
+                    if (Array.isArray(data)) {
+                        setAiNews(data);
+                    } else {
+                        throw new Error("Format error");
+                    }
+                } catch (e) {
+                    console.error("AI News Error", e);
+                    // Fallback data if API fails
+                    setAiNews([
+                        { title: "在地美食新聞", query: "附近美食 新聞" },
+                        { title: "交通路況", query: "附近路況 新聞" }
+                    ]);
+                } finally {
+                    setIsAiNewsLoading(false);
+                }
+            };
+
             const handleGetLocation = () => {
                 if (window.location.protocol === 'file:') {
                    alert("⚠️ 注意：您目前是直接開啟 HTML 檔案 (file://)。\n\nGoogle Chrome 的定位功能通常要求在「安全連線 (HTTPS)」下才能運作。\n\n建議將檔案上傳至 Netlify 或使用 Local Server 開啟。");
@@ -680,6 +726,8 @@
                     setIsLocating(false);
                     // Trigger AI Souvenir Search
                     fetchAiSouvenirs(position.coords.latitude, position.coords.longitude);
+                    // Trigger AI News Search
+                    fetchAiNews(position.coords.latitude, position.coords.longitude);
                   },
                   (error) => {
                     console.error("Error getting location:", error);
@@ -761,6 +809,8 @@
                 const file = e.target.files[0];
                 if (!file) return;
 
+                const inputElement = e.target; // Save reference to clear later
+
                 setIsAnalyzingReceipt(true);
                 const reader = new FileReader();
                 reader.onloadend = async () => {
@@ -802,7 +852,7 @@
                         alert("收據辨識失敗，請手動輸入。");
                     } finally {
                         setIsAnalyzingReceipt(false);
-                        if (fileInputRef.current) fileInputRef.current.value = '';
+                        inputElement.value = ''; // Reset input to allow re-uploading same file
                     }
                 };
                 reader.readAsDataURL(file);
@@ -1279,6 +1329,68 @@
                                     </div>
                                 </div>
 
+                                {/* NEW: AI News & Highlights Box */}
+                                <div className="glass-panel rounded-[2rem] p-8 shadow-lg border border-slate-700">
+                                    <h3 className="text-2xl font-black text-slate-200 mb-6 flex items-center gap-2">
+                                        <span className="bg-[#ec4899] p-2 rounded-xl text-white rotate-2 shadow-lg"><Icons.Newspaper size={20} /></span>
+                                        在地熱點 & 歷史情報
+                                    </h3>
+                                    
+                                    {!userLocation ? (
+                                        <div className="bg-[#1e293b] rounded-2xl p-8 border border-slate-600 border-dashed text-center">
+                                            <div className="w-16 h-16 bg-slate-700 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-400">
+                                                <Icons.LocateFixed size={32} />
+                                            </div>
+                                            <p className="text-slate-400 font-bold mb-4">請先點擊上方的「定位」按鈕，<br/>AI 將為您分析此處的關注焦點。</p>
+                                            <button 
+                                                onClick={handleGetLocation}
+                                                disabled={isLocating}
+                                                className="bg-slate-700 text-white px-6 py-2 rounded-full text-sm font-bold hover:bg-slate-600 transition-colors"
+                                            >
+                                                {isLocating ? '定位中...' : '立即定位'}
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        <div className="space-y-4">
+                                            <div className="text-sm text-slate-400 mb-2 flex items-center gap-2">
+                                                <span className="w-2 h-2 rounded-full bg-[#ec4899] animate-pulse"></span>
+                                                AI 已分析您所在位置的關注議題：
+                                            </div>
+                                            
+                                            {isAiNewsLoading ? (
+                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                    {[1, 2, 3, 4].map(i => (
+                                                        <div key={i} className="h-16 bg-slate-800/50 rounded-xl animate-pulse border border-slate-700"></div>
+                                                    ))}
+                                                </div>
+                                            ) : (
+                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                    {aiNews && aiNews.map((news, idx) => (
+                                                        <a 
+                                                            key={idx}
+                                                            href={`https://www.google.com/search?q=${encodeURIComponent(news.query)}&tbm=nws`}
+                                                            target="_blank"
+                                                            rel="noreferrer"
+                                                            className="group bg-[#1e293b] p-4 rounded-xl border border-slate-600 hover:border-[#ec4899] hover:bg-[#334155] transition-all flex items-center justify-between"
+                                                        >
+                                                            <div className="flex items-center gap-3">
+                                                                <div className="text-[#ec4899] font-bold text-lg">#</div>
+                                                                <div className="font-bold text-slate-200 group-hover:text-white">{news.title}</div>
+                                                            </div>
+                                                            <Icons.ExternalLink size={16} className="text-slate-500 group-hover:text-[#ec4899]" />
+                                                        </a>
+                                                    ))}
+                                                </div>
+                                            )}
+                                            
+                                            <div className="mt-4 p-4 bg-[#ec4899]/10 rounded-xl border border-[#ec4899]/20 text-xs text-[#ec4899] font-bold flex gap-2">
+                                                <Icons.Bot size={16} className="shrink-0" />
+                                                <span>這些關鍵字是由 Gemini AI 根據您的座標推算的在地熱門話題或歷史事件，點擊即可搜尋相關新聞。</span>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+
                                 {/* Flight Info (Adapted for Driving) */}
                                 <div className="glass-panel rounded-[2rem] p-8 shadow-lg border border-slate-700">
                                     <h3 className="text-2xl font-black text-slate-200 mb-6 flex items-center gap-2"><span className="bg-[#4ECDC4] p-2 rounded-xl text-white rotate-3 shadow-lg"><Icons.Car size={20} /></span>車程預估</h3>
@@ -1343,7 +1455,7 @@
                                         <h3 className="text-lg font-black text-slate-200 mb-4">實用連結</h3>
                                         <div className="space-y-3">
                                             <a href="https://www.google.com/maps" target="_blank" rel="noreferrer" className="block w-full text-center py-3 bg-slate-700 border border-slate-600 text-slate-200 font-bold rounded-xl hover:bg-slate-600 active:bg-slate-500 transition-colors">Google Maps</a>
-                                            <a href="https://cwb.gov.tw" target="_blank" rel="noreferrer" className="block w-full text-center py-3 bg-blue-900/40 border border-blue-800 text-blue-200 font-bold rounded-xl hover:bg-blue-900/60 active:bg-slate-500 transition-colors">中央氣象局</a>
+                                            <a href="https://www.cwa.gov.tw/V8/C/" target="_blank" rel="noreferrer" className="block w-full text-center py-3 bg-blue-900/40 border border-blue-800 text-blue-200 font-bold rounded-xl hover:bg-blue-900/60 active:bg-slate-500 transition-colors">中央氣象署</a>
                                         </div>
                                     </div>
                                 </div>
@@ -1415,24 +1527,40 @@
                                         type="number" 
                                         value={expenseForm.amount} 
                                         onChange={e => setExpenseForm({...expenseForm, amount: e.target.value})} 
-                                        className="w-full bg-slate-800 p-3 rounded-xl text-xl font-mono text-white border border-slate-600 outline-none focus:border-[#FFCB77] pr-12" 
+                                        className="w-full bg-slate-800 p-3 rounded-xl text-xl font-mono text-white border border-slate-600 outline-none focus:border-[#FFCB77] pr-32" 
                                         placeholder="金額" 
                                         autoFocus 
                                     />
-                                    {/* Camera Button */}
-                                    <div className="absolute right-2 top-1/2 -translate-y-1/2">
-                                        <input 
-                                            type="file" 
-                                            accept="image/*" 
-                                            capture="environment" 
-                                            id="receipt-upload" 
-                                            className="hidden" 
-                                            ref={fileInputRef}
-                                            onChange={handleImageUpload}
-                                        />
-                                        <label htmlFor="receipt-upload" className={`p-2 rounded-lg cursor-pointer flex items-center justify-center transition-colors ${isAnalyzingReceipt ? 'text-[#FFCB77] animate-pulse' : 'text-slate-400 hover:text-white hover:bg-slate-700'}`}>
-                                            {isAnalyzingReceipt ? <Icons.Loader2 className="animate-spin" size={20} /> : <Icons.Camera size={20} />}
-                                        </label>
+                                    {/* Buttons Container - Moved to right-12 to avoid blocking native spinner arrows */}
+                                    <div className="absolute right-12 top-1/2 -translate-y-1/2 flex items-center gap-2 z-10 pointer-events-none">
+                                        {/* Gallery Upload */}
+                                        <div className="relative pointer-events-auto">
+                                            <input 
+                                                type="file" 
+                                                accept="image/*" 
+                                                id="gallery-upload" 
+                                                className="hidden" 
+                                                onChange={handleImageUpload}
+                                            />
+                                            <label htmlFor="gallery-upload" className={`p-1.5 rounded-lg cursor-pointer flex items-center justify-center transition-colors ${isAnalyzingReceipt ? 'text-slate-600 cursor-not-allowed' : 'text-slate-400 hover:text-white hover:bg-slate-700'}`}>
+                                                <Icons.Image size={20} />
+                                            </label>
+                                        </div>
+
+                                        {/* Camera Upload */}
+                                        <div className="relative pointer-events-auto">
+                                            <input 
+                                                type="file" 
+                                                accept="image/*" 
+                                                capture="environment" 
+                                                id="camera-upload" 
+                                                className="hidden" 
+                                                onChange={handleImageUpload}
+                                            />
+                                            <label htmlFor="camera-upload" className={`p-1.5 rounded-lg cursor-pointer flex items-center justify-center transition-colors ${isAnalyzingReceipt ? 'text-[#FFCB77] animate-pulse' : 'text-slate-400 hover:text-white hover:bg-slate-700'}`}>
+                                                {isAnalyzingReceipt ? <Icons.Loader2 className="animate-spin" size={20} /> : <Icons.Camera size={20} />}
+                                            </label>
+                                        </div>
                                     </div>
                                 </div>
 
