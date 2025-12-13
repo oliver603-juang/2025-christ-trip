@@ -19,34 +19,78 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=JetBrains+Mono:wght@500&family=Mountains+of+Christmas:wght@700&display=swap" rel="stylesheet">
 
     <!-- Markdown Parser -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
     <style>
-        body {
+        /* 1. 基礎設定：深色聖誕夜背景 */
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            min-height: 100vh;
+            background-color: #0f172a; /* 深藍夜空 */
             font-family: 'Noto Sans TC', sans-serif;
-            background-color: #0B1121; /* Deep Night Blue */
             color: #E2E8F0; 
-            /* Starry background effect */
+            overflow-x: hidden;
+            /* 漸層背景：模擬極光或聖誕燈光暈 */
             background-image: 
-                radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 3px),
-                radial-gradient(white, rgba(255,255,255,.15) 1px, transparent 2px),
-                radial-gradient(white, rgba(255,255,255,.1) 2px, transparent 3px);
-            background-size: 550px 550px, 350px 350px, 250px 250px;
-            background-position: 0 0, 40px 60px, 130px 270px;
-            background-attachment: fixed;
+                radial-gradient(circle at 20% 20%, rgba(220, 38, 38, 0.15) 0%, transparent 40%), /* 紅色光暈 */
+                radial-gradient(circle at 80% 80%, rgba(16, 185, 129, 0.15) 0%, transparent 40%); /* 綠色光暈 */
+        }
+
+        /* 2. 雪花特效容器 (不擋點擊) */
+        #snow-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none; /* 關鍵：讓點擊穿透 */
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        .snowflake {
+            position: absolute;
+            top: -10px;
+            color: #fff;
+            font-size: 1.2rem;
+            opacity: 0.8;
+            animation-name: snowfall;
+            animation-timing-function: linear;
+            animation-iteration-count: infinite;
+            text-shadow: 0 0 5px rgba(255,255,255,0.8);
+        }
+
+        @keyframes snowfall {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(110vh) rotate(360deg); opacity: 0.2; }
+        }
+
+        /* 3. 內容層 (z-index 確保在雪花之上或之下，視需求，這裡設為 10 確保互動) */
+        #root {
+            position: relative;
+            z-index: 10;
         }
         
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
+        /* 4. 玻璃擬態 (帶有聖誕紅/綠邊框微光) */
         .glass-panel {
-            background: rgba(30, 41, 59, 0.7);
+            background: rgba(30, 41, 59, 0.75);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s ease;
+        }
+
+        .christmas-border {
+            border-image: linear-gradient(45deg, #ef4444, #10b981) 1;
         }
 
         /* Leaflet Dark Mode Filter */
@@ -59,15 +103,34 @@
         .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
         .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
         @keyframes blink { 0% { opacity: 0.2; } 20% { opacity: 1; } 100% { opacity: 0.2; } }
+
+        /* 特殊字體 */
+        .font-christmas {
+            font-family: 'Mountains of Christmas', cursive;
+        }
     </style>
 </head>
 <body>
+    <!-- 雪花背景層 -->
+    <div id="snow-container">
+        <!-- 雪花將由 JS 動態生成，或預寫 CSS -->
+        <div class="snowflake" style="left: 10%; animation-duration: 10s; animation-delay: 0s;">❄️</div>
+        <div class="snowflake" style="left: 20%; animation-duration: 12s; animation-delay: 2s; font-size: 0.8rem;">❅</div>
+        <div class="snowflake" style="left: 30%; animation-duration: 8s; animation-delay: 4s;">❆</div>
+        <div class="snowflake" style="left: 40%; animation-duration: 11s; animation-delay: 1s;">❄️</div>
+        <div class="snowflake" style="left: 50%; animation-duration: 13s; animation-delay: 3s; font-size: 1.5rem;">❅</div>
+        <div class="snowflake" style="left: 60%; animation-duration: 9s; animation-delay: 5s;">❆</div>
+        <div class="snowflake" style="left: 70%; animation-duration: 12s; animation-delay: 2.5s;">❄️</div>
+        <div class="snowflake" style="left: 80%; animation-duration: 10s; animation-delay: 0.5s; font-size: 0.9rem;">❅</div>
+        <div class="snowflake" style="left: 90%; animation-duration: 14s; animation-delay: 1.5s;">❆</div>
+    </div>
+
     <div id="root"></div>
 
     <script type="text/babel">
         const { useState, useEffect, useMemo, useRef, useCallback } = React;
 
-        // --- Gemini API Helper ---
+        // --- Gemini API Helper (功能不變) ---
         const generateGeminiContent = async (prompt, imageBase64 = null) => {
             const defaultKey = ""; 
             let storedKey = localStorage.getItem('gemini_api_key');
@@ -101,8 +164,6 @@
                 
                 if (!response.ok) {
                     const errData = await response.json().catch(() => ({}));
-                    console.error("API Error Details:", errData);
-                    
                     if (response.status === 403 && errData.error?.message?.includes('leaked')) {
                         localStorage.removeItem('gemini_api_key'); 
                         throw new Error("API Key 已失效 (Key外洩)。請申請新 Key。");
@@ -169,17 +230,12 @@
             Check: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><polyline points="20 6 9 17 4 12"/></svg>,
             Navigation2: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><polygon points="12 2 19 21 12 17 5 21 12 2"/></svg>,
             Camera: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>,
-            // Added for new buttons
             ShoppingBasket: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="m5 11 4-7"/><path d="m19 11-4-7"/><path d="M2 11h20"/><path d="m3.5 11 1.6 7.4a2 2 0 0 0 2 1.6h9.8c.9 0 1.8-.7 2-1.6l1.7-7.4"/><path d="m9 11 1 9"/><path d="m4.5 11 .1 8.1"/><path d="m19.5 11-.1 8.1"/><path d="m15 11-1 9"/></svg>,
-            // New Image Icon
             Image: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>,
-            // New Newspaper Icon
             Newspaper: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8"/><path d="M15 18h-5"/><path d="M10 6h8v4h-8V6Z"/></svg>,
-            // Mail Icon
             Mail: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>,
-            // Photo Search Related Icons
-            UsersViewfinder: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><circle cx="10" cy="10" r="7" /><path d="M21 21l-6-6" /><path d="M7 10h6" /><path d="M10 7v6" /></svg>, // Simplified as Search icon for now or customized
-            MapLocation: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>, // Reusing MapPin or simliar
+            UsersViewfinder: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><circle cx="10" cy="10" r="7" /><path d="M21 21l-6-6" /><path d="M7 10h6" /><path d="M10 7v6" /></svg>,
+            MapLocation: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>,
             Info: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>,
             UpRightFromSquare: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>
         };
@@ -216,7 +272,6 @@
             return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
         };
 
-        // Parse "1.5 hr" or "30 min" to minutes
         const parseStayDuration = (stayStr) => {
              if (!stayStr || stayStr === '-') return 0;
              if (stayStr === 'Overnight') return 0;
@@ -319,7 +374,6 @@
             { id: 'fuel', label: '加油', Icon: Icons.Fuel, color: 'text-[#BC4749]', bgColor: 'bg-[#FFB4A2]' },
             { id: 'other', label: '其他', Icon: Icons.MoreHorizontal, color: 'text-stone-600', bgColor: 'bg-stone-200' },
         ];
-
         const FAMILY_MEMBERS = ["蔣翊齊", "蔣宥昇", "陳榮芳", "蔣宗恆"];
 
         // --- NEW: Daily Detail Modal Component ---
@@ -506,7 +560,7 @@
             // --- NEW: Scientific Calculator State ---
             const [calcInput, setCalcInput] = useState("");
             const [calcResult, setCalcResult] = useState("");
-
+            
             // --- NEW: Photo Search State ---
             const [photoSearchLocation, setPhotoSearchLocation] = useState("");
             const [photoSearchPeople, setPhotoSearchPeople] = useState([]);
@@ -621,19 +675,14 @@
                     setCalcInput(prev => prev.slice(0, -1));
                 } else if (val === '=') {
                     try {
-                        // Replace visual operator '^' with JS operator '**' for calculation
-                        // Handle potential security risks by only allowing safe characters if this were a real app,
-                        // but for this client-side demo, we replace logic.
                         if (!calcInput) return;
                         
                         let expression = calcInput.replace(/\^/g, '**');
-                        // Use Function constructor to evaluate safely
                         const result = new Function('return ' + expression)();
                         
                         if (!isFinite(result) || isNaN(result)) {
                             setCalcResult("Error");
                         } else {
-                            // Format to avoid long decimals
                             const formatted = Math.round(result * 100000000) / 100000000;
                             setCalcResult(String(formatted));
                         }
@@ -641,10 +690,6 @@
                         setCalcResult("Error");
                     }
                 } else {
-                    // Reset result if user starts typing a new number after a calculation? 
-                    // Or allow chaining. Here we allow appending to input.
-                    // If result is showing and user types operator, we could append. 
-                    // For simplicity, we just append to input.
                     setCalcInput(prev => prev + val);
                 }
             };
@@ -772,7 +817,7 @@
                                 actualDepTime: actualDepTime,
                                 mapcodeDisplay: rawSpot.mapCode || "GPS", 
                                 weather: ["sunny", "cloudy"][Math.floor(Math.random()*2)], 
-                                temp: "18°C", // Adjusted for Taiwan Winter
+                                temp: "16°C", // Adjusted for Taiwan Winter
                                 gmapLink: `https://www.google.com/maps/search/?api=1&query=${rawSpot.lat},${rawSpot.lon}`, 
                                 nextStop: nextStopInfo,
                                 ticket: rawSpot.ticket || null 
@@ -967,18 +1012,43 @@
             
             const handleOpenMap = () => {
                 let points = [];
+                
                 if (selectedDay === 'all') {
-                    // Map Hotels
-                    points = HOTEL_INFO.map(h => `${h.lat},${h.lon}`);
+                    // 針對「全部」行程：串接所有天數的所有景點
+                    tripData.forEach(day => {
+                        day.spots.forEach(spot => {
+                            // 優先使用 lat, lon，若無則嘗試解析連結
+                            let coord = "";
+                            if (spot.lat && spot.lon) {
+                                coord = `${spot.lat},${spot.lon}`;
+                            } else if (spot.gmapLink && spot.gmapLink.includes('query=')) {
+                                coord = spot.gmapLink.split('query=')[1];
+                            }
+
+                            if (coord) {
+                                // 避免相鄰重複點 (例如 Day1 終點是飯店，Day2 起點也是飯店，不需要重複導航)
+                                if (points.length === 0 || points[points.length - 1] !== coord) {
+                                    points.push(coord);
+                                }
+                            }
+                        });
+                    });
                 } else {
-                    // Map Spots
+                    // 針對「單日」行程：僅取得當天景點
                     const currentDay = tripData.find(d => d.dayId === selectedDay);
-                    if (currentDay) {
-                         points = currentDay.spots.map(s => `${s.mapcodeDisplay.includes('GPS') || !s.mapcodeDisplay.includes('Tel') ? s.gmapLink.split('query=')[1] : ''}`).filter(p => p);
-                         if(points.length === 0) {
-                             points = currentDay.spots.map(s => `${RAW_KML_DATA.find(d => d.dayId === selectedDay).spots.find(rs => rs.name === s.name).lat},${RAW_KML_DATA.find(d => d.dayId === selectedDay).spots.find(rs => rs.name === s.name).lon}`);
-                         }
+                    if (currentDay) { 
+                        points = currentDay.spots.map(s => {
+                            if (s.lat && s.lon) return `${s.lat},${s.lon}`;
+                            if (s.gmapLink && s.gmapLink.includes('query=')) return s.gmapLink.split('query=')[1];
+                            return null;
+                        }).filter(p => p);
                     }
+                }
+                
+                // --- 關鍵修改：強制閉環邏輯 ---
+                // 如果路徑超過 1 個點，且「終點」不等於「起點」，則自動將「起點」加到最後，形成閉環
+                if (points.length > 1 && points[0] !== points[points.length - 1]) {
+                    points.push(points[0]);
                 }
                 
                 if (points.length > 0) {
@@ -1462,9 +1532,7 @@
                                                                                 <p className="relative z-10">{spot.desc}</p>
                                                                         </div>
                                                                         <div className="flex flex-wrap gap-2 mb-4">
-                                                                                <div className="bg-slate-800 border border-slate-600 px-3 py-1.5 rounded-xl text-xs font-bold text-slate-400 flex items-center gap-1">
-                                                                                    <Icons.MapPin size={12} className="text-[#4ECDC4]" /> {spot.mapcodeLabel}: <span className="font-mono text-slate-300">{spot.mapcodeDisplay}</span>
-                                                                                </div>
+                                                                                <div className="bg-slate-800 border border-slate-600 px-3 py-1.5 rounded-xl text-xs font-bold text-slate-400 flex items-center gap-1"><Icons.MapPin size={12} className="text-[#4ECDC4]" /> {spot.mapcodeLabel}: <span className="font-mono text-slate-300">{spot.mapcodeDisplay}</span></div>
                                                                                 <a href={spot.gmapLink} target="_blank" rel="noreferrer" className="bg-[#4ECDC4] text-white hover:bg-[#3dbdb4] px-3 py-1.5 rounded-xl text-xs font-bold transition-colors flex items-center gap-1 shadow-[0_2px_10px_rgba(78,205,196,0.3)] active:translate-y-[1px] active:shadow-none">
                                                                                     打開地圖 <Icons.ExternalLink size={10} />
                                                                                 </a>
@@ -1518,8 +1586,7 @@
                                                                             <span className="font-mono text-[#4ECDC4]">{spot.nextStop.distance}</span>
                                                                             <span className="w-px h-3 bg-slate-600"></span>
                                                                             <button onClick={() => handleTransportToggle(spot.id)} className="flex items-center gap-1 hover:text-[#4ECDC4] transition-colors font-bold">
-                                                                                 {transportModes[spot.id] === 'walk' ? <><Icons.Footprints size={12} className="text-[#FF9F1C]"/> {spot.nextStop.walkTime}</> : <><Icons.Car size={12} className="text-[#4ECDC4]"/> {spot.nextStop.driveTime}</>}
-                                                                            </button>
+                                                                                 {transportModes[spot.id] === 'walk' ? <><Icons.Footprints size={12} className="text-[#FF9F1C]"/> {spot.nextStop.walkTime}</> : <><Icons.Car size={12} className="text-[#4ECDC4]"/> {spot.nextStop.driveTime}</>}</button>
                                                                         </div>
                                                                     </div>
 
@@ -1546,10 +1613,9 @@
                         )}
 
                         {activeTab === 'info' && (
-                            /* ... Info Content ... */
                             <div className="animate-in fade-in slide-in-from-bottom-6 duration-700 space-y-8">
                                 {/* UPDATED: Navigation & Souvenir Card */}
-                                <div className="bg-[#131b2e] rounded-2xl border border-slate-700/50 shadow-2xl overflow-hidden">
+                                <div className="glass-panel rounded-2xl border border-slate-700/50 shadow-2xl overflow-hidden">
                                     
                                     {/* Header Section from new design */}
                                     <div className="p-6 md:p-8 border-b border-slate-700/50 flex items-center gap-4">
@@ -1563,7 +1629,7 @@
                                     </div>
 
                                     {/* Content Section */}
-                                    <div className="p-6 md:p-8 bg-[#0f1623]">
+                                    <div className="p-6 md:p-8 bg-[#0f1623]/80">
                                         
                                         {/* New Button Grid */}
                                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
