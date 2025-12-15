@@ -3,153 +3,176 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>2025 跨年遊 | 行程 + 統計 + AI 掃雷 (四合一)</title>
+    <!-- 更改標題以符合新的風格 -->
+    <title>旅遊計畫 | Morandi Style Trip Planner</title>
     
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     
+    <!-- EmailJS for sending reports -->
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=JetBrains+Mono:wght@500&family=Mountains+of+Christmas:wght@700&display=swap" rel="stylesheet">
-
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
     <style>
-        /* 1. 基礎設定：深色聖誕夜背景 (來自 A) */
+        /* 樣式調整：莫蘭迪深色系 + 柔和強調色 */
         html, body {
             margin: 0; padding: 0; width: 100%; min-height: 100vh;
-            background-color: #0f172a; color: #E2E8F0; 
+            /* 莫蘭迪深底色：深灰藍 */
+            background-color: #1a202c; color: #D4D4D8; 
             font-family: 'Noto Sans TC', sans-serif; overflow-x: hidden;
-            /* 聖誕色光暈 */
-            background-image: 
-                radial-gradient(circle at 20% 20%, rgba(220, 38, 38, 0.15) 0%, transparent 40%),
-                radial-gradient(circle at 80% 80%, rgba(16, 185, 129, 0.15) 0%, transparent 40%);
+            /* 移除聖誕風格漸層 */
+            background-image: none;
         }
+        /* 移除雪花和煙火的容器及相關 CSS */
+        #snow-container, #fireworks-container { display: none; } 
+        .snowflake, @keyframes snowfall, .firework, @keyframes firework { visibility: hidden !important; }
 
-        /* 2. 雪花/煙火特效容器 (來自 A) */
-        #snow-container, #fireworks-container { 
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; overflow: hidden; 
-        }
-        .snowflake { position: absolute; top: -10px; color: #fff; font-size: 1.2rem; opacity: 0.8; animation: snowfall linear infinite; text-shadow: 0 0 5px rgba(255,255,255,0.8); }
-        @keyframes snowfall { 0% { transform: translateY(0) rotate(0deg); opacity: 1; } 100% { transform: translateY(110vh) rotate(360deg); opacity: 0.2; } }
-        
-        /* 煙火 (來自 A) - 保持原本的煙火動畫 */
-        @keyframes firework { 0% { transform: translate(var(--x), var(--initialY)); width: var(--initialSize); opacity: 1; } 50% { width: 0.5vmin; opacity: 1; } 100% { width: var(--finalSize); opacity: 0; } }
-        .firework, .firework::before, .firework::after { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 0.5vmin; aspect-ratio: 1; background: radial-gradient(circle, #ff0 0.2vmin, #0000 0) 50% 00%, radial-gradient(circle, #ff0 0.3vmin, #0000 0) 00% 50%, radial-gradient(circle, #ff0 0.5vmin, #0000 0) 50% 99%, radial-gradient(circle, #ff0 0.2vmin, #0000 0) 99% 50%, radial-gradient(circle, #ff0 0.3vmin, #0000 0) 80% 90%, radial-gradient(circle, #ff0 0.5vmin, #0000 0) 95% 90%, radial-gradient(circle, #ff0 0.5vmin, #0000 0) 10% 60%, radial-gradient(circle, #ff0 0.2vmin, #0000 0) 31% 80%, radial-gradient(circle, #ff0 0.3vmin, #0000 0) 80% 10%, radial-gradient(circle, #ff0 0.2vmin, #0000 0) 90% 23%, radial-gradient(circle, #ff0 0.3vmin, #0000 0) 45% 20%, radial-gradient(circle, #ff0 0.5vmin, #0000 0) 13% 24%; background-size: 0.5vmin 0.5vmin; background-repeat: no-repeat; animation: firework 2s infinite; }
-        .firework::before { content: ""; display: block; transform: translate(-50%, -50%) rotate(25deg) !important; }
-        .firework::after { content: ""; display: block; transform: translate(-50%, -50%) rotate(-37deg) !important; }
-
-        /* 3. 內容層 */
         #root { position: relative; z-index: 10; }
-        
-        /* 4. 玻璃擬態 (來自 A) */
-        .glass-panel {
-            background: rgba(30, 41, 59, 0.75);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
-            transition: all 0.3s ease;
+        /* 調整 Glass Panel 顏色，使其更柔和 */
+        .glass-panel { 
+            background: rgba(45, 55, 72, 0.7); /* 深灰藍半透明 */
+            backdrop-filter: blur(16px); 
+            -webkit-backdrop-filter: blur(16px); 
+            border: 1px solid rgba(255, 255, 255, 0.1); 
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); 
+            transition: all 0.3s ease; 
         }
-
-        /* 5. AI 掃雷專屬樣式 (來自 B) */
-        .strategy-box {
-            border-left: 3px solid #ffd700;
-            background: rgba(255, 215, 0, 0.05);
-        }
-        
-        /* 6. 其他共用樣式 */
-        .leaflet-layer, .leaflet-control-zoom-in, .leaflet-control-zoom-out, .leaflet-control-attribution { filter: invert(100%) hue-rotate(180deg) brightness(90%) contrast(90%); }
         .typing-indicator span { animation: blink 1.4s infinite both; } .typing-indicator span:nth-child(2) { animation-delay: 0.2s; } .typing-indicator span:nth-child(3) { animation-delay: 0.4s; } @keyframes blink { 0% { opacity: 0.2; } 20% { opacity: 1; } 100% { opacity: 0.2; } }
         .no-scrollbar::-webkit-scrollbar { display: none; }
-        .neon-text { text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 20px #FFD700, 0 0 30px #FFD700; }
-        .markdown-content ul { list-style-type: disc; padding-left: 1.2em; margin-bottom: 0.5em; } .markdown-content ol { list-style-type: decimal; padding-left: 1.2em; margin-bottom: 0.5em; } .markdown-content p { margin-bottom: 0.5em; } .markdown-content strong { color: #FFCB77; } .markdown-content a { color: #4ECDC4; text-decoration: underline; }
+        /* 調整霓虹文字為柔和的莫蘭迪色: 米粉/乾燥玫瑰，降低發光強度以提高閱讀性 */
+        .neon-text { 
+            text-shadow: 
+                0 0 3px #D4D4D8,      /* 較小的白色核心 */
+                0 0 6px #E4C7C2,      /* 降低米粉色擴散 */
+                0 0 10px #E4C7C2;     /* 移除最寬的陰影，保持清晰 */
+        }
+        /* 針對總花費金額的樣式，使用灰藍色發光 */
+        .neon-text-blue {
+            text-shadow: 
+                0 0 3px #D4D4D8,
+                0 0 6px #A0B7C6, 
+                0 0 10px #A0B7C6;
+        }
+        .markdown-content ul { list-style-type: disc; padding-left: 1.2em; margin-bottom: 0.5em; } .markdown-content ol { list-style-type: decimal; padding-left: 1.2em; margin-bottom: 0.5em; } .markdown-content p { margin-bottom: 0.5em; } 
+        /* 調整 Markdown 強調色 */
+        .markdown-content strong { color: #A0B7C6; } /* 柔和灰藍 */
+        .markdown-content a { color: #E4C7C2; text-decoration: underline; } /* 柔和米粉 */
+        
+        /* GuardTab 專用風格 */
+        .guard-card {
+             border-left: 3px solid #B6C9B6; /* 莫蘭迪灰綠 */
+             background: rgba(182, 201, 182, 0.05);
+        }
+        .ai-result-box {
+            background: rgba(160, 183, 198, 0.1); /* 莫蘭迪灰藍色背景 */
+            border: 1px solid rgba(160, 183, 198, 0.3);
+            color: #E2E8F0;
+        }
     </style>
 </head>
 <body>
-    <div id="snow-container"><div class="snowflake" style="left:10%;animation-duration:10s;">❄️</div><div class="snowflake" style="left:20%;animation-duration:12s;font-size:0.8rem;">❅</div><div class="snowflake" style="left:50%;animation-duration:13s;font-size:1.5rem;">❄️</div><div class="snowflake" style="left:70%;animation-duration:11s;">❅</div></div>
-    <div id="fireworks-container"><div class="firework" style="left:15%;top:20%;--x:-50%;--initialY:60vmin;--initialSize:0.5vmin;--finalSize:45vmin;animation-delay:0.5s;"></div><div class="firework" style="left:85%;top:15%;--x:50%;--initialY:60vmin;--initialSize:0.5vmin;--finalSize:40vmin;animation-delay:1.2s;"></div></div>
     
+    <!-- 移除聖誕夜雪花與煙火背景效果 -->
     <div id="root"></div>
 
     <script type="text/babel">
         const { useState, useEffect, useMemo, useRef, useCallback } = React;
 
-        // --- Gemini API Helper (Merged from A and B) ---
-        const generateGeminiContent = async (prompt, imageBase64 = null, useSearch = false) => {
-            const defaultKey = ""; 
-            let storedKey = localStorage.getItem('gemini_api_key');
-            let apiKey = storedKey ? storedKey.trim() : defaultKey.trim();
-            
-            if (!apiKey) throw new Error("NO_API_KEY");
+        /* --- LLM API Function and Utils --- */
 
-            const model = 'gemini-2.5-flash-preview-09-2025';
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+        /**
+         * 呼叫 Google Gemini API 產生內容，支援文字、圖片輸入和 Google Search Grounding。
+         */
+        const generateGeminiContent = async (prompt, base64Image = null, useSearch = false) => {
+            const apiKey = typeof __gemini_api_key !== 'undefined' ? __gemini_api_key : localStorage.getItem('gemini_api_key') || "";
             
-            const parts = [{ text: prompt }];
-            if (imageBase64) {
-                const base64Data = imageBase64.split(',')[1] || imageBase64;
-                parts.push({ inlineData: { mimeType: "image/jpeg", data: base64Data } });
+            if (!apiKey) {
+                throw new Error('NO_API_KEY');
             }
 
-            const payload = { contents: [{ parts: parts }] };
-            
-            // 使用 Google Search Tool (若需要)
-            if (useSearch) {
-                payload.tools = [{ "google_search": {} }];
-            }
+            const MODEL_NAME = "gemini-2.5-flash-preview-09-2025";
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent?key=${apiKey}`;
 
-            try {
-                const response = await fetch(url, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
+            const contents = [{ role: "user", parts: [{ text: prompt }] }];
+
+            // 處理多模態 (圖片) 輸入
+            if (base64Image) {
+                const mimeTypeMatch = base64Image.match(/data:(.*?);/);
+                const mimeType = mimeTypeMatch ? mimeTypeMatch[1] : 'image/jpeg';
+                const data = base64Image.split(',')[1] || base64Image;
+
+                contents[0].parts.unshift({
+                    inlineData: {
+                        mimeType: mimeType,
+                        data: data
+                    }
                 });
-                
-                if (!response.ok) {
-                    const errData = await response.json().catch(() => ({}));
-                    if (response.status === 400 && (errData.error?.message?.includes('tool') || errData.error?.message?.includes('google_search')) && !imageBase64) {
-                         const fallbackResponse = await fetch(url, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
-                        });
-                        const fallbackData = await fallbackResponse.json();
-                        return fallbackData.candidates?.[0]?.content?.parts?.[0]?.text || "AI 回應為空";
+            }
+
+            const payload = {
+                contents: contents,
+                tools: useSearch ? [{ "google_search": {} }] : undefined,
+            };
+
+            // 簡單的指數退避重試機制
+            const maxRetries = 3;
+            for (let i = 0; i < maxRetries; i++) {
+                try {
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!response.ok) {
+                        const errorBody = await response.json();
+                        console.error('API Error Response:', errorBody);
+                        if (response.status === 429 && i < maxRetries - 1) {
+                            const delay = Math.pow(2, i) * 1000 + Math.random() * 1000;
+                            await new Promise(res => setTimeout(res, delay));
+                            continue; 
+                        }
+                        throw new Error(`HTTP error! status: ${response.status} - ${errorBody.error?.message || 'Unknown error'}`);
                     }
-                    if (response.status === 400 || response.status === 403) {
-                        localStorage.removeItem('gemini_api_key'); 
-                        throw new Error("API Key 無效或過期，請重新設定。");
+
+                    const result = await response.json();
+                    const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
+                    if (text) {
+                        return text;
+                    } else {
+                        console.error("Gemini API returned no text:", result);
+                        throw new Error("No content generated.");
                     }
-                    throw new Error(errData.error?.message || `HTTP Error: ${response.status}`);
+                } catch (error) {
+                    if (i === maxRetries - 1) throw error; 
+                    const delay = Math.pow(2, i) * 1000 + Math.random() * 1000;
+                    await new Promise(res => setTimeout(res, delay));
                 }
-                const data = await response.json();
-                return data.candidates?.[0]?.content?.parts?.[0]?.text || "抱歉，AI 暫時無法回應。";
-            } catch (error) {
-                throw error;
             }
         };
 
-        // --- Helper functions for time calculation ---
-        function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
-            var R = 6371; var dLat = deg2rad(lat2-lat1); var dLon = deg2rad(lon2-lon1);
-            var a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * Math.sin(dLon/2) * Math.sin(dLon/2);
-            var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); var d = R * c;
-            return d.toFixed(1);
-        }
-        function deg2rad(deg) { return deg * (Math.PI/180) }
-        const timeToMinutes = (timeStr) => { if (!timeStr) return 0; const [hours, minutes] = timeStr.split(':').map(Number); return hours * 60 + minutes; };
-        const minutesToTimeStr = (minutes) => { let h = Math.floor(minutes / 60); let m = Math.floor(minutes % 60); h = h % 24; return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`; };
-        const parseStayDuration = (stayStr) => { if (!stayStr || stayStr === '-') return 0; if (stayStr === 'Overnight') return 0; if (stayStr.includes('hr')) { return parseFloat(stayStr) * 60; } if (stayStr.includes('min')) { return parseInt(stayStr); } return 0; };
-        const ReactMarkdown = ({ children }) => <div dangerouslySetInnerHTML={{ __html: marked.parse(children) }} />;
+        /* --- GLOBAL CONSTANTS & HELPERS --- */
+        
+        // --- 貨幣轉換輔助資料 ---
+        const CURRENCY_OPTIONS = [
+            { code: 'TWD', symbol: 'NT$', name: '台幣' },
+            { code: 'JPY', symbol: '¥', name: '日幣' },
+            { code: 'CNY', symbol: '¥', name: '人民幣' },
+            { code: 'USD', symbol: '$', name: '美金' },
+        ];
 
+        // RAW DATA (Christmas Trip) - 更新為莫蘭迪色主題色
+        const RAW_KML_DATA = [
+            // themeColor: 柔和灰綠
+            { dayId: "day1", date: "12/24 (三)", title: "聖誕夜桃園之旅", themeColor: "bg-[#B6C9B6] text-stone-900", spots: [ { name: "溫暖的家", lat: 25.0665752, lon: 121.5103617, desc: "旅程起點，準備出發！", mapCode: "GPS" }, { name: "HARD OFF海德沃福 桃園中壢店", lat: 24.9712911, lon: 121.252971, desc: "日本二手連鎖店巡禮，尋寶趣。", mapCode: "GPS" }, { name: "石門水庫福華渡假飯店", lat: 24.8177389, lon: 121.2430134, desc: "入住石門水庫旁，享受聖誕氛圍。", mapCode: "GPS" } ] },
+            // themeColor: 柔和灰藍
+            { dayId: "day2", date: "12/25 (四)", title: "龍潭創意與活力探索", themeColor: "bg-[#A0B7C6] text-stone-900", spots: [ { name: "雄獅文具-想像力製造所", lat: 24.8418681, lon: 121.1962665, desc: "色彩與創意的體驗觀光工廠。", mapCode: "GPS", ticket: { adult: 500, child: 300 } }, { name: "龍潭運動公園兒童遊戲場", lat: 24.868033, lon: 121.2187586, desc: "讓孩子盡情放電的戶外空間。", mapCode: "GPS" }, { name: "溫暖的家", lat: 25.0665752, lon: 121.5103617, desc: "平安返家。", mapCode: "GPS" } ] }
+        ];
 
-        // --- ICONS & CONSTANTS (Merged from A and B) ---
         const Icons = {
             Plane: (props)=><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M2 12h5"/><path d="M13 12h3"/><path d="M19.74 7.33a2.3 2.3 0 0 1 2.93 2.93l-3.33 3.33a2.3 2.3 0 0 1-3.25 0l-7.34-7.34a2.3 2.3 0 0 1 0-3.25l3.33-3.33z"/><path d="M14.66 14.66 9 22H2l2.5-9"/><path d="M7 17l-5 5"/></svg>,
             Smile: (props)=><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" x2="9.01" y1="9" y2="9"/><line x1="15" x2="15.01" y1="9" y2="9"/></svg>,
@@ -169,39 +192,115 @@
             X: (props)=><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>,
             Coffee: (props)=><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M10 2v2"/><path d="M14 2v2"/><path d="M6 2v2"/><path d="M18 8a1 1 0 0 1 1 1v2a3 3 0 0 1-3 3h-2.95a1 1 0 0 0-.768.369l-.254.332a4 4 0 0 1-3.26 1.623 4 4 0 0 1-3.296-1.402l-.125-.153A1 1 0 0 0 4.35 14H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1h14z"/><path d="M18 14v1a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2v-1"/></svg>,
             ShoppingBag: (props)=><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>,
-            Fuel: (props)=><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><line x1="3" x2="15" y1="22" y2="22"/><line x1="4" x2="14" y1="9" y2="9"/><path d="M14 22V4a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v18"/><path d="M14 13h2a2 2 0 0 1 2 2v2a2 2 0 0 0 2 2h0a2 2 0 0 0 2-2V9.83a2 2 0 0 0-.59-1.42L18 5"/></svg>,
-            MoreHorizontal: (props)=><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>,
+            Fuel: (props)=><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinecap="round" {...props}><line x1="3" x2="15" y1="22" y2="22"/><line x1="4" x2="14" y1="9" y2="9"/><path d="M14 22V4a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v18"/><path d="M14 13h2a2 2 0 0 1 2 2v2a2 2 0 0 0 2 2h0a2 2 0 0 0 2-2V9.83a2 2 0 0 0-.59-1.42L18 5"/></svg>,
             Sun: (props)=><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>,
             CloudSnow: (props)=><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="M8 15h.01"/><path d="M8 19h.01"/><path d="M12 17h.01"/><path d="M12 21h.01"/><path d="M16 15h.01"/><path d="M16 19h.01"/></svg>,
             CloudRain: (props)=><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="M16 14v6"/><path d="M8 14v6"/><path d="M12 16v6"/></svg>,
             Cloud: (props)=><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M17.5 19c0-1.7-1.3-3-3-3h-1.1c-.2-3.4-3.1-6-6.5-6-3.7 0-6.6 2.8-6.9 6.4h-.1C2.1 16.4 0 18.5 0 21c0 2.2 1.8 4 4 4h13.5c2.2 0 4-1.8 4-4"/></svg>,
+            Edit3: (props)=><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>,
+            Sparkles: (props)=><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/><path d="M5 3v4"/><path d="M9 3v4"/><path d="M3 5h4"/><path d="M3 9h4"/></svg>,
+            MessageCircle: (props)=><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="m3 21 1.9-5.7a8.5 8.5 0 1 1 3.8 3.8z"/></svg>,
+            Send: (props)=><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>,
+            Bot: (props)=><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg>,
+            Settings: (props)=><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.09a2 2 0 0 1-1-1.74v-.51a2 2 0 0 1 1-1.72l.15-.1a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>,
+            ArrowDown: (props)=><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M12 5v14"/><path d="m19 12-7 7-7-7"/></svg>,
+            Map: (props)=><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21 3 6"/><line x1="9" x2="9" y1="3" y2="18"/><line x1="15" x2="15" y1="6" y2="21"/></svg>,
+            Search: (props)=><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>,
+            Gift: (props)=><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13"/><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"/><path d="M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.9 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5"/></svg>,
+            Store: (props)=><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7"/><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><path d="M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4"/><path d="M2 7h20"/><path d="M22 7v3a2 2 0 0 1-2 2v0a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 16 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 12 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 8 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 4 12v0a2 2 0 0 1-2-2V7"/></svg>,
+            Utensils: (props)=><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg>,
+            LocateFixed: (props)=><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><line x1="2" x2="5" y1="12" y2="12"/><line x1="19" x2="22" y1="12" y2="12"/><line x1="12" x2="12" y1="2" y2="5"/><line x1="12" x2="12" y1="19" y2="22"/><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="3"/></svg>,
+            Loader2: (props)=><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>,
+            AlertTriangle: (props)=><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>,
+            Check: (props)=><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><polyline points="20 6 9 17 4 12"/></svg>,
             Navigation2: (props)=><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><polygon points="12 2 19 21 12 17 5 21 12 2"/></svg>,
             Camera: (props)=><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>,
             ShoppingBasket: (props)=><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="m5 11 4-7"/><path d="m19 11-4-7"/><path d="M2 11h20"/><path d="m3.5 11 1.6 7.4a2 2 0 0 0 2 1.6h9.8c.9 0 1.8-.7 2-1.6l1.7-7.4"/><path d="m9 11 1 9"/><path d="m4.5 11 .1 8.1"/><path d="m19.5 11-.1 8.1"/><path d="m15 11-1 9"/></svg>,
             Image: (props)=><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>,
+            // 新增 CameraOff 圖示
+            CameraOff: (props)=><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><line x1="1" x2="23" y1="1" y2="23"/><path d="M7.74 18H4a2 2 0 0 1-2-2v-9a2 2 0 0 1 2-2h1.5l2.5-3h4"/><path d="M14.5 4h5a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-1"/><path d="M14 14.5a3 3 0 0 1-4.3-4.3"/></svg>,
             Newspaper: (props)=><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8"/><path d="M15 18h-5"/><path d="M10 6h8v4h-8V6Z"/></svg>,
             Mail: (props)=><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>,
-            UsersViewfinder: (props)=><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><circle cx="10" cy="10" r="7" /><path d="M21 21l-6-6" /><path d="M7 10h6" /><path d="M10 7v6" /></svg>, 
+            UsersViewfinder: (props)=><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><circle cx="10" cy="10" r="7" /><path d="M21 21l-6-6" /><path d="M7 10h6" /><path d="M10 7v6" /></svg>,
             MapLocation: (props)=><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>, 
             Info: (props)=><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>,
-            Shield: (props)=><svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></svg>
+            UpRightFromSquare: (props)=><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>,
+            MoreHorizontal: (props)=><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>,
+            // 新增一個圖釘圖示來取代飛機圖示 (Pin)
+            Pin: (props)=><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="m21.75 3.75-6 6"/><path d="M21 3 3 21l8-4 4-8Z"/><path d="m14 10 3 3"/></svg>,
+            // 新增 Shield 圖示
+            Shield: (props)=><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></svg>
         };
 
         const WeatherIcon = ({ type }) => {
             switch (type) {
-                case 'sunny': return <Icons.Sun className="w-5 h-5 text-amber-500" />;
+                case 'sunny': return <Icons.Sun className="w-5 h-5 text-yellow-300" />;
                 case 'snowy': return <Icons.CloudSnow className="w-5 h-5 text-slate-400" />;
-                case 'rainy': return <Icons.CloudRain className="w-5 h-5 text-blue-400" />;
+                case 'rainy': return <Icons.CloudRain className="w-5 h-5 text-blue-300" />;
                 case 'cloudy': return <Icons.Cloud className="w-5 h-5 text-stone-400" />;
                 default: return <Icons.CloudSnow className="w-5 h-5 text-stone-300" />;
             }
         };
 
-        const RAW_KML_DATA = [
-            { dayId: "day1", date: "12/24 (三)", title: "聖誕夜桃園之旅", themeColor: "bg-[#FFCF56]", spots: [ { name: "溫暖的家", lat: 25.0665752, lon: 121.5103617, desc: "旅程起點，準備出發！", mapCode: "GPS" }, { name: "HARD OFF海德沃福 桃園中壢店", lat: 24.9712911, lon: 121.252971, desc: "日本二手連鎖店巡禮，尋寶趣。", mapCode: "GPS" }, { name: "石門水庫福華渡假飯店", lat: 24.8177389, lon: 121.2430134, desc: "入住石門水庫旁，享受聖誕氛圍。", mapCode: "GPS" } ] },
-            { dayId: "day2", date: "12/25 (四)", title: "龍潭創意與活力探索", themeColor: "bg-[#90BE6D]", spots: [ { name: "雄獅文具-想像力製造所", lat: 24.8418681, lon: 121.1962665, desc: "色彩與創意的體驗觀光工廠。", mapCode: "GPS", ticket: { adult: 500, child: 300 } }, { name: "龍潭運動公園兒童遊戲場", lat: 24.868033, lon: 121.2187586, desc: "讓孩子盡情放電的戶外空間。", mapCode: "GPS" }, { name: "溫暖的家", lat: 25.0665752, lon: 121.5103617, desc: "平安返家。", mapCode: "GPS" } ] }
-        ];
-        const REGION_DATA = { "taoyuan": { label: "桃園/中壢", lat: 24.9936, lon: 121.3010, souvenirs: [ { name: "大溪豆干", desc: "桃園經典名產" }, { name: "龍狄花生糖", desc: "龍潭知名伴手禮" }, { name: "中崎本舖蛋糕", desc: "傳統古早味" } ], color: "text-[#FFCF56]" }, "longtan": { label: "龍潭/石門", lat: 24.8694, lon: 121.2183, souvenirs: [ { name: "石門活魚", desc: "在地特色料理" }, { name: "龍潭花生軟糖", desc: "香甜不黏牙" }, { name: "客家菜包", desc: "傳統米食美味" } ], color: "text-[#90BE6D]" } };
+        // --- Helper functions for time calculation ---
+        function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
+            var R = 6371; var dLat = deg2rad(lat2-lat1); var dLon = deg2rad(lon2-lon1);
+            var a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * Math.sin(dLon/2) * Math.sin(dLon/2);
+            var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); var d = R * c;
+            return d.toFixed(1);
+        }
+        function deg2rad(deg) { return deg * (Math.PI/180) }
+
+        const timeToMinutes = (timeStr) => {
+            if (!timeStr) return 0;
+            const [hours, minutes] = timeStr.split(':').map(Number);
+            return hours * 60 + minutes;
+        };
+
+        const minutesToTimeStr = (minutes) => {
+            let h = Math.floor(minutes / 60);
+            let m = Math.floor(minutes % 60);
+             h = h % 24; 
+            return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
+        };
+
+        // Parse "1.5 hr" or "30 min" to minutes
+        const parseStayDuration = (stayStr) => {
+             if (!stayStr || stayStr === '-') return 0;
+             if (stayStr === 'Overnight') return 0;
+             if (stayStr.includes('hr')) {
+                 return parseFloat(stayStr) * 60;
+             }
+             if (stayStr.includes('min')) {
+                 return parseInt(stayStr);
+             }
+             return 0;
+        };
+
+        // --- Constants for Location & Nav ---
+        const REGION_DATA = {
+          "taoyuan": { 
+            label: "桃園/中壢", 
+            lat: 24.9936, lon: 121.3010,
+            souvenirs: [
+              { name: "大溪豆干", desc: "桃園經典名產" },
+              { name: "龍狄花生糖", desc: "龍潭知名伴手禮" },
+              { name: "中崎本舖蛋糕", desc: "傳統古早味" }
+            ],
+            color: "text-[#B6C9B6]" // 灰綠
+          },
+          "longtan": { 
+            label: "龍潭/石門", 
+            lat: 24.8694, lon: 121.2183,
+            souvenirs: [
+              { name: "石門活魚", desc: "在地特色料理" },
+              { name: "龍潭花生軟糖", desc: "香甜不黏牙" },
+              { name: "客家菜包", desc: "傳統米食美味" }
+            ],
+            color: "text-[#A0B7C6]" // 灰藍
+          }
+        };
+
         const NAV_BUTTONS_NEW = [
             { title: "附近的平價美食", query: "平價美食", icon: Icons.Utensils },
             { title: "附近便利商店", query: "便利商店", icon: Icons.Store },
@@ -209,112 +308,243 @@
             { title: "附近的加油站", query: "加油站", icon: Icons.Fuel },
             { title: "附近的全聯", query: "全聯福利中心", icon: Icons.ShoppingBasket }
         ];
-        const FLIGHT_INFO_A = {
+
+        // --- Data ---
+        const FLIGHT_INFO = {
             outbound: { flight: "Drive", airline: "自駕前往", from: "台北", to: "桃園", dep: "09:30", arr: "11:00", date: "12/24 (三)", duration: "1h 30m" },
             inbound: { flight: "Drive", airline: "自駕返程", from: "龍潭", to: "台北", dep: "16:00", arr: "17:30", date: "12/25 (四)", duration: "1h 30m" }
         };
-        const HOTEL_INFO_A = [
+        const HOTEL_INFO = [
             { day: "12/24", name: "石門水庫福華渡假飯店", location: "桃園龍潭", desc: "湖景度假飯店", link: "https://www.google.com/maps/search/?api=1&query=石門水庫福華渡假飯店", lat: 24.8177389, lon: 121.2430134 }
         ];
+        
         const RENTAL_INFO_LIST = [
-            { label: "車輛", value: "自家車" }, { label: "駕駛", value: "爸爸" }, { label: "導航", value: "Google Maps / 車機" },
-            { label: "ETC", value: "已安裝" }, { label: "保險", value: "已投保強制險/第三人責任險" }, { label: "備註", value: "出發前檢查胎壓與五油三水" }
+            { label: "車輛", value: "自家車" },
+            { label: "駕駛", value: "爸爸" },
+            { label: "導航", value: "Google Maps / 車機" },
+            { label: "ETC", value: "已安裝" },
+            { label: "保險", value: "已投保強制險/第三人責任險" },
+            { label: "備註", value: "出發前檢查胎壓與五油三水" }
         ];
-        const FLIGHT_INFO_B = {
-            outbound: { flight: "JX802", airline: "星宇航空", from: "TPE", to: "NRT", dep: "10:10", arr: "14:20", date: "2026/1/30" },
-            inbound: { flight: "JX801", airline: "星宇航空", from: "NRT", to: "TPE", dep: "15:30", arr: "18:45", date: "2026/2/3" }
-        };
-        const HOTEL_INFO_B = [
-            { day: "1/30", name: "Hotel Torifito Kashiwanoha", location: "千葉柏市" }, { day: "1/31", name: "REF大宮 by Vessel Hotels", location: "埼玉大宮" },
-            { day: "2/1", name: "HOTEL COMENTO YOKOHAMA", location: "橫濱關內" }, { day: "2/2", name: "日和飯店舞濱", location: "千葉浦安" },
-        ];
-        const AI_GUARD_DATA_B = [
-            { date: "1/30 (五) Fri.", spots: [ { name: "航空科學博物館", location: "成田機場旁", tags: ["14:30"], timeHint: "14:30", icon: "✈️", url: "http://www.aeromuseum.or.jp/", strategy: "這裡最熱門的是「747 機頭導覽」與「大型模擬駕駛艙」，需要入館後預約。" } ] },
-            { date: "1/31 (六) Sat.", spots: [ { name: "足立區生物園", location: "竹之塚站", tags: ["09:30"], timeHint: "09:30", icon: "🦋", url: "https://seibutuen.jp/", strategy: "冬季「大溫室」特別受歡迎，暖氣充足且蝴蝶飛舞。" }, { name: "大宮鐵道博物館", location: "埼玉大宮", tags: ["13:00"], timeHint: "13:00", icon: "🚂", url: "https://www.railway-museum.jp/", strategy: "門票必須提前買好。想體驗「迷你駕駛列車」務必下載官方 App 抽籤。" } ] },
-            { date: "2/1 (日) Sun.", spots: [ { name: "多摩六都科學館", location: "西東京市", tags: ["09:30"], timeHint: "09:30", icon: "🪐", url: "https://www.tamarokuto.or.jp/", strategy: "有「金氏世界紀錄」認證的天象儀，建議先確認星空劇場場次。" } ] },
-            { date: "2/2 (一) Mon.", spots: [ { name: "合味道紀念館 橫濱", location: "橫濱", tags: ["10:00"], timeHint: "10:00", icon: "🍜", url: "https://www.cupnoodles-museum.jp/zh-tw/yokohama/", strategy: "「我的合味道工廠」非常熱門，強烈建議一個月前上網預約。" } ] },
-        ];
-
+        
         const EXCHANGE_RATE = 1.0; 
         const STAY_OPTIONS = ["30 min", "1 hr", "1.5 hr", "2 hr", "2.5 hr", "3 hr", "4 hr", "5 hr", "Overnight", "-"];
-        const FAMILY_MEMBERS = ["蔣翊齊", "蔣宥昇", "陳榮芳", "蔣宗恆"];
+        // 更新為莫蘭迪配色
+        const EXPENSE_CATEGORIES = [
+            { id: 'food', label: '飲食', Icon: Icons.Coffee, color: 'text-[#A0B7C6]', bgColor: 'bg-[#B6C9B6]' }, 
+            { id: 'shopping', label: '購物', Icon: Icons.ShoppingBag, color: 'text-[#E4C7C2]', bgColor: 'bg-[#E4C7C2]' },
+            { id: 'transport', label: '交通', Icon: Icons.Car, color: 'text-[#708090]', bgColor: 'bg-[#C9D9E4]' },
+            { id: 'hotel', label: '住宿', Icon: Icons.Hotel, color: 'text-[#5A6F7E]', bgColor: 'bg-[#C7D7E4]' }, 
+            { id: 'ticket', label: '門票', Icon: Icons.Ticket, color: 'text-[#8DB4B1]', bgColor: 'bg-[#C4E0DE]' },
+            { id: 'fuel', label: '加油', Icon: Icons.Fuel, color: 'text-[#C7A0A0]', bgColor: 'bg-[#E4D4D4]' },
+            { id: 'other', label: '其他', Icon: Icons.MoreHorizontal, color: 'text-stone-600', bgColor: 'bg-stone-300' },
+        ];
 
+        /* --- COMPONENTS --- */
 
-        // --- COMPONENTS (Merged and Refactored) ---
+        // 1. Markdown 渲染組件
+        const MarkdownRenderer = ({ content, className = '' }) => {
+            const html = marked.parse(content || "");
+            return <div className={`markdown-content ${className}`} dangerouslySetInnerHTML={{ __html: html }} />;
+        };
 
-        // 1. DailyDetailModal (A)
-        const DailyDetailModal = ({ isOpen, onClose, dayData, allExpenses, spotTicketCounts }) => {
+        // 2. Daily Detail Modal Component
+        const DailyDetailModal = ({ isOpen, onClose, dayData, allExpenses, spotTicketCounts, selectedCurrency, exchangeRate, tripData }) => {
             if (!isOpen || !dayData) return null;
+
+            // Determine if showing whole trip details or just one day's
+            const isTotalSummary = dayData.isTotalSummary;
+            const filteredDays = isTotalSummary ? tripData : [dayData];
+
+            // Flatten expenses for the relevant days
             const dayExpensesList = [];
-            dayData.spots.forEach(spot => {
-                const spotExpenses = allExpenses[spot.id] || [];
-                spotExpenses.forEach(record => {
-                    const dateMatch = record.note ? record.note.match(/^(\d{4}[-/]\d{2}[-/]\d{2}\s+\d{2}:\d{2})\s+(.*)$/) : null;
-                    dayExpensesList.push({ type: 'manual', spotName: spot.name, category: record.category, amount: record.amount, note: dateMatch ? dateMatch[2] : (record.note || "消費"), date: dateMatch ? dateMatch[1] : null, id: record.id });
+            
+            filteredDays.forEach(day => {
+                const dayLabel = isTotalSummary ? day.date.split(' ')[0] : "";
+
+                day.spots.forEach(spot => {
+                    // 1. Manual Expenses
+                    const spotExpenses = allExpenses[spot.id] || [];
+                    spotExpenses.forEach(record => {
+                        const dateMatch = record.note ? record.note.match(/^(\d{4}[-/]\d{2}[-/]\d{2}\s+\d{2}:\d{2})\s+(.*)$/) : null;
+                        dayExpensesList.push({
+                            type: 'manual',
+                            spotName: `${dayLabel ? dayLabel + ' - ' : ''}${spot.name}`,
+                            category: record.category,
+                            amount: record.amount,
+                            note: dateMatch ? dateMatch[2] : (record.note || "消費"),
+                            date: dateMatch ? dateMatch[1] : null,
+                            id: record.id
+                        });
+                    });
+
+                    // 2. Ticket Expenses
+                    if (spot.ticket) {
+                        const counts = spotTicketCounts[spot.id] || { adult: 2, child: 2 };
+                        const ticketCost = (spot.ticket.adult * counts.adult + spot.ticket.child * counts.child);
+                        if (ticketCost > 0) {
+                            dayExpensesList.push({
+                                type: 'ticket',
+                                spotName: `${dayLabel ? dayLabel + ' - ' : ''}${spot.name}`,
+                                category: 'ticket',
+                                amount: ticketCost,
+                                note: `門票 (大${counts.adult} 小${counts.child})`,
+                                id: `ticket-${spot.id}`
+                            });
+                        }
+                    }
                 });
-                if (spot.ticket) {
-                    const counts = spotTicketCounts[spot.id] || { adult: 2, child: 2 };
-                    const ticketCost = (spot.ticket.adult * counts.adult + spot.ticket.child * counts.child);
-                    if (ticketCost > 0) { dayExpensesList.push({ type: 'ticket', spotName: spot.name, category: 'ticket', amount: ticketCost, note: `門票 (大${counts.adult} 小${counts.child})`, id: `ticket-${spot.id}` }); }
-                }
             });
 
+            const dayTotalTWD = dayExpensesList.reduce((sum, item) => sum + item.amount, 0);
+            const convertedTotal = (dayTotalTWD * exchangeRate).toFixed(0);
+
             return (
-                <div className="fixed inset-0 bg-stone-900/80 backdrop-blur-sm flex items-center justify-center z-[130] p-4" onClick={onClose}>
-                    <div className="glass-panel rounded-2xl p-6 w-full max-w-sm shadow-2xl max-h-[70vh] flex flex-col bg-[#0f172a] border border-slate-700" onClick={e => e.stopPropagation()}>
+                <div className="fixed inset-0 bg-stone-900/80 backdrop-blur-sm flex items-center justify-center z-[130] p-4 animate-in fade-in duration-200" onClick={onClose}>
+                    {/* 調整 Modal 背景色 */}
+                    <div className="glass-panel rounded-2xl p-6 w-full max-w-sm shadow-2xl max-h-[85vh] flex flex-col bg-[#2d3748] border border-slate-700" onClick={e => e.stopPropagation()}>
                          <div className="flex justify-between items-center mb-4 border-b border-slate-700 pb-3">
-                            <div><div className="text-xs font-bold text-slate-400 mb-1">{dayData.date}</div><h3 className="font-black text-xl text-slate-200">{dayData.title}</h3></div>
+                            <div>
+                                <div className="text-xs font-bold text-slate-400 mb-1">{isTotalSummary ? "整個行程" : dayData.date}</div>
+                                <h3 className="font-black text-xl text-slate-200">{isTotalSummary ? "總花費明細" : dayData.title}</h3>
+                            </div>
                             <button onClick={onClose} className="p-1 rounded-full hover:bg-slate-700 text-slate-400 transition-colors"><Icons.X size={20}/></button>
                         </div>
+                        
                         <div className="flex-1 overflow-y-auto space-y-3 pr-2">
-                            {dayExpensesList.length === 0 ? (<div className="text-center text-slate-500 py-8 flex flex-col items-center"><Icons.Wallet size={32} className="mb-2 opacity-50"/><span>本日尚無花費紀錄</span></div>) : (
-                                dayExpensesList.map((item, idx) => (<div key={item.id || idx} className="bg-[#1e293b] p-3 rounded-xl border border-slate-700 flex justify-between items-center"><div><div className="text-xs text-[#FFCB77] font-bold mb-0.5">{item.spotName}</div><div className="flex flex-col">{item.date && <span className="text-[10px] text-slate-500 block">{item.date}</span>}<span className="text-sm font-bold text-slate-300">{item.note}</span></div></div><div className="font-mono font-bold text-slate-200 text-lg">NT${item.amount.toLocaleString()}</div></div>))
+                            {dayExpensesList.length === 0 ? (
+                                <div className="text-center text-slate-500 py-8 flex flex-col items-center">
+                                    <Icons.Wallet size={32} className="mb-2 opacity-50"/>
+                                    <span>尚無花費紀錄</span>
+                                </div>
+                            ) : (
+                                dayExpensesList
+                                    .sort((a, b) => (a.date || a.spotName).localeCompare(b.date || b.spotName))
+                                    .map((item, idx) => (
+                                    <div key={item.id || idx} className="bg-slate-800 p-3 rounded-xl border border-slate-700 flex justify-between items-center">
+                                        <div>
+                                            {/* 莫蘭迪灰藍 */}
+                                            <div className="text-xs text-[#A0B7C6] font-bold mb-0.5">{item.spotName}</div>
+                                            <div className="flex flex-col">
+                                                {item.date && <span className="text-[10px] text-slate-500 block">{item.date}</span>}
+                                                <span className="text-sm font-bold text-slate-300">{item.note}</span>
+                                            </div>
+                                        </div>
+                                        <div className="font-mono font-bold text-slate-200 text-lg">NT${item.amount.toLocaleString()}</div>
+                                    </div>
+                                ))
                             )}
                         </div>
-                        <div className="mt-4 pt-4 border-t border-slate-700 flex justify-between items-center"><span className="text-sm font-bold text-slate-400 uppercase tracking-wider">Total</span><span className="text-2xl font-mono font-black text-[#FF6B6B]">NT${dayData.totalJpy.toLocaleString()}</span></div>
+
+                        <div className="mt-4 pt-4 border-t border-slate-700 flex justify-between items-center">
+                            <span className="text-sm font-bold text-slate-400 uppercase tracking-wider">總計 (TWD)</span>
+                            {/* 莫蘭迪淺粉紅 */}
+                            <span className="text-2xl font-mono font-black text-[#DDA0A0]">NT${dayTotalTWD.toLocaleString()}</span>
+                        </div>
+                        <div className="mt-2 flex justify-between items-center">
+                            <span className="text-sm font-bold text-slate-400 uppercase tracking-wider">總計 ({selectedCurrency.code})</span>
+                            {/* 莫蘭迪灰藍 */}
+                            <span className="text-2xl font-mono font-black text-[#A0B7C6]">{selectedCurrency.symbol} {convertedTotal.toLocaleString()}</span>
+                        </div>
                     </div>
                 </div>
             );
         };
 
-        // 2. ApiKeyModal (A/B)
+        // 3. ApiKey Modal Component
         const ApiKeyModal = ({ isOpen, onClose }) => {
             const [key, setKey] = useState('');
-            useEffect(() => { const storedKey = localStorage.getItem('gemini_api_key'); if (storedKey) setKey(storedKey); }, [isOpen]);
-            const handleSave = () => { localStorage.setItem('gemini_api_key', key.trim()); onClose(); };
+            
+            useEffect(() => {
+                const storedKey = localStorage.getItem('gemini_api_key');
+                if (storedKey) setKey(storedKey);
+            }, [isOpen]);
+
+            const handleSave = () => {
+                localStorage.setItem('gemini_api_key', key.trim());
+                onClose();
+            };
+
             if (!isOpen) return null;
+
             return (
-                <div className="fixed inset-0 bg-stone-800/80 backdrop-blur-sm flex items-center justify-center z-[120] p-4"><div className="glass-panel rounded-2xl p-6 w-full max-w-sm shadow-2xl">
-                        <div className="flex justify-between items-center mb-2"><h3 className="font-bold text-lg text-slate-200 flex items-center gap-2"><Icons.Settings size={20} /> 設定 AI 金鑰</h3><button onClick={onClose} className="text-slate-400 hover:text-white p-1 rounded-full hover:bg-slate-700/50 transition-colors"><Icons.X size={20} /></button></div>
-                        <p className="text-xs text-slate-400 mb-4">內建金鑰已啟用！若您有自己的 Key 可在此更換。</p>
-                        <input type="password" value={key} onChange={(e) => setKey(e.target.value)} placeholder="貼上 API Key (選填)" className="w-full bg-slate-700 rounded-lg p-3 text-sm mb-4 outline-none focus:ring-2 focus:ring-[#4ECDC4] text-white"/>
-                        <div className="flex gap-2"><a href="https://aistudio.google.com/app/apikey" target="_blank" className="flex-1 text-center py-2 rounded-lg border border-slate-600 text-xs font-bold text-slate-400 hover:bg-slate-700">取得 Key</a><button onClick={handleSave} className="flex-1 bg-[#4ECDC4] text-white py-2 rounded-lg text-sm font-bold hover:bg-[#3dbdb4]">儲存</button></div>
+                <div className="fixed inset-0 bg-stone-800/80 backdrop-blur-sm flex items-center justify-center z-[120] p-4 animate-in fade-in duration-200">
+                    <div className="glass-panel rounded-2xl p-6 w-full max-w-sm shadow-2xl">
+                        <div className="flex justify-between items-center mb-2">
+                            <h3 className="font-bold text-lg text-slate-200 flex items-center gap-2">
+                                {/* 莫蘭迪灰藍 */}
+                                <Icons.Settings size={20} className="text-[#A0B7C6]"/> 設定 AI 金鑰
+                            </h3>
+                            <button onClick={onClose} className="text-slate-400 hover:text-white p-1 rounded-full hover:bg-slate-700/50 transition-colors">
+                                <Icons.X size={20} />
+                            </button>
+                        </div>
+                        <p className="text-xs text-slate-400 mb-4">
+                            內建金鑰已啟用！若您有自己的 Key 可在此更換。
+                        </p>
+                        <input 
+                            type="password" 
+                            value={key} 
+                            onChange={(e) => setKey(e.target.value)} 
+                            placeholder="貼上 API Key (選填)"
+                            /* 莫蘭迪米粉色 focus */
+                            className="w-full bg-slate-700 rounded-lg p-3 text-sm mb-4 outline-none focus:ring-2 focus:ring-[#E4C7C2] text-white"
+                        />
+                        <div className="flex gap-2">
+                            <a href="https://aistudio.google.com/app/apikey" target="_blank" className="flex-1 text-center py-2 rounded-lg border border-slate-600 text-xs font-bold text-slate-400 hover:bg-slate-700">
+                                取得 Key
+                            </a>
+                            {/* 莫蘭迪灰藍按鈕 */}
+                            <button onClick={handleSave} className="flex-1 bg-[#A0B7C6] text-stone-900 py-2 rounded-lg text-sm font-bold hover:bg-[#86A2B3]">
+                                儲存
+                            </button>
+                        </div>
                     </div>
                 </div>
             );
         };
 
-        // 3. ExpenseModal (A)
+        // 4. ExpenseModal
         const ExpenseModal = ({ isOpen, onClose, currentEditingSpot, expenseForm, setExpenseForm, handleImageUpload, pendingReceipts, togglePendingReceipt, removePendingReceipt, saveExpense, expenses, deleteExpense, isAnalyzingReceipt, quotaStatus }) => {
             if (!isOpen || !currentEditingSpot) return null;
+            
+            // 使用防禦性程式碼確保 pendingReceipts 是陣列
+            const safePendingReceipts = pendingReceipts || [];
+
             return (
                 <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-[100] p-4 backdrop-blur-sm">
-                    <div className="glass-panel rounded-2xl p-6 w-full max-w-sm bg-[#1e293b] border border-slate-600 flex flex-col max-h-[85vh]">
+                    {/* 調整 Modal 背景色 */}
+                    <div className="glass-panel rounded-2xl p-6 w-full max-w-sm bg-[#2d3748] border border-slate-600 flex flex-col max-h-[85vh]">
                         <h3 className="font-bold text-lg mb-4 text-slate-200 shrink-0">{currentEditingSpot.name}</h3>
-                        <div className="overflow-y-auto flex-1 pr-1 -mr-1">
-                            <input type="text" value={expenseForm.note} onChange={e => setExpenseForm({...expenseForm, note: e.target.value})} className="w-full bg-slate-800 p-3 rounded-xl mb-4 text-sm text-white border border-slate-600 outline-none focus:border-[#FFCB77]" placeholder="備註/摘要 (例如: 商店名)" />
+                        
+                        {/* 修正：JSX 必須包圍在單一父標籤內。由於 h3, overflow-y-auto, flex-gap-2 已經在 glass-panel 內，
+                            如果仍報錯，通常是因為內部結構問題。我們將確保所有內容區塊都明確存在於一個父級 div 中。
+                            由於 flex flex-col max-h-[85vh] 已經在 glass-panel 上，我們將它拆分如下：
+                        */}
+                        
+                        <div className="flex-1 overflow-y-auto pr-1 -mr-1">
+                            <input type="text" value={expenseForm.note} onChange={e => setExpenseForm({...expenseForm, note: e.target.value})} className="w-full bg-slate-800 p-3 rounded-xl mb-4 text-sm text-white border border-slate-600 outline-none focus:border-[#E4C7C2]" placeholder="備註/摘要 (例如: 商店名)" />
                             <div className="relative mb-4">
-                                <input type="number" value={expenseForm.amount} onChange={e => setExpenseForm({...expenseForm, amount: e.target.value})} className="w-full bg-slate-800 p-3 rounded-xl text-xl font-mono text-white border border-slate-600 outline-none focus:border-[#FFCB77] pr-32" placeholder="金額" autoFocus />
+                                {/* 莫蘭迪米粉色 focus */}
+                                <input type="number" value={expenseForm.amount} onChange={e => setExpenseForm({...expenseForm, amount: e.target.value})} className="w-full bg-slate-800 p-3 rounded-xl text-xl font-mono text-white border border-slate-600 outline-none focus:border-[#E4C7C2] pr-32" placeholder="金額" autoFocus />
                                 <div className="absolute right-12 top-1/2 -translate-y-1/2 flex items-center gap-2 z-10 pointer-events-none">
                                     <div className="relative pointer-events-auto"><input type="file" accept="image/*" id="gallery-upload" className="hidden" multiple onChange={handleImageUpload}/><label htmlFor="gallery-upload" className={`p-1.5 rounded-lg cursor-pointer flex items-center justify-center transition-colors ${isAnalyzingReceipt ? 'text-slate-600 cursor-not-allowed' : 'text-slate-400 hover:text-white hover:bg-slate-700'}`}><Icons.Image size={20} /></label></div>
-                                    <div className="relative pointer-events-auto"><input type="file" accept="image/*" capture="environment" id="camera-upload" className="hidden" onChange={handleImageUpload}/><label htmlFor="camera-upload" className={`p-1.5 rounded-lg cursor-pointer flex items-center justify-center transition-colors ${isAnalyzingReceipt ? 'text-[#FFCB77] animate-pulse' : 'text-slate-400 hover:text-white hover:bg-slate-700'}`}>{isAnalyzingReceipt ? <Icons.Loader2 className="animate-spin" size={20} /> : <Icons.Camera size={20} />}</label></div>
+                                    {/* 莫蘭迪米粉色 pulse */}
+                                    <div className="relative pointer-events-auto"><input type="file" accept="image/*" capture="environment" id="camera-upload" className="hidden" onChange={handleImageUpload}/><label htmlFor="camera-upload" className={`p-1.5 rounded-lg cursor-pointer flex items-center justify-center transition-colors ${isAnalyzingReceipt ? 'text-[#E4C7C2] animate-pulse' : 'text-slate-400 hover:text-white hover:bg-slate-700'}`}>{isAnalyzingReceipt ? <Icons.Loader2 className="animate-spin" size={20} /> : <Icons.Camera size={20} />}</label></div>
                                 </div>
                             </div>
-                            {pendingReceipts.length > 0 && (
+                            {safePendingReceipts.length > 0 && (
                                 <div className="mb-4 space-y-2">
-                                    <div className="flex justify-between items-center"><div className="text-xs font-bold text-[#4ECDC4] flex items-center gap-1"><Icons.Sparkles size={12}/> AI 辨識結果 ({pendingReceipts.filter(p=>p.isChecked).length})</div><div className={`text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1 ${quotaStatus.type === 'error' ? 'bg-red-500/20 text-red-400' : 'bg-green-500/20 text-green-400'}`}><div className={`w-1.5 h-1.5 rounded-full ${quotaStatus.type === 'error' ? 'bg-red-500 animate-pulse' : 'bg-green-500'}`}></div>{quotaStatus.text}</div></div>
-                                    <div className="bg-slate-900/50 rounded-xl p-2 border border-[#4ECDC4]/30 space-y-2 max-h-40 overflow-y-auto">
-                                        {pendingReceipts.map(item => (<div key={item.id} className={`flex items-center gap-3 p-2 rounded-lg transition-colors ${item.isChecked ? 'bg-[#4ECDC4]/10' : 'opacity-50'}`}><input type="checkbox" checked={item.isChecked} onChange={() => togglePendingReceipt(item.id)} className="w-4 h-4 rounded border-slate-500 accent-[#4ECDC4] cursor-pointer shrink-0" /><div className="flex-1 min-w-0">{item.isAnalyzing ? (<div className="flex items-center gap-2 text-xs text-slate-400"><Icons.Loader2 size={12} className="animate-spin"/> {item.note}</div>) : (<><div className={`font-bold text-sm truncate ${item.note.includes('額度') || item.note.includes('失敗') ? 'text-red-400' : 'text-slate-200'}`}>{item.note || '未命名'}</div>{item.amount > 0 && <div className="text-xs text-[#4ECDC4] font-mono">NT${item.amount}</div>}</>)}</div><button onClick={() => removePendingReceipt(item.id)} className="text-slate-500 hover:text-red-400 p-1"><Icons.X size={14} /></button></div>))}
+                                    {/* 莫蘭迪灰藍 */}
+                                    <div className="flex justify-between items-center"><div className="text-xs font-bold text-[#A0B7C6] flex items-center gap-1"><Icons.Sparkles size={12}/> AI 辨識結果 ({safePendingReceipts.filter(p=>p.isChecked).length})</div><div className={`text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1 ${quotaStatus.type === 'error' ? 'bg-red-500/20 text-red-400' : 'bg-green-500/20 text-green-400'}`}><div className={`w-1.5 h-1.5 rounded-full ${quotaStatus.type === 'error' ? 'bg-red-500 animate-pulse' : 'bg-green-500'}`}></div>{quotaStatus.text}</div></div>
+                                    <div className="bg-slate-900/50 rounded-xl p-2 border border-[#A0B7C6]/30 space-y-2 max-h-40 overflow-y-auto">
+                                        {safePendingReceipts.map(item => (
+                                            <div key={item.id} className={`flex items-center gap-3 p-2 rounded-lg transition-colors ${item.isChecked ? 'bg-[#A0B7C6]/10' : 'opacity-50'}`}>
+                                                <input type="checkbox" checked={item.isChecked} onChange={() => togglePendingReceipt(item.id)} className="w-4 h-4 rounded border-slate-500 accent-[#A0B7C6] cursor-pointer shrink-0" />
+                                                <div className="flex-1 min-w-0">{item.isAnalyzing ? (<div className="flex items-center gap-2 text-xs text-slate-400"><Icons.Loader2 size={12} className="animate-spin"/> {item.note}</div>) : (<><div className={`font-bold text-sm truncate ${item.note.includes('額度') || item.note.includes('失敗') ? 'text-red-400' : 'text-slate-200'}`}>{item.note || '未命名'}</div>{item.amount > 0 && <div className="text-xs text-[#A0B7C6] font-mono">NT${item.amount}</div>}</>)}</div>
+                                                <button onClick={() => removePendingReceipt(item.id)} className="text-slate-500 hover:text-red-400 p-1"><Icons.X size={14} /></button>
+                                            </div>
+                                        ))}
                                     </div>
                                 </div>
                             )}
@@ -328,168 +558,566 @@
                                 </div>
                             </div>
                         </div>
-                        <div className="flex gap-2 mt-4 shrink-0"><button onClick={onClose} className="flex-1 py-3 text-slate-400 hover:text-white">取消</button><button onClick={saveExpense} className="flex-1 bg-[#FFCB77] text-slate-900 rounded-xl font-bold shadow-[0_4px_0px_#d9aa5b] active:translate-y-[2px] active:shadow-none">{pendingReceipts.filter(p => p.isChecked).length > 0 ? `儲存 (${pendingReceipts.filter(p => p.isChecked).length + (expenseForm.amount ? 1 : 0)}筆)` : '儲存'}</button></div>
+                        {/* 底部按鈕區 */}
+                        <div className="flex gap-2 mt-4 shrink-0"><button onClick={onClose} className="flex-1 py-3 text-slate-400 hover:text-white">取消</button>
+                        {/* 莫蘭迪米粉色儲存按鈕 */}
+                        <button 
+                            onClick={saveExpense} 
+                            className="flex-1 bg-[#E4C7C2] text-stone-900 rounded-xl font-bold shadow-[0_4px_0px_#ccb0ac] active:translate-y-[2px] active:shadow-none"
+                        >
+                            {((safePendingReceipts).filter(p => p.isChecked).length > 0 || expenseForm.amount) 
+                                ? `儲存 (${((safePendingReceipts).filter(p => p.isChecked).length) + (expenseForm.amount ? 1 : 0)}筆)` 
+                                : '儲存'}
+                        </button>
+                        </div>
                     </div>
                 </div>
             );
         };
 
-        // 4. EmailModal (A)
+        // 5. EmailModal
         const EmailModal = ({ isOpen, onClose, emailInput, setEmailInput, handleSendEmail, isSendingEmail }) => {
             if (!isOpen) return null;
             return (
-                <div className="fixed inset-0 bg-stone-900/80 backdrop-blur-sm flex items-center justify-center z-[130] p-4"><div className="glass-panel rounded-2xl p-6 w-full max-w-sm shadow-2xl bg-[#1e293b] border border-slate-700">
-                        <h3 className="font-bold text-lg mb-2 text-slate-200 flex items-center gap-2"><Icons.Mail size={20} className="text-[#4ECDC4]" /> 寄送花費報表</h3>
+                <div className="fixed inset-0 bg-stone-900/80 backdrop-blur-sm flex items-center justify-center z-[130] p-4 animate-in fade-in duration-200">
+                    <div className="glass-panel rounded-2xl p-6 w-full max-w-sm shadow-2xl bg-[#2d3748] border border-slate-700">
+                        {/* 莫蘭迪灰藍 */}
+                        <h3 className="font-bold text-lg text-slate-200 flex items-center gap-2"><Icons.Mail size={20} className="text-[#A0B7C6]" /> 寄送花費報表</h3>
                         <p className="text-xs text-slate-400 mb-4">將本次旅程的所有花費明細製作成表格，寄送到您的信箱。</p>
                         <label className="block text-xs font-bold text-slate-300 mb-1">收件人信箱</label>
-                        <input type="email" value={emailInput} onChange={(e) => setEmailInput(e.target.value)} placeholder="your@email.com" className="w-full bg-slate-800 p-3 rounded-xl mb-6 text-sm text-white border border-slate-600 outline-none focus:border-[#4ECDC4]" />
-                        <div className="flex gap-2"><button onClick={onClose} className="flex-1 py-2 text-slate-400 hover:text-white transition-colors" disabled={isSendingEmail}>取消</button><button onClick={handleSendEmail} className="flex-1 bg-[#4ECDC4] text-white rounded-xl font-bold py-2 shadow-lg hover:bg-[#3dbdb4] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2" disabled={isSendingEmail}>{isSendingEmail ? <><Icons.Loader2 size={16} className="animate-spin" /> 發送中...</> : '確認發送'}</button></div>
+                        {/* 莫蘭迪灰藍 focus */}
+                        <input type="email" value={emailInput} onChange={(e) => setEmailInput(e.target.value)} placeholder="your@email.com" className="w-full bg-slate-800 p-3 rounded-xl mb-6 text-sm text-white border border-slate-600 outline-none focus:border-[#A0B7C6]" />
+                        <div className="flex gap-2"><button onClick={onClose} className="flex-1 py-2 text-slate-400 hover:text-white transition-colors" disabled={isSendingEmail}>取消</button>
+                        {/* 莫蘭迪灰藍按鈕 */}
+                        <button onClick={handleSendEmail} className="flex-1 bg-[#A0B7C6] text-stone-900 rounded-xl font-bold py-2 shadow-lg hover:bg-[#86A2B3] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2" disabled={isSendingEmail}>{isSendingEmail ? <><Icons.Loader2 size={16} className="animate-spin" /> 發送中...</> : '確認發送'}</button></div>
                     </div>
                 </div>
             );
         };
-        
-        // 5. AI Guard Tab (B)
-        const AiGuardTab = ({ aiLoading, checkFlight, flightAnalysis, checkHotel, hotelAnalysis, AI_GUARD_DATA, checkSpot, spotAnalysis, aiInput, setAiInput, analyzeGeneral, aiGeneralResult, setIsKeyModalOpen }) => {
+
+        // 6. CurrencySwitcher Component
+        const CurrencySwitcher = ({ selectedCurrency, exchangeRate, isRateLoading, rateError, setSelectedCurrency }) => {
+            
+            const handleCurrencyChange = (e) => {
+                setSelectedCurrency(CURRENCY_OPTIONS.find(c => c.code === e.target.value));
+            };
+
+            return (
+                <div className="flex flex-col items-end gap-1">
+                    <div className="bg-slate-800 p-2 rounded-xl shadow-[0_4px_10px_rgba(0,0,0,0.5)] border border-slate-600 hover:bg-slate-700 transition-all group relative">
+                        <select 
+                            value={selectedCurrency.code}
+                            onChange={handleCurrencyChange}
+                            className={`bg-transparent outline-none cursor-pointer text-slate-300 text-sm font-bold w-16 appearance-none pr-6 focus:ring-0 ${isRateLoading ? 'animate-pulse text-yellow-400' : ''}`}
+                            disabled={isRateLoading}
+                        >
+                            {CURRENCY_OPTIONS.map(c => (
+                                <option key={c.code} value={c.code} className="bg-slate-800">{c.code}</option>
+                            ))}
+                        </select>
+                        {/* 莫蘭迪米粉色 hover */}
+                        <Icons.ArrowDown size={14} className="absolute right-1 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500 group-hover:text-[#E4C7C2] transition-colors"/>
+                    </div>
+                    <div className="text-right text-[10px] font-bold text-slate-400 uppercase bg-slate-800 px-2 py-0.5 rounded-full border border-slate-700 w-fit">
+                        {isRateLoading ? (
+                            <span className="flex items-center text-[#B6C9B6]">
+                                <Icons.Loader2 className="w-3 h-3 mr-1 animate-spin" /> 查詢中...
+                            </span>
+                        ) : rateError ? (
+                            <span className="text-red-400 flex items-center">
+                                <Icons.AlertTriangle className="w-3 h-3 mr-1"/> 失敗
+                            </span>
+                        ) : (
+                            `1 TWD ≈ ${exchangeRate.toFixed(4)} ${selectedCurrency.code}`
+                        )}
+                    </div>
+                </div>
+            );
+        };
+
+
+        // 7. ItineraryTab
+        const ItineraryTab = ({ tripData, selectedDay, setSelectedDay, dayStartTimes, handleDayStartTimeChange, handleDepartureToggle, handleTransportToggle, handleStayChangeNew, openExpenseModal, transportModes, expenses, getTicketCounts, STAY_OPTIONS }) => {
+            const filteredTripData = selectedDay === 'all' ? tripData : tripData.filter(day => day.dayId === selectedDay);
+            return (
+                <div className="animate-in fade-in slide-in-from-bottom-6 duration-700">
+                    {/* 調整背景色 */}
+                    <div className="flex flex-wrap gap-3 mb-8 justify-center sticky top-24 z-40 py-2 bg-[#1a202c]/80 backdrop-blur rounded-2xl border border-slate-700/50">
+                        <button onClick={() => setSelectedDay('all')} className={`px-5 py-2 rounded-xl text-sm font-bold border transition-all shadow-sm ${selectedDay === 'all' ? 'bg-slate-200 text-slate-900 border-slate-200' : 'bg-slate-800 text-slate-400 border-slate-700 hover:border-slate-500'}`}>全部</button>
+                        {tripData.map(day => (<button key={day.dayId} onClick={() => setSelectedDay(day.dayId)} className={`px-5 py-2 rounded-xl text-sm font-bold border transition-all shadow-sm ${selectedDay === day.dayId ? `${day.themeColor} border-transparent` : 'bg-slate-800 text-slate-400 border-slate-700 hover:border-slate-500'}`}>{day.date.split(' ')[0]}</button>))}
+                    </div>
+                    <div className="space-y-12">
+                        {filteredTripData.map((day) => (
+                            <div key={day.dayId} className="relative">
+                                <div className="flex items-center gap-4 mb-6">
+                                    {/* 調整為莫蘭迪色 Day 區塊 */}
+                                    <div className={`${day.themeColor} w-16 h-16 rounded-2xl flex flex-col items-center justify-center shadow-[0_0_15px_rgba(255,255,255,0.1)] border-2 border-slate-700 -rotate-2`}>
+                                        <span className="text-xs font-bold uppercase">Day</span>
+                                        <span className="text-2xl font-black leading-none">{day.dayId.replace('day','')}</span>
+                                    </div>
+                                    <div className="glass-panel px-6 py-2 rounded-r-2xl rounded-bl-2xl shadow-sm border border-slate-700 flex-1">
+                                        <div className="text-2xl font-black text-slate-200">{day.date}</div>
+                                        <div className="text-lg font-bold text-slate-400">{day.title}</div>
+                                    </div>
+                                </div>
+                                <div className="space-y-8 pl-4 border-l-4 border-dotted border-slate-700 ml-8">
+                                    {day.spots.map((spot, index) => {
+                                        const spotExpenses = expenses[spot.id] || [];
+                                        const spotTotal = spotExpenses.reduce((sum, r) => sum + (r.amount || 0), 0);
+                                        const counts = getTicketCounts(spot.id);
+                                        const ticketTotal = spot.ticket ? (spot.ticket.adult * counts.adult + spot.ticket.child * counts.child) : 0;
+                                        const totalCostDisplay = spotTotal + ticketTotal;
+                                        return (
+                                            <div key={spot.id} className="relative group">
+                                                {/* 調整圓點顏色：莫蘭迪米粉色邊框 */}
+                                                <div className="absolute -left-[29px] top-6 w-5 h-5 rounded-full bg-[#1a202c] border-4 border-[#E4C7C2] z-10 shadow-[0_0_10px_rgba(228,199,194,0.5)]"></div>
+                                                <div className="glass-panel rounded-[2rem] p-6 md:p-8 shadow-lg border border-slate-700 transition-all hover:-translate-y-1 hover:border-slate-500 hover:shadow-[0_10px_30px_rgba(0,0,0,0.5)] bg-[#2d3748]">
+                                                    <div className="flex flex-col md:flex-row justify-between items-start gap-4 mb-4">
+                                                        <div className="flex-1 w-full">
+                                                            <div className="flex items-center justify-between mb-3">
+                                                                {/* 莫蘭迪灰藍色時間區塊 */}
+                                                                <div className="relative group/time flex items-center gap-2 bg-[#334155] rounded-xl px-3 py-1 border border-slate-600 shadow-sm text-[#A0B7C6] transform -rotate-1 hover:scale-105 transition-all w-fit">
+                                                                    {index === 0 ? <><span className="text-sm font-bold font-mono text-white shrink-0">抵達</span><input type="time" value={dayStartTimes[day.dayId] || "09:00"} onChange={(e) => handleDayStartTimeChange(day.dayId, e.target.value)} className="bg-slate-800 text-white rounded px-2 py-0.5 outline-none font-bold text-sm font-mono border border-slate-600 focus:border-[#E4C7C2]" /></> : <><span className="text-sm font-bold font-mono text-[#E4C7C2] shrink-0">抵達</span><span className="text-lg font-bold font-mono text-[#E4C7C2]">{spot.time}</span></>}
+                                                                </div>
+                                                                {/* 確認動身按鈕：已動身 (莫蘭迪灰綠), 未動身 (莫蘭迪淺粉紅) */}
+                                                                <button onClick={() => handleDepartureToggle(spot.id)} className={`flex items-center gap-2 px-4 py-2 rounded-full font-bold text-xs transition-all shadow-md active:scale-95 ${spot.isDeparted ? 'bg-[#B6C9B6]/20 text-[#B6C9B6] border border-[#B6C9B6]' : 'bg-[#DDA0A0] text-stone-900 hover:bg-[#C99191]'}`}>{spot.isDeparted ? <><Icons.Check size={14} />已動身 {spot.actualDepTime}</> : <><Icons.Navigation2 size={14} />確認動身</>}</button>
+                                                            </div>
+                                                            <h3 className="text-2xl font-black text-slate-100 mb-2">{spot.name}</h3>
+                                                            <div className="flex items-center gap-4 text-sm font-bold text-slate-400 mb-4 bg-slate-800 w-fit px-3 py-1 rounded-lg border border-slate-700">
+                                                                <span className="flex items-center gap-1"><WeatherIcon type={spot.weather} /> {spot.temp}</span><span className="w-1.5 h-1.5 rounded-full bg-slate-600"></span><span className="flex items-center gap-1">停留 <select value={spot.stay} onChange={(e) => handleStayChangeNew(spot.id, e.target.value)} className="bg-transparent outline-none cursor-pointer border-b border-dashed border-slate-500 hover:border-[#E4C7C2] hover:text-[#E4C7C2] transition-colors ml-1 appearance-none text-center">{STAY_OPTIONS.map(opt => <option key={opt} value={opt} className="bg-slate-800 text-slate-200">{opt}</option>)}</select></span>
+                                                            </div>
+                                                            <div className="text-lg font-bold text-slate-300 leading-relaxed mb-6 relative"><span className="text-4xl absolute -top-4 -left-2 text-slate-700 z-0">“</span><p className="relative z-10">{spot.desc}</p></div>
+                                                            <div className="flex flex-wrap gap-2 mb-4">
+                                                                {/* 莫蘭迪灰藍色圖示 */}
+                                                                <div className="bg-slate-800 border border-slate-600 px-3 py-1.5 rounded-xl text-xs font-bold text-slate-400 flex items-center gap-1"><Icons.MapPin size={12} className="text-[#A0B7C6]" /> {spot.mapcodeLabel}: <span className="font-mono text-slate-300">{spot.mapcodeDisplay}</span></div>
+                                                                {/* 莫蘭迪灰藍色按鈕 */}
+                                                                <a href={spot.gmapLink} target="_blank" rel="noreferrer" className="bg-[#A0B7C6] text-stone-900 hover:bg-[#86A2B3] px-3 py-1.5 rounded-xl text-xs font-bold transition-colors flex items-center gap-1 shadow-[0_2px_10px_rgba(160,183,198,0.3)] active:translate-y-[1px] active:shadow-none">打開地圖 <Icons.ExternalLink size={10} /></a>
+                                                            </div>
+                                                        </div>
+                                                        {/* 莫蘭迪米粉色按鈕 */}
+                                                        <button onClick={() => openExpenseModal(spot)} className="self-start md:self-center bg-[#E4C7C2] text-stone-900 p-4 rounded-2xl transition-all shadow-[0_4px_15px_rgba(228,199,194,0.3)] hover:-translate-y-1 hover:bg-[#d9bfa9] active:translate-y-0 border border-white/10"><Icons.Wallet size={24} strokeWidth={2.5} /></button>
+                                                    </div>
+                                                    {(spotTotal > 0 || ticketTotal > 0) && (<div className="mt-4 pt-4 border-t border-dashed border-slate-700 flex justify-end items-center gap-2"><span className="text-xs font-bold text-slate-500 uppercase bg-slate-800 px-2 py-0.5 rounded border border-slate-700">Estimated Total</span>{/* 莫蘭迪淺粉紅 */}
+                                                    <span className="text-xl font-mono font-black text-[#DDA0A0]">NT${totalCostDisplay.toLocaleString()}</span></div>)}
+                                                </div>
+                                                {spot.nextStop && (
+                                                    <div className="relative flex flex-col items-center my-6 gap-3">
+                                                        <div className="absolute top-0 bottom-0 w-0.5 bg-slate-700 -z-10"></div>
+                                                        <div className="bg-slate-800 border border-slate-600 px-4 py-2 rounded-2xl flex flex-col items-center gap-1 text-xs text-slate-400 shadow-lg z-10"><span className="font-bold text-slate-300">前往：{spot.nextStop.name}</span><div className="flex items-center gap-3"><span className="font-mono text-[#A0B7C6]">{spot.nextStop.distance}</span><span className="w-px h-3 bg-slate-600"></span><button onClick={() => handleTransportToggle(spot.id)} className="flex items-center gap-1 hover:text-[#A0B7C6] transition-colors font-bold">{transportModes[spot.id] === 'walk' ? <><Icons.Footprints size={12} className="text-[#E4C7C2]"/> {spot.nextStop.walkTime}</> : <><Icons.Car size={12} className="text-[#A0B7C6]"/> {spot.nextStop.driveTime}</>}</button></div></div>
+                                                        {/* 莫蘭迪灰藍色導航按鈕 */}
+                                                        <a href={spot.nextStop.navLink} target="_blank" rel="noreferrer" className="bg-[#A0B7C6] text-stone-900 px-4 py-2 rounded-full text-xs font-bold shadow-[0_0_15px_rgba(160,183,198,0.4)] hover:bg-[#86A2B3] hover:scale-105 transition-all flex items-center gap-1 z-10 border border-white/10"><Icons.Navigation size={14} /> Google 導航</a>
+                                                        <div className="text-slate-600 mt-1"><Icons.ArrowDown size={20} /></div>
+                                                        <div className="text-xs text-slate-500 mt-1">預計抵達下一站: <span className="text-[#A0B7C6] font-bold font-mono">{spot.departureTime}</span> 後 + {transportModes[spot.id] === 'walk' ? spot.nextStop.walkTime : spot.nextStop.driveTime}</div>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            );
+        };
+
+        // 8. InfoTab
+        const InfoTab = () => {
             return (
                 <div className="animate-in fade-in slide-in-from-bottom-6 duration-700 space-y-8">
-                    <header className="glass-panel p-6 rounded-2xl border border-blue-500/30">
-                        <h1 className="text-2xl font-black text-white flex items-center gap-2">
-                            <span className="bg-blue-600 p-2 rounded-lg"><Icons.Shield size={24}/></span> 
-                            AI 旅遊防雷助手
-                        </h1>
-                        <p className="text-slate-400 text-sm mt-2">點擊下方按鈕，利用 Gemini AI 結合 Google Search 查證資訊。</p>
-                    </header>
-                    
-                    {/* 航班檢查 */}
-                    <section className="glass-panel p-6 rounded-2xl border border-slate-700">
-                        <h3 className="font-bold text-white mb-4 flex items-center gap-2"><Icons.Plane className="text-blue-400"/> 航班防雷 (範例: 東京行)</h3>
-                        <div className="bg-slate-800 p-4 rounded-xl mb-4 border border-slate-600">
-                            <div className="flex justify-between text-sm text-slate-300 mb-2"><span>去: {FLIGHT_INFO_B.outbound.flight}</span><span>{FLIGHT_INFO_B.outbound.date}</span></div>
-                            <div className="flex justify-between text-sm text-slate-300"><span>回: {FLIGHT_INFO_B.inbound.flight}</span><span>{FLIGHT_INFO_B.inbound.date}</span></div>
+                    <div className="glass-panel rounded-2xl border border-slate-700/50 shadow-2xl overflow-hidden">
+                        {/* 莫蘭迪灰藍色標題 */}
+                        <div className="p-6 md:p-8 border-b border-slate-700/50 flex items-center gap-4"><div className="bg-[#A0B7C6]/10 p-3 rounded-xl border border-[#A0B7C6]/20 shadow-[0_0_15px_rgba(160,183,198,0.15)]"><Icons.Navigation size={28} className="text-[#A0B7C6]" /></div><div><h1 className="text-2xl font-bold text-white tracking-wide">實用導航 & 周邊機能</h1><p className="text-slate-400 text-sm mt-1">一鍵搜尋周邊生活機能</p></div></div>
+                        <div className="p-6 md:p-8 bg-[#1a202c]/80">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+                                {NAV_BUTTONS_NEW.map((btn, index) => (
+                                    <button key={index} onClick={() => { const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(btn.query)}`; window.open(url, '_blank'); }} className="group relative flex items-center p-4 rounded-xl bg-slate-800/50 border border-slate-700 hover:border-[#A0B7C6]/50 hover:bg-slate-800 transition-all duration-300 text-left">
+                                        <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-slate-700/50 flex items-center justify-center text-slate-300 group-hover:text-[#A0B7C6] group-hover:scale-110 group-hover:bg-slate-700 transition-all duration-300"><btn.icon size={24} /></div>
+                                        <div className="ml-4 flex-grow"><h3 className="text-slate-200 font-medium group-hover:text-white transition-colors">{btn.title}</h3><p className="text-xs text-slate-500 mt-0.5 group-hover:text-[#A0B7C6]/80 transition-colors flex items-center gap-1">開啟地圖 <Icons.MapPin size={10} /></p></div>
+                                        <div className="opacity-0 group-hover:opacity-100 transition-opacity absolute right-3 top-3 text-slate-500"><Icons.ExternalLink size={14} /></div>
+                                    </button>
+                                ))}
+                            </div>
                         </div>
-                        {flightAnalysis && <div className="bg-blue-900/30 p-4 rounded-xl border border-blue-500/30 text-sm text-blue-200 mb-4"><ReactMarkdown>{flightAnalysis}</ReactMarkdown></div>}
-                        <button onClick={checkFlight} disabled={aiLoading} className="w-full bg-blue-600 hover:bg-blue-500 text-white py-2 rounded-lg font-bold flex justify-center items-center gap-2 transition-colors">
-                            {aiLoading && !flightAnalysis ? <Icons.Loader2 className="animate-spin"/> : <Icons.Search size={16}/>} AI 驗證航班
+                    </div>
+                    
+                    <div className="glass-panel rounded-[2rem] p-8 shadow-lg border border-slate-700">
+                        {/* 莫蘭迪灰藍色標題 */}
+                        <h3 className="text-2xl font-black text-slate-200 mb-6 flex items-center gap-2"><span className="bg-[#A0B7C6] p-2 rounded-xl text-stone-900 rotate-3 shadow-lg"><Icons.Car size={20} /></span>車程預估</h3>
+                        <div className="space-y-6">
+                            {/* 莫蘭迪灰綠色塊 (去程) */}
+                            <div className="bg-[#B6C9B6]/30 p-6 rounded-3xl border border-[#B6C9B6]/50 relative overflow-hidden backdrop-blur-sm">
+                                <div className="flex justify-between items-center mb-4 relative z-10"><span className="bg-[#B6C9B6] text-stone-900 text-xs font-black px-3 py-1 rounded-full shadow-md">去程</span><span className="font-bold text-slate-300">{FLIGHT_INFO.outbound.date}</span></div>
+                                <div className="flex justify-between items-center text-center relative z-10"><div><div className="text-4xl font-black text-slate-100">{FLIGHT_INFO.outbound.dep}</div><div className="text-sm font-bold text-slate-400">{FLIGHT_INFO.outbound.from}</div></div><div className="flex-1 px-4 flex flex-col items-center"><div className="text-xs font-bold text-slate-500 mb-1">{FLIGHT_INFO.outbound.duration}</div><div className="w-full border-t border-dashed border-slate-600 relative my-2"><Icons.Car size={16} className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[#A0B7C6] bg-[#B6C9B6]/30 px-1 rounded-full" /></div><div className="text-xs font-bold text-[#A0B7C6] mt-1">{FLIGHT_INFO.outbound.flight}</div></div><div><div className="text-4xl font-black text-slate-100">{FLIGHT_INFO.outbound.arr}</div><div className="text-sm font-bold text-slate-400">{FLIGHT_INFO.inbound.to}</div></div></div>
+                            </div>
+                            {/* 莫蘭迪米粉色塊 (回程) */}
+                            <div className="bg-[#E4C7C2]/30 p-6 rounded-3xl border border-[#E4C7C2]/50 relative overflow-hidden backdrop-blur-sm">
+                                <div className="flex justify-between items-center mb-4 relative z-10"><span className="bg-[#E4C7C2] text-stone-900 text-xs font-black px-3 py-1 rounded-full shadow-md">回程</span><span className="font-bold text-slate-300">{FLIGHT_INFO.inbound.date}</span></div>
+                                <div className="flex justify-between items-center text-center relative z-10"><div><div className="text-4xl font-black text-slate-100">{FLIGHT_INFO.inbound.dep}</div><div className="text-sm font-bold text-slate-400">{FLIGHT_INFO.inbound.from}</div></div><div className="flex-1 px-4 flex flex-col items-center"><div className="text-xs font-bold text-slate-500 mb-1">{FLIGHT_INFO.inbound.duration}</div><div className="w-full border-t border-dashed border-slate-600 relative my-2"><Icons.Car size={16} className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[#DDA0A0] bg-[#E4C7C2]/30 px-1 rounded-full" /></div><div className="text-xs font-bold text-[#DDA0A0] mt-1">{FLIGHT_INFO.inbound.flight}</div></div><div><div className="text-4xl font-black text-slate-100">{FLIGHT_INFO.inbound.arr}</div><div className="text-sm font-bold text-slate-400">{FLIGHT_INFO.inbound.to}</div></div></div>
+                            </div>
+                        </div>
+                    </div>
+                    {/* 🚗 Rental Car Info Block (莫蘭迪灰藍) */}
+                    <div className="glass-panel rounded-[2rem] p-8 shadow-lg border border-slate-700">
+                        <h3 className="text-2xl font-black text-slate-200 mb-6 flex items-center gap-2"><span className="bg-[#A0B7C6] p-2 rounded-xl text-stone-900 rotate-1 shadow-lg"><Icons.Car size={20} /></span>行車檢查清單<span className="text-xs bg-slate-700 text-slate-300 px-2 py-1 rounded ml-2">出發前確認</span></h3>
+                        <div className="bg-[#2d3748] p-6 rounded-2xl border border-slate-600 font-mono text-sm leading-relaxed text-slate-300"><ul className="space-y-2 list-disc list-inside">{RENTAL_INFO_LIST.map((item, idx) => (<li key={idx} className="break-words"><span className="font-bold text-slate-200">{item.label}：</span>{item.value}</li>))}</ul></div>
+                    </div>
+                    <div className="glass-panel rounded-[2rem] p-8 shadow-lg border border-slate-700">
+                        {/* 莫蘭迪米粉色標題 */}
+                        <h3 className="text-2xl font-black text-slate-200 mb-6 flex items-center gap-2"><span className="bg-[#E4C7C2] p-2 rounded-xl text-stone-900 -rotate-2 shadow-lg"><Icons.Hotel size={20} /></span>住宿安排</h3>
+                        <div className="grid gap-4">{HOTEL_INFO.map((hotel, idx) => (<div key={idx} className="flex gap-4 p-4 rounded-2xl hover:bg-[#334155] transition-colors border border-slate-700 hover:border-[#E4C7C2]/50 group bg-[#2d3748]"><div className="bg-slate-700 text-white font-bold text-sm h-10 w-12 rounded-xl flex items-center justify-center shrink-0 shadow-md group-hover:bg-[#E4C7C2] group-hover:text-stone-900 transition-colors">{hotel.day}</div><div className="flex-1"><h4 className="font-bold text-lg text-slate-200">{hotel.name}</h4><p className="text-sm font-bold text-slate-400 mt-1">{hotel.location} • {hotel.desc}</p></div><a href={hotel.link} target="_blank" rel="noreferrer" className="self-center bg-slate-800 border border-slate-600 p-2 rounded-full text-slate-400 hover:text-[#E4C7C2] hover:border-[#E4C7C2] transition-colors"><Icons.Navigation size={20} /></a></div>))}</div>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="glass-panel rounded-[2rem] p-6 shadow-lg border border-slate-700"><h3 className="text-lg font-black text-slate-200 mb-4">緊急聯絡</h3><div className="space-y-4"><a href="tel:119" className="flex items-center justify-between p-4 bg-[#450a0a]/50 rounded-2xl text-red-200 font-bold hover:bg-[#450a0a] transition-colors border border-red-900"><span>🚑 救護車/火警</span><span className="text-2xl font-black">119</span></a><a href="tel:110" className="flex items-center justify-between p-4 bg-[#172554]/50 rounded-2xl text-blue-200 font-bold hover:bg-[#172554] transition-colors border border-blue-900"><span>🚓 警察局</span><span className="text-2xl font-black">110</span></a></div></div>
+                        <div className="glass-panel rounded-[2rem] p-6 shadow-lg border border-slate-700"><h3 className="text-lg font-black text-slate-200 mb-4">實用連結</h3><div className="space-y-3"><a href="https://www.google.com/maps" target="_blank" rel="noreferrer" className="block w-full text-center py-3 bg-slate-700 border border-slate-600 text-slate-200 font-bold rounded-xl hover:bg-slate-600 active:bg-slate-500 transition-colors">Google Maps</a><a href="https://www.cwa.gov.tw/V8/C/" target="_blank" rel="noreferrer" className="block w-full text-center py-3 bg-blue-900/40 border border-blue-800 text-blue-200 font-bold rounded-xl hover:bg-blue-900/60 active:bg-slate-500 transition-colors">中央氣象署</a></div></div>
+                    </div>
+                </div>
+            );
+        };
+
+        // 10. StatsTab
+        const StatsTab = ({ dailyStats, handleOpenDailyDetail, handleOpenEmailClick, stats, selectedCurrency, exchangeRate, setSelectedCurrency, tripData, isRateLoading, rateError }) => { 
+            const convertedTotal = (stats.totalJpy * exchangeRate).toFixed(0);
+            
+            // Function to handle click on Total Summary
+            const handleTotalSummaryClick = () => {
+                const totalSummaryData = {
+                    isTotalSummary: true,
+                    date: "全程",
+                    title: "總花費",
+                };
+                handleOpenDailyDetail(totalSummaryData);
+            };
+            
+
+            return (
+                <div className="animate-in fade-in slide-in-from-bottom-6 duration-700 space-y-8">
+                    
+                    {/* Currency Rate Info Block (莫蘭迪灰綠) */}
+                    <div className="glass-panel p-5 rounded-2xl border border-[#B6C9B6]/50 shadow-lg">
+                        <h4 className="text-lg font-bold text-[#B6C9B6] flex items-center gap-2 mb-4">
+                            <Icons.Calculator size={20}/> 貨幣匯率資訊
+                        </h4>
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-3 sm:space-y-0 sm:space-x-4 p-3 bg-gray-800 rounded-xl border border-slate-700">
+                            <span className="text-gray-300 font-medium whitespace-nowrap">
+                                當前目標幣別:
+                            </span>
+                            <span className="text-xl font-bold text-yellow-300">{selectedCurrency.name} ({selectedCurrency.code})</span>
+                            <div className="text-sm text-gray-400 whitespace-nowrap">
+                                {isRateLoading ? (
+                                    <span className="flex items-center text-[#B6C9B6]">
+                                        <Icons.Loader2 className="w-3 h-3 mr-1 animate-spin" /> 查詢中...
+                                    </span>
+                                ) : rateError ? (
+                                    <span className="text-red-400 flex items-center">
+                                        <Icons.AlertTriangle className="w-3 h-3 mr-1"/> 失敗
+                                    </span>
+                                ) : (
+                                    `1 TWD ≈ ${exchangeRate.toFixed(4)} ${selectedCurrency.code}`
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                    {/* END Currency Rate Info Block */}
+
+                    {/* 相簿搜尋連結 (莫蘭迪灰藍色漸層) */}
+                    <div className="glass-panel rounded-[2rem] overflow-hidden shadow-lg border border-slate-700">
+                        <div className="bg-gradient-to-r from-[#A0B7C6] to-[#B6C9B6] p-4 text-center relative shadow-md">
+                            <h1 className="text-stone-900 text-lg font-bold flex items-center justify-center gap-2"><Icons.CameraOff size={24} className="text-[#E4C7C2] stroke-2.5" /> 相簿複合搜尋</h1>
+                            <p className="text-stone-900 text-xs mt-1 opacity-80">點擊前往獨立搜尋頁面 (https://oliver603-juang.github.io/photo-map/)</p>
+                        </div>
+                        <div className="p-6">
+                            <a href="https://oliver603-juang.github.io/photo-map/" target="_blank" rel="noreferrer" className="w-full bg-[#A0B7C6] hover:bg-[#86A2B3] text-stone-900 font-bold py-3.5 rounded-xl shadow-lg transition transform active:scale-95 flex items-center justify-center gap-2 text-lg border border-[#A0B7C6]/30">
+                                <Icons.UpRightFromSquare size={20} />
+                                <span>開啟相簿搜尋器</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    {/* AI 智慧購物車方框 (莫蘭迪米粉色漸層) */}
+                    <div className="glass-panel rounded-[2rem] overflow-hidden shadow-lg border border-slate-700">
+                        <div className="bg-gradient-to-r from-[#E4C7C2] to-[#DDA0A0] p-4 text-center relative shadow-md">
+                            <h1 className="text-stone-900 text-lg font-bold flex items-center justify-center gap-2"><Icons.ShoppingBag size={24} className="text-[#A0B7C6] stroke-2.5" /> AI 智慧購物車</h1>
+                            <p className="text-stone-900 text-xs mt-1 opacity-80">點擊前往購物清單 AI 助理頁面</p>
+                        </div>
+                        <div className="p-6">
+                            <a href="https://oliver603-juang.github.io/shopping-cart-ai/" target="_blank" rel="noreferrer" className="w-full bg-[#E4C7C2] hover:bg-[#DDA0A0] text-stone-900 font-bold py-3.5 rounded-xl shadow-lg transition transform active:scale-95 flex items-center justify-center gap-2 text-lg border border-[#E4C7C2]/30">
+                                <Icons.UpRightFromSquare size={20} />
+                                <span>開啟購物助理</span>
+                            </a>
+                        </div>
+                    </div>
+                    {/* END NEW BLOCK */}
+
+                    <div className="space-y-4">
+                        <div className="flex items-center justify-between">
+                            {/* 莫蘭迪米粉色星號 */}
+                            <h3 className="text-xl font-black text-slate-200 ml-2 flex items-center gap-2"><Icons.Star className="text-[#E4C7C2]" fill="#E4C7C2" /> 每日花費</h3>
+                            {/* 莫蘭迪灰藍色按鈕 */}
+                            <button onClick={handleOpenEmailClick} className="text-xs font-bold text-stone-900 bg-[#A0B7C6] px-3 py-1.5 rounded-full hover:bg-[#86A2B3] transition-colors flex items-center gap-1 shadow-md"><Icons.Mail size={14} /> 發送報表</button>
+                        </div>
+                        {dailyStats.map((day) => (
+                            <div key={day.dayId} onClick={() => handleOpenDailyDetail(day)} className="bg-[#2d3748] p-5 rounded-2xl shadow-md border border-slate-700 flex justify-between items-center transition-transform hover:-translate-y-1 hover:border-slate-500 cursor-pointer">
+                                <div className="flex items-center gap-4">
+                                    <div className={`${day.themeColor} px-3 py-1 rounded-lg text-xs font-black shadow-sm`}>{day.date}</div>
+                                    <div className="font-bold text-slate-200">{day.title}</div>
+                                </div>
+                                <div className="text-right">
+                                    <div className="text-[10px] font-bold text-slate-500 uppercase">Total ({selectedCurrency.code})</div>
+                                    {/* 莫蘭迪淺粉紅 */}
+                                    <div className="text-lg font-mono font-black text-[#DDA0A0]">{selectedCurrency.symbol} {(day.totalTwd * exchangeRate).toFixed(0).toLocaleString()}</div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                    {/* 總費用摘要 (點擊觸發總明細) - 修正樣式以符合右圖更圓角的卡片設計 */}
+                    <div 
+                        className="glass-panel p-5 rounded-[2rem] border border-[#E4C7C2]/50 shadow-lg mt-8 cursor-pointer hover:bg-[#2d3748]/70 transition-colors"
+                        onClick={handleTotalSummaryClick}
+                    >
+                        <div className="flex justify-between items-center">
+                            {/* 莫蘭迪米粉色 */}
+                            <h4 className="text-lg font-bold text-[#E4C7C2] flex items-center gap-2">
+                                <Icons.Wallet size={20}/> 總花費估算
+                            </h4>
+                            <div className="text-right">
+                                <div className="text-sm font-bold text-slate-400">總計 (TWD): NT$ {stats.totalJpy.toLocaleString()}</div>
+                                {/* 莫蘭迪灰藍色霓虹文字 */}
+                                <div className="text-2xl font-mono font-black text-[#A0B7C6] neon-text-blue">
+                                    {selectedCurrency.symbol} {convertedTotal.toLocaleString()} ({selectedCurrency.code})
+                                </div>
+                            </div>
+                        </div>
+                        <p className="text-xs text-slate-500 text-right mt-2">(點擊查看完整明細)</p>
+                    </div>
+                </div>
+            );
+        };
+
+        // 10. GuardTab - AI 防雷分頁
+        const GuardTab = ({ tripData, flightInfo, hotelInfo, openKeyModal, aiLoading, setAiLoading }) => {
+            const [flightAnalysis, setFlightAnalysis] = useState("");
+            const [hotelAnalysis, setHotelAnalysis] = useState({});
+            const [spotAnalysis, setSpotAnalysis] = useState({});
+            const [aiInput, setAiInput] = useState("");
+            const [aiGeneralResult, setAiGeneralResult] = useState("");
+            
+            // 將所有景點攤平，方便迭代
+            const allSpots = useMemo(() => {
+                return tripData.flatMap(day => day.spots.map(spot => ({
+                    ...spot,
+                    dayDate: day.date.split(' ')[0],
+                    dayTitle: day.title
+                })));
+            }, [tripData]);
+
+            // AI 邏輯 functions
+            const checkFlight = async () => {
+                setAiLoading(true);
+                setFlightAnalysis(<span className="flex items-center gap-2 typing-indicator">分析中...<span>.</span><span>.</span><span>.</span></span>);
+                try {
+                    const prompt = `檢查交通：去程 ${flightInfo.outbound.flight} (${flightInfo.outbound.date}) 與 回程 ${flightInfo.inbound.flight} (${flightInfo.inbound.date})。請查詢近期準點率、交通注意事項與潛在風險 (繁體中文)。`;
+                    const res = await generateGeminiContent(prompt, null, true);
+                    setFlightAnalysis(<MarkdownRenderer content={res} className="text-sm" />);
+                } catch(e) { 
+                    setFlightAnalysis("⚠️ 分析失敗，請檢查 API Key 或網路連線。");
+                    if(e.message.includes("NO_API_KEY")) openKeyModal(true);
+                }
+                setAiLoading(false);
+            };
+
+            const checkHotel = async (hName, hLocation) => {
+                const key = hName;
+                setHotelAnalysis(p => ({...p, [key]: <span className="flex items-center gap-2 typing-indicator">🔍 掃雷中...<span>.</span><span>.</span><span>.</span></span>}));
+                setAiLoading(true);
+
+                try {
+                    const prompt = `飯店防雷檢查：${hName} (${hLocation})。請檢查：
+                    1. 附近的超市/便利商店? (步行5分鐘內)
+                    2. 停車資訊（若為自駕）?
+                    3. 近期是否有嚴重負評(噪音/清潔)?
+                    4. 離車站實際步行距離。
+                    請簡短回覆，使用繁體中文。`;
+                    const res = await generateGeminiContent(prompt, null, true);
+                    setHotelAnalysis(p => ({...p, [key]: <MarkdownRenderer content={res} className="text-sm" />}));
+                } catch(e) { 
+                    setHotelAnalysis(p => ({...p, [key]: "分析失敗，請檢查 API Key 或網路連線。"})); 
+                    if(e.message.includes("NO_API_KEY")) openKeyModal(true);
+                }
+                setAiLoading(false);
+            };
+
+            const checkSpot = async (spot) => {
+                const fullTime = `${spot.dayDate} ${spot.time || ''}`.trim();
+                const key = spot.id;
+                
+                setSpotAnalysis(p => ({...p, [key]: <span className="flex items-center gap-2 typing-indicator">🔍 掃雷中...<span>.</span><span>.</span><span>.</span></span>}));
+                setAiLoading(true);
+
+                try {
+                    const prompt = `景點掃雷：${spot.name}，地點：${spot.mapcodeDisplay}。
+                    預計到訪時間：${fullTime}。
+                    原始筆記：${spot.desc}
+                    請檢查：1.該日期時間是否營業/公休? 2.近期是否有整修或關閉? 3.達人筆記 (建議停留時間/避雷針)。
+                    請簡短回覆，使用繁體中文。`;
+                    const res = await generateGeminiContent(prompt, null, true);
+                    setSpotAnalysis(p => ({...p, [key]: <MarkdownRenderer content={res} className="text-sm" />}));
+                } catch(e) { 
+                    setSpotAnalysis(p => ({...p, [key]: "分析失敗，請檢查 API Key 或網路連線。"}));
+                    if(e.message.includes("NO_API_KEY")) openKeyModal(true);
+                }
+                setAiLoading(false);
+            };
+
+            const analyzeGeneral = async () => {
+                if(!aiInput) return;
+                setAiGeneralResult(<span className="flex items-center gap-2 typing-indicator">分析中...<span>.</span><span>.</span><span>.</span></span>);
+                setAiLoading(true);
+                try {
+                    const res = await generateGeminiContent(`請分析這段旅遊情報或攻略的潛在風險、誤區或過時資訊：${aiInput}`, null, true);
+                    setAiGeneralResult(<MarkdownRenderer content={res} className="text-sm" />);
+                } catch(e) { 
+                    setAiGeneralResult("⚠️ 分析失敗，請檢查 API Key 或網路連線。");
+                    if(e.message.includes("NO_API_KEY")) openKeyModal(true);
+                }
+                setAiLoading(false);
+            };
+
+            return (
+                <div className="animate-in fade-in slide-in-from-bottom-6 duration-700 space-y-8">
+                    <h1 className="text-3xl font-black text-slate-200 flex items-center gap-3 mb-6 px-2">
+                        <Icons.Shield className="w-8 h-8 text-[#A0B7C6]" strokeWidth={2.5} /> AI 旅遊防雷
+                    </h1>
+
+                    {/* 1. 航班/車程檢查 */}
+                    <section className="glass-panel p-6 rounded-[2rem] border border-slate-700">
+                        {/* 莫蘭迪灰藍 */}
+                        <h3 className="font-bold text-[#A0B7C6] mb-4 flex items-center gap-2 text-xl"><Icons.Plane className="text-[#A0B7C6] w-5 h-5"/> 交通防雷</h3>
+                        <div className="bg-[#334155] p-4 rounded-xl mb-4 border border-slate-600">
+                            <div className="flex justify-between text-sm text-slate-300 mb-2 font-mono">
+                                <span className="text-xs text-slate-400">去程 ({flightInfo.outbound.flight})</span><span>{flightInfo.outbound.date}</span>
+                            </div>
+                            <div className="flex justify-between text-sm text-slate-300 font-mono">
+                                <span className="text-xs text-slate-400">回程 ({flightInfo.inbound.flight})</span><span>{flightInfo.inbound.date}</span>
+                            </div>
+                        </div>
+                        {flightAnalysis && <div className="ai-result-box p-4 rounded-xl mb-4 border border-[#A0B7C6]/50">{flightAnalysis}</div>}
+                        <button onClick={checkFlight} disabled={aiLoading} className="w-full bg-[#A0B7C6] hover:bg-[#86A2B3] text-stone-900 py-3 rounded-xl font-bold flex justify-center items-center gap-2 transition-colors shadow-[0_4px_0px_#86A2B3] active:translate-y-[2px] active:shadow-none">
+                            {aiLoading ? <Icons.Loader2 className="animate-spin w-5 h-5"/> : <Icons.Search size={18}/>} AI 驗證車程/航班
                         </button>
                     </section>
 
-                    {/* 住宿檢查 */}
-                    <section className="glass-panel p-6 rounded-2xl border border-slate-700">
-                        <h3 className="font-bold text-white mb-4 flex items-center gap-2"><Icons.Hotel className="text-[#FFCB77]"/> 住宿防雷 (範例: 東京行)</h3>
+                    {/* 2. 住宿檢查 */}
+                    <section className="glass-panel p-6 rounded-[2rem] border border-slate-700">
+                        {/* 莫蘭迪米粉色 */}
+                        <h3 className="font-bold text-[#E4C7C2] mb-4 flex items-center gap-2 text-xl"><Icons.Hotel className="text-[#E4C7C2] w-5 h-5"/> 住宿防雷</h3>
                         <div className="space-y-4">
-                            {HOTEL_INFO_B.map((h,i) => (
-                                <div key={i} className="bg-slate-800 p-4 rounded-xl border border-slate-600">
+                            {hotelInfo.map((h,i) => (
+                                <div key={i} className="bg-[#334155] p-4 rounded-xl border border-slate-600">
                                     <div className="flex justify-between items-start mb-2">
-                                        <div><div className="font-bold text-slate-200 text-sm">{h.name}</div><div className="text-xs text-slate-400 mt-1">{h.location}</div></div>
-                                        <button onClick={()=>checkHotel(h.name)} disabled={aiLoading} className="text-xs bg-[#FFCB77]/20 text-[#FFCB77] px-3 py-1.5 rounded-lg border border-[#FFCB77] hover:bg-[#FFCB77] hover:text-slate-900 transition-colors flex items-center gap-1 font-bold shrink-0">
-                                            <Icons.Search size={12}/> 掃雷
+                                        <div>
+                                            <div className="font-bold text-slate-200 text-base">{h.name}</div>
+                                            <div className="text-xs text-slate-400 mt-1">{h.location}</div>
+                                        </div>
+                                        <button onClick={()=>checkHotel(h.name, h.location)} disabled={aiLoading} className="text-xs bg-[#E4C7C2]/20 text-[#E4C7C2] px-3 py-1.5 rounded-full border border-[#E4C7C2] hover:bg-[#E4C7C2] hover:text-stone-900 transition-colors font-bold shrink-0">
+                                            {aiLoading ? <Icons.Loader2 size={12} className="animate-spin"/> : <Icons.Search size={12}/>} 掃雷
                                         </button>
                                     </div>
-                                    {hotelAnalysis[h.name] && <div className="text-sm text-slate-300 bg-black/20 p-3 rounded-lg mt-2 border border-white/5"><ReactMarkdown>{hotelAnalysis[h.name]}</ReactMarkdown></div>}
+                                    {hotelAnalysis[h.name] && <div className="ai-result-box p-3 rounded-xl mt-2">{hotelAnalysis[h.name]}</div>}
                                 </div>
                             ))}
                         </div>
                     </section>
 
-                    {/* 景點檢查 */}
+                    {/* 3. 景點檢查 */}
                     <section className="space-y-4">
-                        <h3 className="text-xl font-bold text-white flex items-center gap-2 px-2"><Icons.Sparkles className="w-6 h-6 text-yellow-400" />冬季精選景點 & AI 掃雷 (範例: 東京行)</h3>
+                        <h3 className="text-2xl font-black text-white flex items-center gap-2 px-2">
+                            <Icons.MapPin className="w-6 h-6 text-[#B6C9B6]" />
+                            每日行程防雷
+                        </h3>
                         
-                        {AI_GUARD_DATA_B.map((dayGroup, idx) => (
-                            <div key={idx} className="space-y-3">
-                                <div className="sticky top-20 z-40 bg-[#0B1121]/95 backdrop-blur-sm py-2 px-4 border-b border-slate-700 text-sm font-bold text-blue-300 rounded-lg shadow-md">{dayGroup.date}</div>
-                                {dayGroup.spots.map((spot, sIdx) => {
-                                    const resultKey = spot.name + `2026年${dayGroup.date} ${spot.timeHint || ''}`.trim();
-                                    return (
-                                        <div key={sIdx} className="glass-panel rounded-xl p-5 border-l-4 border-l-blue-500 hover:border-l-blue-400 transition-all">
-                                            <div className="flex items-start gap-4">
-                                                <div className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center text-2xl shrink-0"><span className="text-2xl">{spot.icon}</span></div>
-                                                <div className="flex-1">
-                                                    <div className="flex justify-between items-start"><h4 className="font-bold text-lg text-white mb-1">{spot.name}</h4><a href={spot.url} target="_blank" className="text-slate-400 hover:text-white"><Icons.ExternalLink className="w-4 h-4" /></a></div>
-                                                    <div className="flex flex-wrap gap-2 mb-3">
-                                                        <span className="text-xs bg-slate-700/50 text-slate-300 px-2 py-0.5 rounded flex items-center gap-1"><Icons.MapPin className="w-3 h-3" /> {spot.location}</span>
-                                                        <span className="text-xs bg-blue-900/30 text-blue-200 px-2 py-0.5 rounded border border-blue-500/20">{spot.tags[0]}</span>
-                                                    </div>
-                                                    <div className="strategy-box p-3 rounded-r-lg text-sm text-slate-200 mb-3 relative group">
-                                                        <div className="font-bold text-amber-400 text-xs mb-1 flex items-center gap-1"><Icons.Sun className="w-3 h-3" /> 達人筆記</div>
-                                                        {spot.strategy}
-                                                    </div>
-                                                    {spotAnalysis[resultKey] && (<div className="mb-3 p-3 bg-indigo-900/30 border border-indigo-500/30 rounded-lg text-sm text-indigo-100 animate-in fade-in"><div className="flex items-center gap-2 mb-2 text-indigo-300 font-bold border-b border-indigo-500/20 pb-1"><Icons.Bot className="w-4 h-4" /> AI 掃雷報告</div><ReactMarkdown>{spotAnalysis[resultKey]}</ReactMarkdown></div>)}
-                                                    <button onClick={() => checkSpot(spot, dayGroup.date)} disabled={aiLoading} className="w-full py-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white rounded-lg text-sm font-medium transition-all shadow-lg shadow-indigo-500/20 flex items-center justify-center gap-2">
-                                                        {aiLoading ? <Icons.Loader2 className="animate-spin w-4 h-4"/> : <Icons.Check className="w-4 h-4"/>} AI 防雷驗證 {spot.timeHint ? `(${spot.timeHint})` : ''}
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    );
-                                })}
+                        {allSpots.map((spot) => (
+                            <div key={spot.id} className="glass-panel rounded-[2rem] p-6 guard-card hover:border-l-[#A0B7C6] transition-all">
+                                <div className="flex items-start gap-4">
+                                    <div className="w-10 h-10 bg-[#B6C9B6] rounded-full flex items-center justify-center text-stone-900 shrink-0">
+                                        <span className="text-lg font-bold">{spot.dayDate}</span>
+                                    </div>
+                                    <div className="flex-1">
+                                        <h4 className="font-black text-xl text-slate-100">{spot.name}</h4>
+                                        <p className="text-sm text-slate-400 mb-3">{spot.time} 抵達</p>
+
+                                        {/* AI Result */}
+                                        {spotAnalysis[spot.id] && (
+                                            <div className="ai-result-box p-3 rounded-xl mb-3">{spotAnalysis[spot.id]}</div>
+                                        )}
+
+                                        <p className="text-xs font-bold text-[#B6C9B6]">達人筆記 (行程規劃者備註):</p>
+                                        <p className="text-sm text-slate-300 mb-4">{spot.desc}</p>
+
+
+                                        <button 
+                                            onClick={() => checkSpot(spot)}
+                                            disabled={aiLoading}
+                                            className="w-full py-2 bg-[#A0B7C6] hover:bg-[#86A2B3] text-stone-900 rounded-xl text-sm font-bold transition-colors flex items-center justify-center gap-2 shadow-[0_4px_0px_#86A2B3] active:translate-y-[2px] active:shadow-none"
+                                        >
+                                            {aiLoading ? <Icons.Loader2 className="animate-spin w-4 h-4"/> : <Icons.Shield size={14}/>}
+                                            AI 景點掃雷驗證 ({spot.time})
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
                         ))}
                     </section>
 
-                    {/* 通用檢查 */}
-                    <section className="glass-panel p-6 rounded-2xl border border-slate-700">
-                        <h3 className="font-bold text-white mb-4 flex items-center gap-2"><Icons.Shield className="text-green-400"/> 通用情報分析</h3>
-                        <textarea value={aiInput} onChange={e=>setAiInput(e.target.value)} placeholder="貼上網路攻略或餐廳評論..." className="w-full h-32 bg-slate-800 rounded-xl p-3 text-sm text-white outline-none focus:ring-2 focus:ring-green-500 mb-3 border border-slate-600 resize-none"/>
-                        <button onClick={analyzeGeneral} disabled={aiLoading||!aiInput} className="w-full bg-green-600 hover:bg-green-500 text-white py-2 rounded-lg font-bold transition-colors">開始分析</button>
-                        {aiGeneralResult && <div className="mt-4 p-4 bg-slate-800 rounded-xl text-sm text-slate-300 border border-slate-600"><ReactMarkdown>{aiGeneralResult}</ReactMarkdown></div>}
+                    {/* 4. 通用檢查 */}
+                    <section className="glass-panel p-6 rounded-[2rem] border border-slate-700">
+                        {/* 莫蘭迪灰綠 */}
+                        <h3 className="font-bold text-white mb-4 flex items-center gap-2 text-xl"><Icons.Bot className="text-[#B6C9B6] w-5 h-5"/> 通用情報分析</h3>
+                        <textarea value={aiInput} onChange={e=>setAiInput(e.target.value)} placeholder="貼上網路上找到的攻略、注意事項或餐廳評論，讓 AI 幫您檢查是否有風險或過時資訊..." className="w-full h-32 bg-slate-800 rounded-xl p-3 text-sm text-white outline-none focus:ring-2 focus:ring-[#B6C9B6] mb-3 border border-slate-600 resize-none"/>
+                        <button onClick={analyzeGeneral} disabled={aiLoading||!aiInput} className="w-full bg-[#B6C9B6] hover:bg-[#9BB49B] text-stone-900 py-3 rounded-xl font-bold transition-colors shadow-[0_4px_0px_#9BB49B] active:translate-y-[2px] active:shadow-none">開始分析</button>
+                        {aiGeneralResult && <div className="mt-4 p-4 ai-result-box rounded-xl">{aiGeneralResult}</div>}
                     </section>
 
                 </div>
             );
-        };
+        }
 
-
-        // --- MAIN APP COMPONENT ---
+        // 11. 主應用程式
         function App() {
-            // A Tabs: 'itinerary', 'info', 'stats' | B Tab: 'ai_guard'
             const [activeTab, setActiveTab] = useState('itinerary'); 
             const [selectedDay, setSelectedDay] = useState('all'); 
             
-            // --- Info States ---
-            const [userLocation, setUserLocation] = useState(null);
-            const [isLocating, setIsLocating] = useState(false);
-            const [locationError, setLocationError] = useState(null);
-            const [infoRegion, setInfoRegion] = useState("taoyuan"); 
-            const [aiSouvenirs, setAiSouvenirs] = useState(null);
-            const [isAiSouvenirLoading, setIsAiSouvenirLoading] = useState(false);
-            const [aiNews, setAiNews] = useState(null);
-            const [isAiNewsLoading, setIsAiNewsLoading] = useState(false);
+            // --- Currency States (NEW) ---
+            const [selectedCurrency, setSelectedCurrency] = useState(() => {
+                // 讀取 localStorage 中的預設幣別
+                const savedCode = localStorage.getItem('2025_xmas_trip_currency') || 'TWD';
+                return CURRENCY_OPTIONS.find(c => c.code === savedCode) || CURRENCY_OPTIONS[0];
+            });
+            const [exchangeRate, setExchangeRate] = useState(1);
+            const [isRateLoading, setIsRateLoading] = useState(false);
+            const [rateError, setRateError] = useState(null);
             
             // --- Itinerary States ---
-            const [dayStartTimes, setDayStartTimes] = useState(() => { const initial = {}; RAW_KML_DATA.forEach(day => initial[day.dayId] = "09:00"); const saved = localStorage.getItem('2025_ny_trip_start'); return saved ? JSON.parse(saved) : initial; });
-            const [actualDepartures, setActualDepartures] = useState(() => { const saved = localStorage.getItem('2025_ny_trip_deps'); return saved ? JSON.parse(saved) : {}; });
-            const [stays, setStays] = useState(() => { const saved = localStorage.getItem('2025_ny_trip_stays'); return saved ? JSON.parse(saved) : {}; });
+            const [dayStartTimes, setDayStartTimes] = useState(() => { const initial = {}; RAW_KML_DATA.forEach(day => initial[day.dayId] = "09:00"); const saved = localStorage.getItem('2025_xmas_trip_start'); return saved ? JSON.parse(saved) : initial; });
+            const [actualDepartures, setActualDepartures] = useState(() => { const saved = localStorage.getItem('2025_xmas_trip_deps'); return saved ? JSON.parse(saved) : {}; });
+            const [stays, setStays] = useState(() => { const saved = localStorage.getItem('2025_xmas_trip_stays'); return saved ? JSON.parse(saved) : {}; });
             const [transportModes, setTransportModes] = useState({});
             const [tripData, setTripData] = useState([]);
-            const [activeTipSpotId, setActiveTipSpotId] = useState(null);
-            const [aiTips, setAiTips] = useState({});
-            const [isTipLoading, setIsTipLoading] = useState(false);
-            const [spotTicketCounts, setSpotTicketCounts] = useState(() => { const saved = localStorage.getItem('2025_ny_trip_tickets'); return saved ? JSON.parse(saved) : {}; });
+            const [spotTicketCounts, setSpotTicketCounts] = useState(() => { const saved = localStorage.getItem('2025_xmas_trip_tickets'); return saved ? JSON.parse(saved) : {}; });
 
             // --- Stats & Expense States ---
             const [expenses, setExpenses] = useState({});
             const [isModalOpen, setIsModalOpen] = useState(false);
-            const [isKeyModalOpen, setIsKeyModalOpen] = useState(false);
+            const [isKeyModalOpen, setIsKeyModalOpen] = useState(false); // Correct name: isKeyModalOpen
             const [currentEditingSpot, setCurrentEditingSpot] = useState(null);
             const [expenseForm, setExpenseForm] = useState({ category: 'food', amount: '', note: '' });
             const [isAnalyzingReceipt, setIsAnalyzingReceipt] = useState(false);
             const [pendingReceipts, setPendingReceipts] = useState([]);
             const [quotaStatus, setQuotaStatus] = useState({ type: 'normal', text: 'API 額度正常' });
             
-            // --- Calculator States ---
-            const [calcInput, setCalcInput] = useState("");
-            const [calcResult, setCalcResult] = useState("");
+            // --- AI Guard States ---
+            const [aiLoading, setAiLoading] = useState(false);
             
-            // --- Photo Search States ---
-            const [photoSearchLocation, setPhotoSearchLocation] = useState("");
-            const [photoSearchPeople, setPhotoSearchPeople] = useState([]);
-            const [photoSearchStatus, setPhotoSearchStatus] = useState({ text: "請輸入地點或點擊定位", type: "normal" });
-            const mapContainerRef = useRef(null);
-            const mapInstanceRef = useRef(null);
-            const markerInstanceRef = useRef(null);
-
             // --- Email States ---
             const [isDailyDetailOpen, setIsDailyDetailOpen] = useState(false);
             const [selectedDailyStats, setSelectedDailyStats] = useState(null);
@@ -497,27 +1125,70 @@
             const [emailInput, setEmailInput] = useState("");
             const [isSendingEmail, setIsSendingEmail] = useState(false);
 
-            // --- AI Guard (B) States ---
-            const [aiLoading, setAiLoading] = useState(false);
-            const [flightAnalysis, setFlightAnalysis] = useState(null);
-            const [hotelAnalysis, setHotelAnalysis] = useState({});
-            const [spotAnalysis, setSpotAnalysis] = useState({});
-            const [aiInput, setAiInput] = useState("");
-            const [aiGeneralResult, setAiGeneralResult] = useState("");
+            // Helper to set Key Modal state
+            const openKeyModal = (state) => setIsKeyModalOpen(state); // Renamed helper for clarity and fixed usage
 
-
-            // --- PERSISTENCE & INITIALIZATION ---
-            useEffect(() => { const saved = localStorage.getItem('2025_ny_trip_exp'); if (saved) { try { const parsed = JSON.parse(saved); if (parsed && typeof parsed === 'object') { setExpenses(parsed); } } catch(e) {} } }, []);
-            useEffect(() => { localStorage.setItem('2025_ny_trip_exp', JSON.stringify(expenses)); }, [expenses]);
-            useEffect(() => { localStorage.setItem('2025_ny_trip_start', JSON.stringify(dayStartTimes)); }, [dayStartTimes]);
-            useEffect(() => { localStorage.setItem('2025_ny_trip_deps', JSON.stringify(actualDepartures)); }, [actualDepartures]);
-            useEffect(() => { localStorage.setItem('2025_ny_trip_stays', JSON.stringify(stays)); }, [stays]);
-            useEffect(() => { localStorage.setItem('2025_ny_trip_tickets', JSON.stringify(spotTicketCounts)); }, [spotTicketCounts]);
+            // --- PERSISTENCE (omitted for brevity, assume correct) ---
+            useEffect(() => { const saved = localStorage.getItem('2025_xmas_trip_exp'); if (saved) { try { const parsed = JSON.parse(saved); if (parsed && typeof parsed === 'object') { setExpenses(parsed); } } catch(e) {} } }, []);
+            useEffect(() => { localStorage.setItem('2025_xmas_trip_exp', JSON.stringify(expenses)); }, [expenses]);
+            useEffect(() => { localStorage.setItem('2025_xmas_trip_start', JSON.stringify(dayStartTimes)); }, [dayStartTimes]);
+            useEffect(() => { localStorage.setItem('2025_xmas_trip_deps', JSON.stringify(actualDepartures)); }, [actualDepartures]);
+            useEffect(() => { localStorage.setItem('2025_xmas_trip_stays', JSON.stringify(stays)); }, [stays]);
+            useEffect(() => { localStorage.setItem('2025_xmas_trip_tickets', JSON.stringify(spotTicketCounts)); }, [spotTicketCounts]);
             useEffect(() => { if (window.emailjs) { window.emailjs.init("mYOFMMnqLdDxR0wjj"); } }, []);
+            // Persist currency choice
+            useEffect(() => {
+                localStorage.setItem('2025_xmas_trip_currency', selectedCurrency.code);
+            }, [selectedCurrency.code]);
 
 
-            // --- Core Logic ---
-            // Recalculate Trip Data (A)
+            // --- CURRENCY LOGIC (UPDATED) ---
+            const fetchExchangeRate = useCallback(async (base, target) => {
+                if (base === target) {
+                    setExchangeRate(1);
+                    return;
+                }
+                
+                setIsRateLoading(true);
+                setRateError(null);
+                
+                try {
+                    // 使用 Google Search Grounding 查詢即時匯率
+                    const prompt = `目前的即時匯率是多少？1 ${base} 等於多少 ${target}? 請只回答數字。`;
+                    const rateText = await generateGeminiContent(prompt, null, true);
+                    
+                    // 嘗試從 AI 回覆中解析數字
+                    const rateMatch = rateText.match(/[\d.]+/);
+                    const rate = rateMatch ? parseFloat(rateMatch[0]) : 0;
+
+                    if (rate > 0) {
+                        setExchangeRate(rate);
+                    } else {
+                        setRateError(`無法取得 ${base} 到 ${target} 的有效匯率。`);
+                        setExchangeRate(1); 
+                    }
+                } catch (e) {
+                    console.error("Exchange rate fetch error:", e);
+                    if (e.message === 'NO_API_KEY') {
+                        setRateError("匯率查詢失敗 (API Key 未設定)。請點擊右上角⚙️設定。");
+                        openKeyModal(true);
+                    } else {
+                        setRateError(`匯率查詢失敗：${e.message}。將使用預設值 1。`);
+                    }
+                    setExchangeRate(1);
+                } finally {
+                    setIsRateLoading(false);
+                }
+            }, []);
+
+            // Currency effect runs when selectedCurrency changes
+            useEffect(() => {
+                // 基礎貨幣固定為 TWD，所有門票費用都是 TWD 計算
+                fetchExchangeRate('TWD', selectedCurrency.code);
+            }, [selectedCurrency.code, fetchExchangeRate]);
+            // --- END CURRENCY LOGIC ---
+
+
              useEffect(() => {
                 setTripData(prevData => {
                      return RAW_KML_DATA.map(day => {
@@ -543,7 +1214,7 @@
                             let travelMinutes = 0;
                             if (index < day.spots.length - 1) {
                                 const nextSpot = day.spots[index + 1];
-                                const dist = getDistanceFromLatLonInKm(rawSpot.lat, rawSpot.lon, nextSpot.lat, nextSpot.lon);
+                                const dist = getDistanceFromLatLonInKm(rawSpot.lat, rawSpot.lon, nextSpot.lat, nextSpot.lon); // 修正: nextStop.lon -> nextSpot.lon
                                 const mode = transportModes[spotId] || 'car';
                                 const speed = mode === 'car' ? 40 : 4; 
                                 travelMinutes = Math.round((dist / speed) * 60);
@@ -553,23 +1224,132 @@
                                     name: nextSpot.name, distance: `${dist} km`,
                                     driveTime: displayDriveMins > 60 ? `${Math.floor(displayDriveMins/60)}hr ${displayDriveMins%60}m` : `${displayDriveMins}m`,
                                     walkTime: displayWalkMins > 60 ? `${Math.floor(displayWalkMins/60)}hr ${displayWalkMins%60}m` : `${displayWalkMins}m`,
-                                    navLink: `https://www.google.com/maps/dir/?api=1&origin=$${rawSpot.lat},${rawSpot.lon}&destination=${nextStop.lat},${nextStop.lon}&travelmode=driving`
+                                    // 修正: nextStop.lon -> nextSpot.lon
+                                    navLink: `https://www.google.com/maps/dir/?api=1&origin=${rawSpot.lat},${rawSpot.lon}&destination=${nextSpot.lat},${nextSpot.lon}&travelmode=driving`
                                 };
                             }
                             currentMinutes = departureMinutes + travelMinutes;
-                            return { ...rawSpot, id: spotId, time: arrivalTimeStr, stay: stayStr, departureTime: departureTimeStr, isDeparted: isDeparted, actualDepTime: actualDepTime, mapcodeDisplay: rawSpot.mapCode || "GPS", weather: ["sunny", "cloudy"][Math.floor(Math.random()*2)], temp: "16°C", gmapLink: `https://www.google.com/maps/search/?api=1&query=$${rawSpot.lat},${rawSpot.lon}`, nextStop: nextStopInfo, ticket: rawSpot.ticket || null };
+                            return { ...rawSpot, id: spotId, time: arrivalTimeStr, stay: stayStr, departureTime: departureTimeStr, isDeparted: isDeparted, actualDepTime: actualDepTime, mapcodeDisplay: rawSpot.mapCode || "GPS", weather: ["sunny", "cloudy"][Math.floor(Math.random()*2)], temp: "16°C", gmapLink: `https://www.google.com/maps/search/?api=1&query=${rawSpot.lat},${rawSpot.lon}`, nextStop: nextStopInfo, ticket: rawSpot.ticket || null };
                         });
                         return { ...day, spots: processedSpots };
                     });
                 });
             }, [dayStartTimes, actualDepartures, transportModes, stays]);
 
-            // Stats Calculation (A)
+            const handleTransportToggle = (spotId) => { setTransportModes(prev => ({ ...prev, [spotId]: prev[spotId] === 'walk' ? 'car' : 'walk' })); };
+            const handleStayChangeNew = (spotId, newStay) => { setStays(prev => ({ ...prev, [spotId]: newStay })); };
+            const handleDayStartTimeChange = (dayId, newTime) => { setDayStartTimes(prev => ({ ...prev, [dayId]: newTime })); };
+            const handleDepartureToggle = (spotId) => { setActualDepartures(prev => { const newState = { ...prev }; if (newState[spotId]) { delete newState[spotId]; } else { const now = new Date(); const timeStr = `${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`; newState[spotId] = timeStr; } return newState; }); };
+            const getTicketCounts = (spotId) => spotTicketCounts[spotId] || { adult: 2, child: 2 };
+
+            const handleOpenMap = () => { let points = []; if (selectedDay === 'all') { tripData.forEach(day => { day.spots.forEach(spot => { const coord = `${spot.lat},${spot.lon}`; if (points.length === 0 || points[points.length - 1] !== coord) { points.push(coord); } }); }); } else { const currentDay = tripData.find(d => d.dayId === selectedDay); if (currentDay) { points = currentDay.spots.map(s => `${s.lat},${s.lon}`); } } if (points.length > 0) { window.open(`https://www.google.com/maps/dir/${points.join('/')}`, '_blank'); } };
+
+            const openExpenseModal = (spot) => { setCurrentEditingSpot(spot); setExpenseForm({ category: 'food', amount: '', note: '' }); setPendingReceipts([]); setQuotaStatus({ type: 'normal', text: 'API 額度正常' }); setIsModalOpen(true); };
+            const saveExpense = () => { const newRecords = []; if (expenseForm.amount && !isNaN(expenseForm.amount)) { newRecords.push({ id: Date.now(), category: expenseForm.category, amount: parseInt(expenseForm.amount), note: expenseForm.note }); } pendingReceipts.forEach((p, idx) => { if (p.isChecked && !p.isAnalyzing && p.amount > 0) { newRecords.push({ id: Date.now() + idx + 1, category: expenseForm.category, amount: parseInt(p.amount), note: p.note }); } }); if (newRecords.length > 0) { const spotId = currentEditingSpot.id; setExpenses(prev => ({ ...prev, [spotId]: [...(prev[spotId] || []), ...newRecords] })); } setIsModalOpen(false); };
+            const deleteExpense = (spotId, recordId) => { setExpenses(prev => ({ ...prev, [spotId]: prev[spotId].filter(r => r.id !== recordId) })); };
+            const togglePendingReceipt = (id) => { setPendingReceipts(prev => prev.map(p => p.id === id ? { ...p, isChecked: !p.isChecked } : p)); };
+            const removePendingReceipt = (id) => { setPendingReceipts(prev => prev.filter(p => p.id !== id)); };
+
+            const handleImageUpload = async (e) => { 
+                const files = Array.from(e.target.files); 
+                if (files.length === 0) return; 
+                const inputElement = e.target; 
+                const newItems = files.map(file => ({ id: Math.random().toString(36).substr(2, 9), file, amount: 0, note: '分析中...', isAnalyzing: true, isChecked: true })); 
+                setPendingReceipts(prev => [...prev, ...newItems]); 
+                setIsAnalyzingReceipt(true); 
+                setQuotaStatus({ type: 'normal', text: '高速分析中 (Paid Key)' }); 
+                
+                await Promise.all(newItems.map(async (item) => { 
+                    return new Promise((resolve) => { 
+                        const reader = new FileReader(); 
+                        reader.onloadend = async () => { 
+                            const base64String = reader.result; 
+                            try { 
+                                const prompt = `Analyze this receipt image. Extract: 1. Total amount in TWD (Taiwan Dollar). 2. Store name in Chinese. 3. Date in YYYY/MM/DD HH:MM format. Return JSON: {"amount": <number>, "store": "<string>", "date": "<string>"}.`; 
+                                let responseText = await generateGeminiContent(prompt, base64String); 
+                                let result; 
+                                const jsonMatch = responseText.match(/\{[\s\S]*\}/); 
+                                if (jsonMatch) { 
+                                    result = JSON.parse(jsonMatch[0]); 
+                                } else { 
+                                    responseText = responseText.replace(/```json/g, '').replace(/```/g, '').trim(); 
+                                    result = JSON.parse(responseText); 
+                                } 
+                                if (result && (result.amount || result.amount === 0)) { 
+                                    const cleanAmount = String(result.amount).replace(/[^0-9.]/g, ''); 
+                                    const autoNote = (result.date ? result.date + " " : "") + (result.store || ""); 
+                                    setPendingReceipts(prev => prev.map(p => p.id === item.id ? { ...p, amount: cleanAmount, note: autoNote, isAnalyzing: false } : p)); 
+                                } else { 
+                                    throw new Error("Invalid JSON"); 
+                                };
+                            } catch (error) { 
+                                let errorMsg = '辨識失敗'; 
+                                if (error.message === 'NO_API_KEY') { 
+                                    errorMsg = '請設定 API Key'; 
+                                    setQuotaStatus({ type: 'error', text: '❌ 未設定 API 金鑰' }); 
+                                    setIsKeyModalOpen(true); // FIX: Used setIsKeyModalOpen
+                                } 
+                                setPendingReceipts(prev => prev.map(p => p.id === item.id ? { ...p, note: errorMsg, isAnalyzing: false, isChecked: false } : p)); 
+                            } finally { 
+                                resolve(); 
+                            } 
+                        }; 
+                        reader.readAsDataURL(item.file); 
+                    }); 
+                })); 
+                
+                setIsAnalyzingReceipt(false); 
+                setQuotaStatus({ type: 'normal', text: '分析完成' }); 
+                inputElement.value = ''; 
+            };
+
+            const handleOpenDailyDetail = (dayStats) => { setSelectedDailyStats(dayStats); setIsDailyDetailOpen(true); };
+            const handleOpenEmailClick = () => { const savedEmail = localStorage.getItem('user_email') || "yofarn@gmail.com"; setEmailInput(savedEmail); setIsEmailModalOpen(true); };
+            
+            const handleSendEmail = async () => {
+                if (!emailInput) { alert("請輸入信箱"); return; }
+                setIsSendingEmail(true); localStorage.setItem('user_email', emailInput);
+                try {
+                    let tableRows = ""; let grandTotal = 0;
+                    tripData.forEach(day => {
+                        tableRows += `<tr style="background-color: #e2e8f0;"><td colspan="4" style="border: 1px solid #ddd; padding: 8px; font-weight: bold; color: #333;">${day.date} - ${day.title}</td></tr>`;
+                        day.spots.forEach(spot => {
+                            const spotExpenses = expenses[spot.id] || [];
+                            spotExpenses.forEach(record => { tableRows += `<tr><td style="border: 1px solid #ddd; padding: 8px;">${day.date}</td><td style="border: 1px solid #ddd; padding: 8px;">${spot.name} (${record.category})</td><td style="border: 1px solid #ddd; padding: 8px;">${record.note || '-'}</td><td style="border: 1px solid #ddd; padding: 8px;">${record.amount}</td></tr>`; grandTotal += (record.amount || 0); });
+                            if (spot.ticket) { const counts = getTicketCounts(spot.id); const ticketCost = (spot.ticket.adult * counts.adult + spot.ticket.child * counts.child); if (ticketCost > 0) { tableRows += `<tr><td style="border: 1px solid #ddd; padding: 8px;">${day.date}</td><td style="border: 1px solid #ddd; padding: 8px;">${spot.name} (門票)</td><td style="border: 1px solid #ddd; padding: 8px;">全票${counts.adult}, 優待${counts.child}</td><td style="border: 1px solid #ddd; padding: 8px;">${ticketCost}</td></tr>`; grandTotal += ticketCost; } }
+                        });
+                    });
+                    // 莫蘭迪灰藍色 (A0B7C6) 替換原有的青綠色 (4ECDC4)
+                    const htmlMessage = `<h2 style="color: #333;">2025 旅遊計畫 - 花費明細</h2><table style="width:100%; border-collapse: collapse; font-family: sans-serif; border: 1px solid #ddd;"><thead><tr style="background-color: #A0B7C6; color: #1a202c;"><th style="border: 1px solid #ddd; padding: 12px;">日期</th><th style="border: 1px solid #ddd; padding: 12px;">地點/項目</th><th style="border: 1px solid #ddd; padding: 12px;">備註</th><th style="border: 1px solid #ddd; padding: 12px;">金額 (NT$)</th></tr></thead><tbody>${tableRows}</tbody><tfoot><tr style="background-color: #f8f9fa;"><td colspan="3" style="border: 1px solid #ddd; padding: 12px; text-align: right; font-weight: bold; color: #333;">總計</td><td style="border: 1px solid #ddd; padding: 12px; font-weight: bold; color: #DDA0A0;">NT$ ${grandTotal.toLocaleString()}</td></tr></tfoot></table><p style="font-size: 12px; color: #666; margin-top: 20px;">本信件由旅遊規劃 App 自動發送。</p>`;
+                    const params = { email: emailInput, to_email: emailInput, recipient: emailInput, subject: `莫蘭迪旅遊花費報表_${new Date().toLocaleDateString()}`, message: htmlMessage }; 
+                    await window.emailjs.send("service_5yh7x6g", "template_dlbyml8", params);
+                    alert("✅ 發送成功！\n\n注意：若信件中顯示的是 HTML 原始碼，請至 EmailJS 後台將 Content 變數改為 {{{message}}}（三個大括號）。"); setIsEmailModalOpen(false);
+                } catch (error) { console.error("Email Error:", error); alert("❌ 發送失敗，請檢查網路或稍後再試。\n" + JSON.stringify(error)); } finally { setIsSendingEmail(false); }
+            };
+
+
+            // --- Stats Calculation Logic ---
             const stats = useMemo(() => { 
                 let totalJpy = 0; 
                 const currentExpenses = expenses || {};
-                Object.values(currentExpenses).forEach(recs => { if (Array.isArray(recs)) { recs.forEach(r => totalJpy += (r.amount || 0)); } });
-                if (tripData) { tripData.forEach(day => { if (day.spots) { day.spots.forEach(spot => { if (spot.ticket) { const counts = spotTicketCounts[spot.id] || { adult: 2, child: 2 }; totalJpy += (spot.ticket.adult * counts.adult + spot.ticket.child * counts.child); } }); } }); }
+                Object.values(currentExpenses).forEach(recs => {
+                    if (Array.isArray(recs)) {
+                        recs.forEach(r => totalJpy += (r.amount || 0));
+                    }
+                });
+
+                if (tripData) {
+                    tripData.forEach(day => {
+                        if (day.spots) {
+                            day.spots.forEach(spot => {
+                                if (spot.ticket) {
+                                    const counts = spotTicketCounts[spot.id] || { adult: 2, child: 2 }; 
+                                    totalJpy += (spot.ticket.adult * counts.adult + spot.ticket.child * counts.child);
+                                }
+                            });
+                        }
+                    });
+                }
                 return { totalJpy }; 
             }, [expenses, tripData, spotTicketCounts]);
 
@@ -581,8 +1361,13 @@
                     if (day.spots) {
                         day.spots.forEach(spot => {
                             const spotExpenses = currentExpenses[spot.id] || [];
-                            if (Array.isArray(spotExpenses)) { dayExpenses.forEach(e => dayTotal += (e.amount || 0)); }
-                            if (spot.ticket) { const counts = spotTicketCounts[spot.id] || { adult: 2, child: 2 }; dayTotal += (spot.ticket.adult * counts.adult + spot.ticket.child * counts.child); }
+                            if (Array.isArray(spotExpenses)) {
+                                spotExpenses.forEach(e => dayTotal += (e.amount || 0));
+                            }
+                            if (spot.ticket) {
+                                const counts = spotTicketCounts[spot.id] || { adult: 2, child: 2 };
+                                dayTotal += (spot.ticket.adult * counts.adult + spot.ticket.child * counts.child);
+                            }
                         });
                     }
                     return { ...day, totalJpy: dayTotal, totalTwd: dayTotal * EXCHANGE_RATE };
@@ -590,126 +1375,42 @@
             }, [expenses, tripData, spotTicketCounts]);
 
 
-            // --- Handlers (A) ---
-            const handleTransportToggle = (spotId) => { setTransportModes(prev => ({ ...prev, [spotId]: prev[spotId] === 'walk' ? 'car' : 'walk' })); };
-            const handleStayChangeNew = (spotId, newStay) => { setStays(prev => ({ ...prev, [spotId]: newStay })); };
-            const handleDayStartTimeChange = (dayId, newTime) => { setDayStartTimes(prev => ({ ...prev, [dayId]: newTime })); };
-            const handleDepartureToggle = (spotId) => { setActualDepartures(prev => { const newState = { ...prev }; if (newState[spotId]) { delete newState[spotId]; } else { const now = new Date(); const timeStr = `${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`; newState[spotId] = timeStr; } return newState; }); };
-            const getTicketCounts = (spotId) => spotTicketCounts[spotId] || { adult: 2, child: 2 };
-            const updateSpotTicketCount = (spotId, type, delta) => { setSpotTicketCounts(prev => { const current = prev[spotId] || { adult: 2, child: 2 }; const newValue = Math.max(0, current[type] + delta); return { ...prev, [spotId]: { ...current, [type]: newValue } }; }); };
-            const fetchAiSouvenirs = async (lat, lon) => { setIsAiSouvenirLoading(true); setAiSouvenirs(null); try { const prompt = `我現在在台灣的座標: 緯度 ${lat}, 經度 ${lon}。請推薦 3 個這個地點附近必買的知名伴手禮或土產。請直接回傳一個 JSON Array，格式如下，不要有 Markdown 標記或其他文字：[ {"name": "伴手禮名稱", "desc": "簡短介紹(20字內)"}, {"name": "伴手禮名稱", "desc": "簡短介紹(20字內)"}, {"name": "伴手禮名稱", "desc": "簡短介紹(20字內)"} ]`; let text = await generateGeminiContent(prompt, null, true); text = text.replace(/```json/g, '').replace(/```/g, '').trim(); const data = JSON.parse(text); if (Array.isArray(data)) { setAiSouvenirs(data); } else { throw new Error("Format error"); } } catch (e) { console.error("AI Souvenir Error", e); setAiSouvenirs([{name: "推薦失敗", desc: "無法取得 AI 推薦，請稍後再試。"}]); } finally { setIsAiSouvenirLoading(false); } };
-            const fetchAiNews = async (lat, lon) => { setIsAiNewsLoading(true); setAiNews(null); try { const prompt = `我現在在台灣的座標: 緯度 ${lat}, 經度 ${lon}。請分析這個地點(請自行判斷行政區)，並列出 4 個與此地高度相關的「新聞關鍵字」或「關注焦點」。請依照「重要性」與「熱門度」排序，並優先關注以下面向：1. **最新熱門旅遊情報** (如: 新開幕景點、IG打卡熱點、季節限定花海/市集) 2. **交通與旅遊安全** (如: 易肇事路段、山區路況、觀光區治安、交通管制) 3. **居住與環境安全** (如: 天坑/施工工安、淹水潛勢、治安熱點、防災警報) 4. **在地熱門民生議題** (如: 交通建設、大型活動影響) 請直接回傳一個 JSON Array，格式如下，不要有 Markdown 標記或其他文字：[ {"title": "顯示標題", "query": "搜尋關鍵字"}, {"title": "顯示標題", "query": "搜尋關鍵字"}, {"title": "顯示標題", "query": "搜尋關鍵字"}, {"title": "顯示標題", "query": "搜尋關鍵字"} ]`; let text = await generateGeminiContent(prompt, null, true); text = text.replace(/```json/g, '').replace(/```/g, '').trim(); const data = JSON.parse(text); if (Array.isArray(data)) { setAiNews(data); } else { throw new Error("Format error"); } } catch (e) { console.error("AI News Error", e); setAiNews([{ title: "在地熱門景點", query: "附近 熱門景點 新聞" }, { title: "交通與安全資訊", query: "附近 交通安全 新聞" }]); } finally { setIsAiNewsLoading(false); } };
-            const handleGetLocation = () => { if (!navigator.geolocation) { setLocationError("您的瀏覽器不支援定位功能"); return; } setIsLocating(true); setLocationError(null); const options = { enableHighAccuracy: true, timeout: 30000, maximumAge: 600000 }; navigator.geolocation.getCurrentPosition( (position) => { setUserLocation({ lat: position.coords.latitude, lon: position.coords.longitude }); setIsLocating(false); fetchAiSouvenirs(position.coords.latitude, position.coords.longitude); fetchAiNews(position.coords.latitude, position.coords.longitude); }, (error) => { setLocationError("定位失敗，請確認 Wi-Fi 或 GPS 已開啟"); setIsLocating(false); }, options ); };
-            const handleGetSpotTip = async (spot, date) => { if (activeTipSpotId === spot.id) { setActiveTipSpotId(null); return; } setActiveTipSpotId(spot.id); if (aiTips[spot.id]) return; setIsTipLoading(true); try { const prompt = `針對景點「${spot.name}」，預計造訪日期為「${date}」。請利用 Google Search "主動查詢" 當天的最新營業公告、FB 粉絲頁貼文或官網資訊。請扮演專業導遊，提供「防雷旅遊攻略」：✅ **營業狀況預測**：根據搜尋結果，明確告訴我當天是否開放？有無跨年/元旦特殊活動？(若搜尋不到確切公告，請回答「建議當天致電確認」)。⚠️ **風險評估**：是否有整修、人潮管制或需預約？💡 **推薦備案**：萬一沒開或人太多，推薦附近車程 10 分鐘內的一個替代景點或美食。請用繁體中文回答，語氣專業貼心，條列式呈現，總字數 150 字以內。`; const tip = await generateGeminiContent(prompt, null, true); setAiTips(prev => ({ ...prev, [spot.id]: tip })); } catch (error) { if (error.message.includes('NO_API_KEY')) { setAiTips(prev => ({ ...prev, [spot.id]: "找不到 API Key，請檢查設定。" })); setIsKeyModalOpen(true); } else { setAiTips(prev => ({ ...prev, [spot.id]: `連線錯誤 (${error.message})` })); } } finally { setIsTipLoading(false); } };
-            const handleOpenMap = () => { let points = []; if (selectedDay === 'all') { tripData.forEach(day => { day.spots.forEach(spot => { const coord = `${spot.lat},${spot.lon}`; if (points.length === 0 || points[points.length - 1] !== coord) { points.push(coord); } }); }); } else { const currentDay = tripData.find(d => d.dayId === selectedDay); if (currentDay) { points = currentDay.spots.map(s => `${s.lat},${s.lon}`); } } if (points.length > 1 && points[0] !== points[points.length - 1]) { points.push(points[0]); } if (points.length > 0) { window.open(`https://www.google.com/maps/dir/$${points.join('/')}`, '_blank'); } };
-            const openExpenseModal = (spot) => { setCurrentEditingSpot(spot); setExpenseForm({ category: 'food', amount: '', note: '' }); setPendingReceipts([]); setQuotaStatus({ type: 'normal', text: 'API 額度正常' }); setIsModalOpen(true); };
-            const saveExpense = () => { const newRecords = []; if (expenseForm.amount && !isNaN(expenseForm.amount)) { newRecords.push({ id: Date.now(), category: expenseForm.category, amount: parseInt(expenseForm.amount), note: expenseForm.note }); } pendingReceipts.forEach((p, idx) => { if (p.isChecked && !p.isAnalyzing && p.amount > 0) { newRecords.push({ id: Date.now() + idx + 1, category: expenseForm.category, amount: parseInt(p.amount), note: p.note }); } }); if (newRecords.length > 0) { const spotId = currentEditingSpot.id; setExpenses(prev => ({ ...prev, [spotId]: [...(prev[spotId] || []), ...newRecords] })); } setIsModalOpen(false); };
-            const deleteExpense = (spotId, recordId) => { setExpenses(prev => ({ ...prev, [spotId]: prev[spotId].filter(r => r.id !== recordId) })); };
-            const togglePendingReceipt = (id) => { setPendingReceipts(prev => prev.map(p => p.id === id ? { ...p, isChecked: !p.isChecked } : p)); };
-            const removePendingReceipt = (id) => { setPendingReceipts(prev => prev.filter(p => p.id !== id)); };
-            const handleImageUpload = async (e) => { 
-                const files = Array.from(e.target.files); 
-                if (files.length === 0) return; 
-                const inputElement = e.target; 
-                const newItems = files.map(file => ({ id: Math.random().toString(36).substr(2, 9), file, amount: 0, note: '分析中...', isAnalyzing: true, isChecked: true })); 
-                setPendingReceipts(prev => [...prev, ...newItems]); 
-                setIsAnalyzingReceipt(true); 
-                setQuotaStatus({ type: 'normal', text: '高速分析中 (Paid Key)' }); 
-                await Promise.all(newItems.map(async (item) => { 
-                    return new Promise((resolve) => { 
-                        const reader = new FileReader(); 
-                        reader.onloadend = async () => { 
-                            const base64String = reader.result; 
-                            try { 
-                                const prompt = `Analyze this receipt image. Extract: 1. Total amount. 2. Store name. 3. Date. Return JSON: {"amount", "store", "date"}.`; 
-                                let responseText = await generateGeminiContent(prompt, base64String); 
-                                let result; const jsonMatch = responseText.match(/\{[\s\S]*\}/); 
-                                if (jsonMatch) { result = JSON.parse(jsonMatch[0]); } else { responseText = responseText.replace(/```json/g, '').replace(/```/g, '').trim(); result = JSON.parse(responseText); } 
-                                if (result && (result.amount || result.amount === 0)) { 
-                                    const cleanAmount = String(result.amount).replace(/[^0-9.]/g, ''); 
-                                    const autoNote = (result.date ? result.date + " " : "") + (result.store || ""); 
-                                    setPendingReceipts(prev => prev.map(p => p.id === item.id ? { ...p, amount: cleanAmount, note: autoNote, isAnalyzing: false } : p)); 
-                                } else { throw new Error("Invalid JSON"); } 
-                            } catch (error) { 
-                                let errorMsg = '辨識失敗'; if (error.message.includes('NO_API_KEY')) { errorMsg = '請設定 API Key'; setQuotaStatus({ type: 'error', text: '❌ 未設定 API 金鑰' }); setIsKeyModalOpen(true); } 
-                                setPendingReceipts(prev => prev.map(p => p.id === item.id ? { ...p, note: errorMsg, isAnalyzing: false, isChecked: false } : p)); 
-                            } finally { resolve(); } }; 
-                        reader.readAsDataURL(item.file); 
-                    }); 
-                })); 
-                setIsAnalyzingReceipt(false); 
-                setQuotaStatus({ type: 'normal', text: '分析完成' }); 
-                inputElement.value = ''; 
-            };
-            const handleOpenDailyDetail = (dayStats) => { setSelectedDailyStats(dayStats); setIsDailyDetailOpen(true); };
-            const handleOpenEmailClick = () => { const savedEmail = localStorage.getItem('user_email') || "yofarn@gmail.com"; setEmailInput(savedEmail); setIsEmailModalOpen(true); };
-            const handleSendEmail = async () => {
-                if (!emailInput) { alert("請輸入信箱"); return; } setIsSendingEmail(true); localStorage.setItem('user_email', emailInput);
-                try {
-                    let tableRows = ""; let grandTotal = 0;
-                    tripData.forEach(day => {
-                        tableRows += `<tr style="background-color: #e2e8f0;"><td colspan="4" style="border: 1px solid #ddd; padding: 8px; font-weight: bold; color: #333;">${day.date} - ${day.title}</td></tr>`;
-                        day.spots.forEach(spot => {
-                            const spotExpenses = expenses[spot.id] || [];
-                            spotExpenses.forEach(record => { tableRows += `<tr><td style="border: 1px solid #ddd; padding: 8px;">${day.date}</td><td style="border: 1px solid #ddd; padding: 8px;">${spot.name} (${record.category})</td><td style="border: 1px solid #ddd; padding: 8px;">${record.note || '-'}</td><td style="border: 1px solid #ddd; padding: 8px;">${record.amount}</td></tr>`; grandTotal += (record.amount || 0); });
-                            if (spot.ticket) { const counts = getTicketCounts(spot.id); const ticketCost = (spot.ticket.adult * counts.adult + spot.ticket.child * counts.child); if (ticketCost > 0) { tableRows += `<tr><td style="border: 1px solid #ddd; padding: 8px;">${day.date}</td><td style="border: 1px solid #ddd; padding: 8px;">${spot.name} (門票)</td><td style="border: 1px solid #ddd; padding: 8px;">全票${counts.adult}, 優待${counts.child}</td><td style="border: 1px solid #ddd; padding: 8px;">${ticketCost}</td></tr>`; grandTotal += ticketCost; } }
-                        });
-                    });
-                    const htmlMessage = `<h2 style="color: #333;">2025 跨年親子遊 - 花費明細</h2><table style="width:100%; border-collapse: collapse; font-family: sans-serif; border: 1px solid #ddd;"><thead><tr style="background-color: #4ECDC4; color: white;"><th style="border: 1px solid #ddd; padding: 12px;">日期</th><th style="border: 1px solid #ddd; padding: 12px;">地點/項目</th><th style="border: 1px solid #ddd; padding: 12px;">備註</th><th style="border: 1px solid #ddd; padding: 12px;">金額 (NT$)</th></tr></thead><tbody>${tableRows}</tbody><tfoot><tr style="background-color: #f8f9fa;"><td colspan="3" style="border: 1px solid #ddd; padding: 12px; text-align: right; font-weight: bold; color: #333;">總計</td><td style="border: 1px solid #ddd; padding: 12px; font-weight: bold; color: #E63946;">NT$ ${grandTotal.toLocaleString()}</td></tr></tfoot></table><p style="font-size: 12px; color: #666; margin-top: 20px;">本信件由旅遊規劃 App 自動發送。</p>`;
-                    const params = { email: emailInput, to_email: emailInput, recipient: emailInput, subject: `旅遊花費報表_${new Date().toLocaleDateString()}`, message: htmlMessage };
-                    await window.emailjs.send("service_5yh7x6g", "template_dlbyml8", params);
-                    alert("✅ 發送成功！"); setIsEmailModalOpen(false);
-                } catch (error) { alert("❌ 發送失敗，請檢查網路或稍後再試。"); } finally { setIsSendingEmail(false); }
-            };
-            const handleCalcPress = (val) => { if (val === 'AC') { setCalcInput(""); setCalcResult(""); } else if (val === 'DEL') { setCalcInput(prev => prev.slice(0, -1)); } else if (val === '=') { try { if (!calcInput) return; let expression = calcInput.replace(/\^/g, '**'); const result = new Function('return ' + expression)(); if (!isFinite(result) || isNaN(result)) { setCalcResult("Error"); } else { const formatted = Math.round(result * 100000000) / 100000000; setCalcResult(String(formatted)); } } catch (e) { setCalcResult("Error"); } } else { setCalcInput(prev => prev + val); } };
-            const handlePhotoGps = () => {
-                setPhotoSearchStatus({ text: 'GPS 定位中...', type: 'loading' });
-                if (!navigator.geolocation) { setPhotoSearchStatus({ text: '不支援 GPS', type: 'error' }); return; }
-                navigator.geolocation.getCurrentPosition((position) => {
-                    const lat = position.coords.latitude; const lon = position.coords.longitude;
-                    if (mapInstanceRef.current) { mapInstanceRef.current.setView([lat, lon], 15); if (markerInstanceRef.current) mapInstanceRef.current.removeLayer(markerInstanceRef.current); markerInstanceRef.current = L.marker([lat, lon]).addTo(mapInstanceRef.current); }
-                    setPhotoSearchStatus({ text: '轉換地址中...', type: 'loading' });
-                    fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=14`).then(res => res.json()).then(data => { let place = data.address ? (data.address.city || data.address.town || data.address.district || "") : ""; if (place) { setPhotoSearchLocation(place); setPhotoSearchStatus({ text: `📍 已定位：${place}`, type: 'success' }); } else { setPhotoSearchLocation("我的位置"); setPhotoSearchStatus({ text: '無法辨識地名', type: 'error' }); } }).catch(err => setPhotoSearchStatus({ text: '網路錯誤', type: 'error' }));
-                }, (err) => setPhotoSearchStatus({ text: '定位失敗', type: 'error' }), { enableHighAccuracy: true, timeout: 20000 });
-            };
-            const executePhotoSearch = () => {
-                let locationVal = photoSearchLocation.trim(); if (!locationVal) { setPhotoSearchStatus({ text: '請輸入地點！', type: 'error' }); return; }
-                fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(locationVal)}`).then(res => res.json()).then(data => { if (data && data.length > 0 && mapInstanceRef.current) { mapInstanceRef.current.setView([data[0].lat, data[0].lon], 13); if (markerInstanceRef.current) mapInstanceRef.current.removeLayer(markerInstanceRef.current); markerInstanceRef.current = L.marker([data[0].lat, data[0].lon]).addTo(mapInstanceRef.current); } });
-                let finalQuery = locationVal; if (photoSearchPeople.length > 0) finalQuery += " " + photoSearchPeople.join(" ");
-                const url = `https://photos.google.com/search/$${encodeURIComponent(finalQuery)}`;
-                setPhotoSearchStatus({ text: '正在開啟相簿...', type: 'success' }); setTimeout(() => { window.open(url, '_blank'); }, 500);
-            };
-            const togglePhotoPerson = (name) => { setPhotoSearchPeople(prev => prev.includes(name) ? prev.filter(p => p !== name) : [...prev, name]); };
-            
-            // Map init for StatsTab
-            useEffect(() => {
-                 if (activeTab === 'stats' && mapContainerRef.current) {
-                    if (!mapInstanceRef.current) {
-                        mapInstanceRef.current = L.map(mapContainerRef.current).setView([24.7671, 121.2177], 9);
-                        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OSM', maxZoom: 19 }).addTo(mapInstanceRef.current);
-                    }
-                    setTimeout(() => { mapInstanceRef.current.invalidateSize(); }, 100);
-                }
-            }, [activeTab]);
-
-            // --- Handlers (B) ---
-            const checkFlight = async () => { setAiLoading(true); setFlightAnalysis("🔍 AI 驗證中..."); try { const prompt = `檢查航班：去程 ${FLIGHT_INFO_B.outbound.flight} (${FLIGHT_INFO_B.outbound.date}) 與 回程 ${FLIGHT_INFO_B.inbound.flight} (${FLIGHT_INFO_B.inbound.date})。請查詢近期準點率、航廈異動與注意事項 (繁體中文)。`; const res = await generateGeminiContent(prompt, null, true); setFlightAnalysis(res); } catch(e) { setFlightAnalysis("航班資訊驗證失敗，請檢查 Key 或網路。"); if(e.message.includes("KEY")) setIsKeyModalOpen(true); } setAiLoading(false); };
-            const checkHotel = async (hName) => { setAiLoading(true); setHotelAnalysis(p => ({...p, [hName]: "🔍 AI 分析中..."})); try { const prompt = `飯店防雷檢查：${hName} (東京地區)。請檢查：1. 附近的超市/便利商店? 2. 飯店附設停車場或是合約停車場資訊? 3. 近期是否有嚴重負評(噪音/清潔)? 4. 離車站實際步行距離。請簡短回覆。`; const res = await generateGeminiContent(prompt, null, true); setHotelAnalysis(p => ({...p, [hName]: res})); } catch(e) { setHotelAnalysis(p => ({...p, [hName]: "分析失敗，請檢查 Key 或網路。"})); if(e.message.includes("KEY")) setIsKeyModalOpen(true); } setAiLoading(false); };
-            const checkSpot = async (spot, dateStr) => { setAiLoading(true); const fullTime = `2026年${dateStr} ${spot.timeHint || ''}`.trim(); const key = spot.name + fullTime; setSpotAnalysis(p => ({...p, [key]: "🔍 掃雷中..."})); try { const prompt = `景點掃雷：${spot.name}。預計到訪時間：${fullTime}。請檢查：1.該日期時間是否營業/公休? 2.近期是否有整修或關閉? 3.建議停留時間與避雷針(如排隊過長)。`; const res = await generateGeminiContent(prompt, null, true); setSpotAnalysis(p => ({...p, [key]: res})); } catch(e) { setSpotAnalysis(p => ({...p, [key]: "分析失敗，請檢查 Key 或網路。"})); if(e.message.includes("KEY")) setIsKeyModalOpen(true); } setAiLoading(false); };
-            const analyzeGeneral = async () => { if(!aiInput) return; setAiLoading(true); setAiGeneralResult("🔍 AI 分析中..."); try { const res = await generateGeminiContent(`請分析這段旅遊資訊的風險與正確性：${aiInput}`, null, true); setAiGeneralResult(res); } catch(e) { setAiGeneralResult("分析失敗，請檢查 Key 或網路。"); if(e.message.includes("KEY")) setIsKeyModalOpen(true); } setAiLoading(false); };
-
-            
-            // --- Render ---
             return (
                 <div className="min-h-screen pb-24">
-                    <nav className="sticky top-0 z-50 bg-[#0B1121]/80 backdrop-blur-md border-b border-slate-700 shadow-sm">
+                    {/* 調整 Nav Bar 背景色 */}
+                    <nav className="sticky top-0 z-50 bg-[#1a202c]/90 backdrop-blur-md border-b border-slate-700 shadow-sm">
                         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                             <div className="flex justify-between items-center h-20">
                                 <div className="flex items-center gap-3">
-                                    <div className="bg-[#FF9F1C] p-2 rounded-2xl text-white shadow-lg -rotate-6 border border-white/20"><Icons.Plane size={24} strokeWidth={3} /></div>
-                                    <div><div className="font-extrabold text-2xl tracking-tight text-slate-100 flex items-center gap-2 neon-text">2025 跨年 <Icons.Smile className="text-[#FF9F1C]" size={20}/></div><div className="text-xs font-bold text-[#FFD700] tracking-widest uppercase bg-[#FFD700]/10 px-2 py-0.5 rounded-full inline-block border border-[#FFD700]/30">Family New Year Trip</div></div>
+                                    {/* 1. 導覽列左側圖示區塊 (參考右圖風格) */}
+                                    <div className="w-12 h-12 rounded-full bg-[#A0B7C6]/20 border-2 border-[#A0B7C6] flex items-center justify-center shadow-lg shrink-0">
+                                        <Icons.Pin size={24} strokeWidth={2} className="text-[#A0B7C6] rotate-12"/>
+                                    </div>
+                                    <div className="flex flex-col justify-center">
+                                        {/* 莫蘭迪米粉色霓虹文字 */}
+                                        <div className="font-extrabold text-2xl tracking-tight text-slate-100 flex items-center gap-2 neon-text">莫蘭迪旅遊 <Icons.Smile className="text-[#E4C7C2]" size={20}/></div>
+                                        {/* 莫蘭迪灰藍色副標題 - 使用圓角按鈕樣式 */}
+                                        <div className="text-xs font-bold text-slate-300 tracking-widest uppercase bg-[#2d3748] px-3 py-0.5 rounded-full inline-block border border-slate-600 w-fit mt-0.5">STYLE TRIP PLANNER</div>
+                                    </div>
                                 </div>
-                                <div className="flex gap-2"><button onClick={() => setIsKeyModalOpen(true)} className="md:hidden bg-slate-800 p-2 rounded-full text-slate-400 border border-slate-700"><Icons.Settings size={20} /></button><div className="text-right hidden sm:block"><div className="text-[10px] font-bold text-slate-400 uppercase bg-slate-800 px-2 rounded-full border border-slate-700">Total</div><div className="font-mono font-bold text-[#FF6B6B] text-lg">NT$ {stats.totalJpy.toLocaleString()}</div></div></div>
+                                <div className="flex items-center gap-4">
+                                    {/* NEW: Global Currency Switcher */}
+                                    <div className="hidden sm:block">
+                                        <CurrencySwitcher 
+                                            selectedCurrency={selectedCurrency}
+                                            exchangeRate={exchangeRate}
+                                            isRateLoading={isRateLoading}
+                                            rateError={rateError}
+                                            setSelectedCurrency={setSelectedCurrency}
+                                        />
+                                    </div>
+                                    <button onClick={() => setIsKeyModalOpen(true)} className="md:hidden bg-slate-800 p-2 rounded-full text-slate-400 border border-slate-700"><Icons.Settings size={20} /></button>
+                                    <div className="text-right hidden sm:block">
+                                        <div className="text-[10px] font-bold text-slate-400 uppercase bg-slate-800 px-2 rounded-full border border-slate-700">總計 ({selectedCurrency.code})</div>
+                                        {/* 莫蘭迪淺粉紅總花費 */}
+                                        <div className="font-mono font-bold text-[#DDA0A0] text-lg">{selectedCurrency.symbol} {(stats.totalJpy * exchangeRate).toFixed(0).toLocaleString()}</div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </nav>
@@ -717,55 +1418,94 @@
                     <main className="max-w-5xl mx-auto p-4 md:p-8">
                         {activeTab === 'itinerary' && (
                             <ItineraryTab 
-                                tripData={tripData} selectedDay={selectedDay} setSelectedDay={setSelectedDay} dayStartTimes={dayStartTimes} handleDayStartTimeChange={handleDayStartTimeChange} handleDepartureToggle={handleDepartureToggle} handleTransportToggle={handleTransportToggle} handleStayChangeNew={handleStayChangeNew} handleGetSpotTip={handleGetSpotTip} activeTipSpotId={activeTipSpotId} aiTips={aiTips} isTipLoading={isTipLoading} openExpenseModal={openExpenseModal} transportModes={transportModes} expenses={expenses} getTicketCounts={getTicketCounts} STAY_OPTIONS={STAY_OPTIONS}
+                                tripData={tripData} selectedDay={selectedDay} setSelectedDay={setSelectedDay} dayStartTimes={dayStartTimes} handleDayStartTimeChange={handleDayStartTimeChange} handleDepartureToggle={handleDepartureToggle} handleTransportToggle={handleTransportToggle} handleStayChangeNew={handleStayChangeNew} openExpenseModal={openExpenseModal} transportModes={transportModes} expenses={expenses} getTicketCounts={getTicketCounts} STAY_OPTIONS={STAY_OPTIONS}
                             />
                         )}
 
                         {activeTab === 'info' && (
                             <InfoTab 
-                                userLocation={userLocation} isLocating={isLocating} handleGetLocation={handleGetLocation} infoRegion={infoRegion} setInfoRegion={setInfoRegion} aiSouvenirs={aiSouvenirs} isAiSouvenirLoading={isAiSouvenirLoading} aiNews={aiNews} isAiNewsLoading={isAiNewsLoading} 
                             />
                         )}
 
                         {activeTab === 'stats' && (
                             <StatsTab 
-                                calcInput={calcInput} calcResult={calcResult} handleCalcPress={handleCalcPress} photoSearchLocation={photoSearchLocation} setPhotoSearchLocation={setPhotoSearchLocation} photoSearchPeople={photoSearchPeople} togglePhotoPerson={togglePhotoPerson} photoSearchStatus={photoSearchStatus} handlePhotoGps={handlePhotoGps} executePhotoSearch={executePhotoSearch} mapContainerRef={mapContainerRef} dailyStats={dailyStats} handleOpenDailyDetail={handleOpenDailyDetail} handleOpenEmailClick={handleOpenEmailClick} stats={stats} 
+                                dailyStats={dailyStats} 
+                                handleOpenDailyDetail={handleOpenDailyDetail} 
+                                handleOpenEmailClick={handleOpenEmailClick} 
+                                stats={stats} 
+                                selectedCurrency={selectedCurrency} 
+                                exchangeRate={exchangeRate}
+                                setSelectedCurrency={setSelectedCurrency}
+                                tripData={tripData} // Pass tripData to StatsTab
+                                isRateLoading={isRateLoading} // PASS: isRateLoading
+                                rateError={rateError} // PASS: rateError
                             />
                         )}
-                        
-                        {activeTab === 'ai_guard' && (
-                            <AiGuardTab
-                                aiLoading={aiLoading} checkFlight={checkFlight} flightAnalysis={flightAnalysis} checkHotel={checkHotel} hotelAnalysis={hotelAnalysis} AI_GUARD_DATA={AI_GUARD_DATA_B} checkSpot={checkSpot} spotAnalysis={spotAnalysis} aiInput={aiInput} setAiInput={setAiInput} analyzeGeneral={analyzeGeneral} aiGeneralResult={aiGeneralResult} setIsKeyModalOpen={setIsKeyModalOpen}
+
+                        {/* NEW: AI 防雷分頁 */}
+                        {activeTab === 'guard' && (
+                            <GuardTab
+                                tripData={tripData}
+                                flightInfo={FLIGHT_INFO}
+                                hotelInfo={HOTEL_INFO}
+                                openKeyModal={openKeyModal} // Pass the setter function
+                                aiLoading={aiLoading}
+                                setAiLoading={setAiLoading}
                             />
                         )}
                     </main>
 
-                    {/* 底部導覽列 (四頁面) */}
-                    <div className="fixed bottom-0 w-full bg-[#0B1121]/95 backdrop-blur-md border-t border-slate-700 pb-safe z-40 flex justify-around py-3 text-xs font-bold text-slate-500">
-                        <button onClick={() => setActiveTab('itinerary')} className={`flex flex-col items-center gap-1 ${activeTab === 'itinerary' ? 'text-[#FFCB77]' : 'hover:text-slate-300'}`}><Icons.List size={22} /> 行程</button>
-                        <button onClick={() => setActiveTab('info')} className={`flex flex-col items-center gap-1 ${activeTab === 'info' ? 'text-[#4ECDC4]' : 'hover:text-slate-300'}`}><Icons.LayoutGrid size={22} /> 資訊</button>
-                        <button onClick={() => setActiveTab('stats')} className={`flex flex-col items-center gap-1 ${activeTab === 'stats' ? 'text-[#FF6B6B]' : 'hover:text-slate-300'}`}><Icons.Calculator size={22} /> 統計</button>
-                        <button onClick={() => setActiveTab('ai_guard')} className={`flex flex-col items-center gap-1 ${activeTab === 'ai_guard' ? 'text-blue-400' : 'hover:text-slate-300'}`}><Icons.Shield size={22} /> AI 掃雷</button>
+                    {/* Footer Navigation (調整背景色和強調色) */}
+                    <div className="fixed bottom-0 w-full bg-[#1a202c]/95 backdrop-blur-md border-t border-slate-700 pb-safe z-40 flex justify-around py-3 text-xs font-bold text-slate-500">
+                        {/* 莫蘭迪灰藍色行程 */}
+                        <button onClick={() => setActiveTab('itinerary')} className={`flex flex-col items-center gap-1 ${activeTab === 'itinerary' ? 'text-[#A0B7C6]' : 'hover:text-slate-300'}`}><Icons.List size={22} /> 行程</button>
+                        {/* 莫蘭迪灰綠色資訊 */}
+                        <button onClick={() => setActiveTab('info')} className={`flex flex-col items-center gap-1 ${activeTab === 'info' ? 'text-[#B6C9B6]' : 'hover:text-slate-300'}`}><Icons.LayoutGrid size={22} /> 資訊</button>
+                        {/* 莫蘭迪米粉色統計 */}
+                        <button onClick={() => setActiveTab('stats')} className={`flex flex-col items-center gap-1 ${activeTab === 'stats' ? 'text-[#E4C7C2]' : 'hover:text-slate-300'}`}><Icons.Calculator size={22} /> 統計</button>
+                        {/* NEW: 防雷按鈕 */}
+                        <button onClick={() => setActiveTab('guard')} className={`flex flex-col items-center gap-1 ${activeTab === 'guard' ? 'text-[#A0B7C6]' : 'hover:text-slate-300'}`}><Icons.Shield size={22} /> 防雷</button>
                     </div>
 
                     <div className="fixed bottom-24 right-4 flex flex-col gap-3 z-50">
+                        {/* Mobile Currency Switcher - Visible only on mobile sizes */}
+                        <div className="sm:hidden">
+                            <CurrencySwitcher 
+                                selectedCurrency={selectedCurrency}
+                                exchangeRate={exchangeRate}
+                                isRateLoading={isRateLoading}
+                                rateError={rateError}
+                                setSelectedCurrency={setSelectedCurrency}
+                            />
+                        </div>
+                        
                         <button onClick={handleOpenMap} className="bg-slate-800 text-slate-300 p-3 rounded-full shadow-[0_4px_10px_rgba(0,0,0,0.5)] border border-slate-600 hover:bg-slate-700 hover:text-white transition-all"><Icons.Map size={24} /></button>
                         <button onClick={() => setIsKeyModalOpen(true)} className="bg-slate-800 text-slate-300 p-3 rounded-full shadow-[0_4px_10px_rgba(0,0,0,0.5)] border border-slate-600 hover:bg-slate-700 hover:text-white transition-all"><Icons.Settings size={24} /></button>
                     </div>
 
-                    <ApiKeyModal isOpen={isKeyModalOpen} onClose={() => setIsKeyModalOpen(false)} />
+                    {/* FIX: 使用正確的 setIsKeyModalOpen 進行關閉 */}
+                    <ApiKeyModal isOpen={isKeyModalOpen} onClose={() => setIsKeyModalOpen(false)} /> 
                     
                     <ExpenseModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} currentEditingSpot={currentEditingSpot} expenseForm={expenseForm} setExpenseForm={setExpenseForm} handleImageUpload={handleImageUpload} pendingReceipts={pendingReceipts} togglePendingReceipt={togglePendingReceipt} removePendingReceipt={removePendingReceipt} saveExpense={saveExpense} expenses={expenses} deleteExpense={deleteExpense} isAnalyzingReceipt={isAnalyzingReceipt} quotaStatus={quotaStatus} />
                     
-                    <DailyDetailModal isOpen={isDailyDetailOpen} onClose={() => setIsDailyDetailOpen(false)} dayData={selectedDailyStats} allExpenses={expenses} spotTicketCounts={spotTicketCounts} />
+                    <DailyDetailModal isOpen={isDailyDetailOpen} onClose={() => setIsDailyDetailOpen(false)} dayData={selectedDailyStats} allExpenses={expenses} spotTicketCounts={spotTicketCounts} selectedCurrency={selectedCurrency} exchangeRate={exchangeRate} tripData={tripData} />
 
-                    <EmailModal isOpen={isEmailModalOpen} onClose={() => setIsEmailModalOpen(false)} emailInput={emailInput} setEmailInput={setEmailInput} handleSendEmail={handleSendEmail} isSendingEmail={isSendingEmail} />
+                    <EmailModal isOpen={isEmailModalOpen} onClose={() => setIsModalOpen(false)} emailInput={emailInput} setEmailInput={setEmailInput} handleSendEmail={handleSendEmail} isSendingEmail={isSendingEmail} />
                 </div>
             );
         }
 
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<App />);
+        // FIX: 確保使用正確的 ReactDOM 模組和 createRoot 啟動
+        const container = document.getElementById('root');
+        const ReactDomModule = typeof ReactDOM !== 'undefined' ? ReactDOM : window.ReactDOM;
+
+        if (ReactDomModule && ReactDomModule.createRoot) {
+             const root = ReactDomModule.createRoot(container);
+             root.render(<App />);
+        } else {
+             console.error("ReactDOM.createRoot not found. Attempting legacy render.");
+             ReactDomModule.render(<App />, container);
+        }
     </script>
 </body>
 </html>
