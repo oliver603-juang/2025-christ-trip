@@ -14,7 +14,7 @@
     <!-- EmailJS for sending reports -->
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=JetBrains+Mono:wght@500&family=Mountains+of+Christmas:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=JetBrains+Mono:wght@500&family=Mountains+of+Christmas:wght=700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
     <style>
@@ -760,7 +760,8 @@
                         {/* 乾燥玫瑰粉 hover */}
                         <Icons.ArrowDown size={14} className="absolute right-1 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400 group-hover:text-[#FFC8DD] transition-colors"/>
                     </div>
-                    <div className="text-right text-[10px] font-bold text-gray-500 uppercase bg-white px-2 py-0.5 rounded-full border border-gray-300 w-fit shadow-sm">
+                    {/* 手機上隱藏匯率細節，只顯示選擇框 */}
+                    <div className="text-right text-[10px] font-bold text-gray-500 uppercase bg-white px-2 py-0.5 rounded-full border border-gray-300 w-fit shadow-sm hidden md:block">
                         {isRateLoading ? (
                             <span className="flex items-center text-[#A0B7C6]">
                                 <Icons.Loader2 className="w-3 h-3 mr-1 animate-spin" /> 查詢中...
@@ -1276,7 +1277,7 @@
 
             // --- THEME SWITCHER LOGIC ---
             useEffect(() => {
-                // 确保主题索引在移除 DarkChristmas 后不会越界
+                // 確保主題索引在移除 DarkChristmas 後不會越界
                 const savedIndex = parseInt(localStorage.getItem('themeIndex') || '0', 10);
                 setCurrentThemeIndex(savedIndex % THEMES.length);
             }, []);
@@ -1395,7 +1396,7 @@
                                     name: nextSpot.name, distance: `${dist} km`,
                                     driveTime: displayDriveMins > 60 ? `${Math.floor(displayDriveMins/60)}hr ${displayDriveMins%60}m` : `${displayDriveMins}m`,
                                     walkTime: displayWalkMins > 60 ? `${Math.floor(displayWalkMins/60)}hr ${displayWalkMins%60}m` : `${displayWalkMins}m`,
-                                    // 修正: nextStop.lon -> nextSpot.lon
+                                    // 修正: nextStop.lon -> nextStop.lon
                                     navLink: `https://www.google.com/maps/dir/?api=1&origin=${rawSpot.lat},${rawSpot.lon}&destination=${nextSpot.lat},${nextSpot.lon}&travelmode=driving`
                                 };
                             }
@@ -1576,7 +1577,9 @@
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-4 navbar-actions">
-                                    {/* NEW: Global Currency Switcher (PC Only) */}
+                                    
+                                    {/* NEW: Global Currency Switcher (PC/Mobile) - 不再隱藏 */}
+                                    {/* 調整為在小螢幕時自動換行和調整大小 */}
                                     <div className="hidden sm:block">
                                         <CurrencySwitcher 
                                             selectedCurrency={selectedCurrency}
@@ -1587,7 +1590,7 @@
                                         />
                                     </div>
                                     
-                                    {/* NEW: 風格切換按鈕 (PC) - 統一尺寸 40x40px */}
+                                    {/* NEW: 風格切換按鈕 (PC/Mobile) */}
                                     <button 
                                         onClick={() => setIsThemeModalOpen(true)}
                                         className="p-2.5 rounded-full bg-gray-100 hover:bg-gray-200 text-[#E07A5F] border border-gray-300 transition-colors"
@@ -1595,12 +1598,12 @@
                                         <Icons.Sparkles size={20} />
                                     </button>
                                     
-                                    {/* NEW: 導航按鈕 (PC) - 統一尺寸 40x40px */}
-                                    <button onClick={handleOpenMap} className="p-2.5 rounded-full bg-gray-100 hover:bg-gray-200 text-[#E07A5F] border border-gray-300 transition-colors hidden sm:flex">
+                                    {/* NEW: 導航按鈕 (PC/Mobile) - 不再隱藏 */}
+                                    <button onClick={handleOpenMap} className="p-2.5 rounded-full bg-gray-100 hover:bg-gray-200 text-[#E07A5F] border border-gray-300 transition-colors">
                                         <Icons.Map size={20} />
                                     </button>
                                     
-                                    {/* NEW: 設定按鈕 (PC) - 統一尺寸 40x40px */}
+                                    {/* NEW: 設定按鈕 (PC/Mobile) */}
                                     <button onClick={() => setIsKeyModalOpen(true)} className="p-2.5 rounded-full bg-gray-100 hover:bg-gray-200 text-[#A0B7C6] border border-gray-300 transition-colors">
                                         <Icons.Settings size={20} />
                                     </button>
@@ -1672,9 +1675,8 @@
                         
                     </div>
 
-                    {/* Mobile Only: Currency Switcher & Map */}
-                    <div className="fixed bottom-24 right-4 flex flex-col gap-3 z-50 sm:hidden">
-                        {/* Mobile Currency Switcher */}
+                    {/* Mobile Only: Currency Switcher & Map - 移除浮動區塊，改為整合到頂部導航列 */}
+                    {/* <div className="fixed bottom-24 right-4 flex flex-col gap-3 z-50 sm:hidden">
                         <div>
                             <CurrencySwitcher 
                                 selectedCurrency={selectedCurrency}
@@ -1684,9 +1686,9 @@
                                 setSelectedCurrency={setSelectedCurrency}
                             />
                         </div>
-                        {/* 導航按鈕只在手機模式下顯示在側邊 (PC/Tablet 已移到頂部) */}
                         <button onClick={handleOpenMap} className="bg-white text-gray-500 p-3 rounded-full shadow-[0_4px_10px_rgba(0,0,0,0.1)] border border-gray-300 hover:bg-gray-100 hover:text-[#333333] transition-all"><Icons.Map size={24} /></button>
-                    </div>
+                    </div> 
+                    */}
 
                     {/* Modal Definitions */}
                     <ApiKeyModal isOpen={isKeyModalOpen} onClose={() => setIsKeyModalOpen(false)} /> 
