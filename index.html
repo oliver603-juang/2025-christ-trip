@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <!-- 更改標題以符合新的風格 -->
-    <title>旅遊計畫 | Pink Morandi Light Style</title>
+    <title>旅遊計畫 | Pink & Green Morandi Style</title>
     
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -71,6 +71,22 @@
         .theme-PinkMorandi {
             /* 保持 Light Pink Morandi 的預設值 */
         }
+        /* NEW: Green Morandi Style */
+        .theme-GreenMorandi {
+             --bg-main: #F9F7F3; /* 淺米白/灰白 */
+             --color-text: #333333;
+             --color-subtle-text: #71717A; /* Stone-500 */
+             --color-text-inverse: #ffffff;
+             --bg-glass: rgba(255, 255, 255, 0.85);
+             --border-glass: rgba(0, 0, 0, 0.05);
+             --bg-card-sub: #f3f4f6;
+             --border-card-sub: #d1d5db;
+
+             --accent-pink: #E4C7C2; /* 淺柔粉 (作為強調色 1) */
+             --accent-pink-dark: #DDA0A0; /* 淺暖橘 */
+             --accent-blue: #A8B5A3; /* 柔和灰綠 (作為強調色 2) */
+             --accent-blue-dark: #7D8B7E; /* 沉穩深綠 */
+        }
 
 
         /* ------------------- BASE STYLES ------------------- */
@@ -125,9 +141,10 @@
              border-left: 3px solid var(--accent-pink); 
              background: rgba(255, 200, 221, 0.15); 
         }
+        /* 使用 Accent-Blue 作為 AI Result 的邊框色 */
         .ai-result-box {
-            background: rgba(160, 183, 198, 0.1); 
-            border: 1px solid rgba(160, 183, 198, 0.3);
+            background: var(--bg-card-sub); 
+            border: 1px solid var(--accent-blue);
             color: var(--color-text);
         }
         
@@ -155,7 +172,7 @@
              align-items: center;
         }
         
-        /* 頂部按鈕容器樣式，確保在手機上隱藏地圖按鈕 */
+        /* 頂部按鈕容器樣式 */
         .navbar-actions > button {
              padding: 0.5rem;
              border-radius: 9999px; /* Full circle */
@@ -186,9 +203,10 @@
         const { useState, useEffect, useMemo, useRef, useCallback } = React;
 
         // --- 全局主題配置 ---
-        // 移除 DarkChristmas 主題
+        // 新增 GreenMorandi 主題
         const THEMES = [
             { name: 'PinkMorandi', label: '粉色莫蘭迪', accent: '#FFC8DD', darkAccent: '#E07A5F' },
+            { name: 'GreenMorandi', label: '綠色莫蘭迪', accent: '#A8B5A3', darkAccent: '#7D8B7E' }, // NEW
             { name: 'DarkMorandi', label: '沉穩莫蘭迪', accent: '#E4C7C2', darkAccent: '#A0B7C6' },
         ];
 
@@ -275,12 +293,12 @@
             { code: 'USD', symbol: '$', name: '美金' },
         ];
 
-        // RAW DATA (Christmas Trip) - 更新為莫蘭迪淺色系主題色
+        // RAW DATA (Christmas Trip) - 更新為莫蘭迪淺色系主題色，使用新的 GreenMorandi 配色
         const RAW_KML_DATA = [
-            // themeColor: 柔和淺粉 (Pink Morandi)
-            { dayId: "day1", date: "12/24 (三)", title: "聖誕夜桃園之旅", themeColor: "bg-[#FFC8DD] text-[#333333]", spots: [ { name: "溫暖的家", lat: 25.0665752, lon: 121.5103617, desc: "旅程起點，準備出發！", mapCode: "GPS" }, { name: "HARD OFF海德沃福 桃園中壢店", lat: 24.9712911, lon: 121.252971, desc: "日本二手連鎖店巡禮，尋寶趣。", mapCode: "GPS" }, { name: "石門水庫福華渡假飯店", lat: 24.8177389, lon: 121.2430134, desc: "入住石門水庫旁，享受聖誕氛圍。", mapCode: "GPS" } ] },
-            // themeColor: 柔和灰藍 (Light Blue Morandi)
-            { dayId: "day2", date: "12/25 (四)", title: "龍潭創意與活力探索", themeColor: "bg-[#A0B7C6] text-[#333333]", spots: [ { name: "雄獅文具-想像力製造所", lat: 24.8418681, lon: 121.1962665, desc: "色彩與創意的體驗觀光工廠。", mapCode: "GPS", ticket: { adult: 500, child: 300 } }, { name: "龍潭運動公園兒童遊戲場", lat: 24.868033, lon: 121.2187586, desc: "讓孩子盡情放電的戶外空間。", mapCode: "GPS" }, { name: "溫暖的家", lat: 25.0665752, lon: 121.5103617, desc: "平安返家。", mapCode: "GPS" } ] }
+            // themeColor: 柔和淺綠 (Green Morandi Accent 1: Green)
+            { dayId: "day1", date: "12/24 (三)", title: "聖誕夜桃園之旅", themeColor: "bg-[#A8B5A3] text-[#333333]", spots: [ { name: "溫暖的家", lat: 25.0665752, lon: 121.5103617, desc: "旅程起點，準備出發！", mapCode: "GPS" }, { name: "HARD OFF海德沃福 桃園中壢店", lat: 24.9712911, lon: 121.252971, desc: "日本二手連鎖店巡禮，尋寶趣。", mapCode: "GPS" }, { name: "石門水庫福華渡假飯店", lat: 24.8177389, lon: 121.2430134, desc: "入住石門水庫旁，享受聖誕氛圍。", mapCode: "GPS" } ] },
+            // themeColor: 柔和淺粉 (Green Morandi Accent 2: Pink)
+            { dayId: "day2", date: "12/25 (四)", title: "龍潭創意與活力探索", themeColor: "bg-[#E4C7C2] text-[#333333]", spots: [ { name: "雄獅文具-想像力製造所", lat: 24.8418681, lon: 121.1962665, desc: "色彩與創意的體驗觀光工廠。", mapCode: "GPS", ticket: { adult: 500, child: 300 } }, { name: "龍潭運動公園兒童遊戲場", lat: 24.868033, lon: 121.2187586, desc: "讓孩子盡情放電的戶外空間。", mapCode: "GPS" }, { name: "溫暖的家", lat: 25.0665752, lon: 121.5103617, desc: "平安返家。", mapCode: "GPS" } ] }
         ];
 
         const Icons = {
@@ -332,7 +350,7 @@
             Newspaper: (props)=><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8"/><path d="M15 18h-5"/><path d="M10 6h8v4h-8V6Z"/></svg>,
             Mail: (props)=><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>,
             UsersViewfinder: (props)=><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><circle cx="10" cy="10" r="7" /><path d="M21 21l-6-6" /><path d="M7 10h6" /><path d="M10 7v6" /></svg>,
-            MapLocation: (props)=><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>, 
+            MapLocation: (props)=><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M20 10c0 6-8 8-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>, 
             Info: (props)=><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>,
             UpRightFromSquare: (props)=><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>,
             MoreHorizontal: (props)=><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>,
@@ -440,14 +458,14 @@
         
         const EXCHANGE_RATE = 1.0; 
         const STAY_OPTIONS = ["30 min", "1 hr", "1.5 hr", "2 hr", "2.5 hr", "3 hr", "4 hr", "5 hr", "Overnight", "-"];
-        // 更新為明亮粉色莫蘭迪配色
+        // 更新為莫蘭迪配色
         const EXPENSE_CATEGORIES = [
-            { id: 'food', label: '飲食', Icon: Icons.Coffee, color: 'text-[#E07A5F]', bgColor: 'bg-[#FFC8DD]' }, // 粉色
-            { id: 'shopping', label: '購物', Icon: Icons.ShoppingBag, color: 'text-[#A0B7C6]', bgColor: 'bg-[#C9D9E4]' }, // 灰藍
-            { id: 'transport', label: '交通', Icon: Icons.Car, color: 'text-[#FFC8DD]', bgColor: 'bg-[#C9D9E4]' }, 
-            { id: 'hotel', label: '住宿', Icon: Icons.Hotel, color: 'text-[#A0B7C6]', bgColor: 'bg-[#FFC8DD]' }, 
-            { id: 'ticket', label: '門票', Icon: Icons.Ticket, color: 'text-[#E07A5F]', bgColor: 'bg-[#FFC8DD]' },
-            { id: 'fuel', label: '加油', Icon: Icons.Fuel, color: 'text-[#A0B7C6]', bgColor: 'bg-[#C9D9E4]' },
+            { id: 'food', label: '飲食', Icon: Icons.Coffee, color: 'text-[var(--accent-pink-dark)]', bgColor: 'bg-[var(--accent-pink)]' }, 
+            { id: 'shopping', label: '購物', Icon: Icons.ShoppingBag, color: 'text-[var(--accent-blue-dark)]', bgColor: 'bg-[var(--accent-blue)]' }, 
+            { id: 'transport', label: '交通', Icon: Icons.Car, color: 'text-[var(--accent-pink)]', bgColor: 'bg-[var(--accent-blue)]' }, 
+            { id: 'hotel', label: '住宿', Icon: Icons.Hotel, color: 'text-[var(--accent-blue)]', bgColor: 'bg-[var(--accent-pink)]' }, 
+            { id: 'ticket', label: '門票', Icon: Icons.Ticket, color: 'text-[var(--accent-pink-dark)]', bgColor: 'bg-[var(--accent-pink)]' },
+            { id: 'fuel', label: '加油', Icon: Icons.Fuel, color: 'text-[var(--accent-blue-dark)]', bgColor: 'bg-[var(--accent-blue)]' },
             { id: 'other', label: '其他', Icon: Icons.MoreHorizontal, color: 'text-stone-500', bgColor: 'bg-stone-200' },
         ];
 
@@ -513,11 +531,11 @@
             return (
                 <div className="fixed inset-0 bg-stone-900/80 backdrop-blur-sm flex items-center justify-center z-[130] p-4 animate-in fade-in duration-200" onClick={onClose}>
                     {/* 調整 Modal 背景色 */}
-                    <div className="glass-panel rounded-2xl p-6 w-full max-w-sm shadow-2xl max-h-[85vh] flex flex-col bg-white/80 text-[#333333] border border-gray-200" onClick={e => e.stopPropagation()}>
+                    <div className="glass-panel rounded-2xl p-6 w-full max-w-sm shadow-2xl max-h-[85vh] flex flex-col bg-white/80 text-[var(--color-text)] border border-gray-200" onClick={e => e.stopPropagation()}>
                          <div className="flex justify-between items-center mb-4 border-b border-gray-300 pb-3">
                             <div>
                                 <div className="text-xs font-bold text-gray-500 mb-1">{isTotalSummary ? "整個行程" : dayData.date}</div>
-                                <h3 className="font-black text-xl text-[#333333]">{isTotalSummary ? "總花費明細" : dayData.title}</h3>
+                                <h3 className="font-black text-xl text-[var(--color-text)]">{isTotalSummary ? "總花費明細" : dayData.title}</h3>
                             </div>
                             <button onClick={onClose} className="p-1 rounded-full hover:bg-gray-200 text-gray-500 transition-colors"><Icons.X size={20}/></button>
                         </div>
@@ -534,14 +552,14 @@
                                     .map((item, idx) => (
                                     <div key={item.id || idx} className="bg-white p-3 rounded-xl border border-gray-200 flex justify-between items-center shadow-sm">
                                         <div>
-                                            {/* 柔和灰藍 */}
-                                            <div className="text-xs text-[#A0B7C6] font-bold mb-0.5">{item.spotName}</div>
+                                            {/* 使用 Accent-Blue */}
+                                            <div className="text-xs text-[var(--accent-blue)] font-bold mb-0.5">{item.spotName}</div>
                                             <div className="flex flex-col">
                                                 {item.date && <span className="text-[10px] text-gray-500 block">{item.date}</span>}
-                                                <span className="text-sm font-bold text-[#333333]">{item.note}</span>
+                                                <span className="text-sm font-bold text-[var(--color-text)]">{item.note}</span>
                                             </div>
                                         </div>
-                                        <div className="font-mono font-bold text-[#333333] text-lg">NT${item.amount.toLocaleString()}</div>
+                                        <div className="font-mono font-bold text-[var(--color-text)] text-lg">NT${item.amount.toLocaleString()}</div>
                                     </div>
                                 ))
                             )}
@@ -549,13 +567,13 @@
 
                         <div className="mt-4 pt-4 border-t border-gray-300 flex justify-between items-center">
                             <span className="text-sm font-bold text-gray-500 uppercase tracking-wider">總計 (TWD)</span>
-                            {/* 柔和深粉 */}
-                            <span className="text-2xl font-mono font-black text-[#E07A5F]">NT${dayTotalTWD.toLocaleString()}</span>
+                            {/* 使用 Accent-Pink-Dark */}
+                            <span className="text-2xl font-mono font-black text-[var(--accent-pink-dark)]">NT${dayTotalTWD.toLocaleString()}</span>
                         </div>
                         <div className="mt-2 flex justify-between items-center">
                             <span className="text-sm font-bold text-gray-500 uppercase tracking-wider">總計 ({selectedCurrency.code})</span>
-                            {/* 柔和灰藍 */}
-                            <span className="text-2xl font-mono font-black text-[#A0B7C6]">{selectedCurrency.symbol} {convertedTotal.toLocaleString()}</span>
+                            {/* 使用 Accent-Blue-Dark */}
+                            <span className="text-2xl font-mono font-black text-[var(--accent-blue-dark)]">{selectedCurrency.symbol} {convertedTotal.toLocaleString()}</span>
                         </div>
                     </div>
                 </div>
@@ -580,11 +598,11 @@
 
             return (
                 <div className="fixed inset-0 bg-stone-800/80 backdrop-blur-sm flex items-center justify-center z-[120] p-4 animate-in fade-in duration-200">
-                    <div className="glass-panel rounded-2xl p-6 w-full max-w-sm shadow-2xl bg-white/90 text-[#333333]">
+                    <div className="glass-panel rounded-2xl p-6 w-full max-w-sm shadow-2xl bg-white/90 text-[var(--color-text)]">
                         <div className="flex justify-between items-center mb-2">
-                            <h3 className="font-bold text-lg text-[#333333] flex items-center gap-2">
-                                {/* 莫蘭迪灰藍 */}
-                                <Icons.Settings size={20} className="text-[#A0B7C6]"/> 設定 AI 金鑰
+                            <h3 className="font-bold text-lg text-[var(--color-text)] flex items-center gap-2">
+                                {/* 使用 Accent-Blue */}
+                                <Icons.Settings size={20} className="text-[var(--accent-blue)]"/> 設定 AI 金鑰
                             </h3>
                             <button onClick={onClose} className="p-1 rounded-full hover:bg-gray-200 text-gray-500 transition-colors">
                                 <Icons.X size={20} />
@@ -598,15 +616,15 @@
                             value={key} 
                             onChange={(e) => setKey(e.target.value)} 
                             placeholder="貼上 API Key (選填)"
-                            /* 乾燥玫瑰粉 focus */
-                            className="w-full bg-gray-100 rounded-lg p-3 text-sm mb-4 outline-none border border-gray-300 focus:ring-2 focus:ring-[#FFC8DD] text-[#333333]"
+                            /* 使用 Accent-Pink focus */
+                            className="w-full bg-gray-100 rounded-lg p-3 text-sm mb-4 outline-none border border-gray-300 focus:ring-2 focus:ring-[var(--accent-pink)] text-[var(--color-text)]"
                         />
                         <div className="flex gap-2">
                             <a href="https://aistudio.google.com/app/apikey" target="_blank" className="flex-1 text-center py-2 rounded-lg border border-gray-300 text-xs font-bold text-gray-600 hover:bg-gray-200">
                                取得 Key
                             </a>
-                            {/* 莫蘭迪灰藍按鈕 */}
-                            <button onClick={handleSave} className="flex-1 bg-[#A0B7C6] text-white py-2 rounded-lg text-sm font-bold hover:bg-[#86A2B3] shadow-md">
+                            {/* 使用 Accent-Blue 按鈕 */}
+                            <button onClick={handleSave} className="flex-1 bg-[var(--accent-blue)] text-white py-2 rounded-lg text-sm font-bold hover:bg-[var(--accent-blue-dark)] shadow-md">
                                 儲存
                             </button>
                         </div>
@@ -626,9 +644,9 @@
 
             return (
                 <div className="fixed inset-0 bg-stone-800/80 backdrop-blur-sm flex items-center justify-center z-[120] p-4 animate-in fade-in duration-200">
-                    <div className="glass-panel rounded-2xl p-6 w-full max-w-sm shadow-2xl bg-white/90 text-[#333333]">
-                        <h3 className="font-bold text-lg mb-4 text-[#333333] flex items-center gap-2">
-                            <Icons.Sparkles size={20} className="text-[#E07A5F]"/> 選擇主題風格
+                    <div className="glass-panel rounded-2xl p-6 w-full max-w-sm shadow-2xl bg-white/90 text-[var(--color-text)]">
+                        <h3 className="font-bold text-lg mb-4 text-[var(--color-text)] flex items-center gap-2">
+                            <Icons.Sparkles size={20} className="text-[var(--accent-pink-dark)]"/> 選擇主題風格
                         </h3>
                         <div className="space-y-3">
                             {THEMES.map((theme, index) => (
@@ -636,7 +654,7 @@
                                     key={theme.name}
                                     onClick={() => handleSelectTheme(index)}
                                     className={`w-full py-3 px-4 rounded-xl font-bold text-sm text-left theme-select-btn
-                                        ${index === currentThemeIndex ? 'border-2 border-[#E07A5F] shadow-lg bg-[#FFC8DD]' : 'bg-gray-100 text-gray-700 border border-gray-300'}
+                                        ${index === currentThemeIndex ? 'border-2 border-[var(--accent-pink-dark)] shadow-lg bg-[var(--accent-pink)]' : 'bg-gray-100 text-gray-700 border border-gray-300'}
                                         hover:shadow-md transition-shadow
                                     `}
                                 >
@@ -644,7 +662,7 @@
                                 </button>
                             ))}
                         </div>
-                        <button onClick={onClose} className="mt-4 w-full py-2 text-gray-500 hover:text-[#333333] border border-gray-300 rounded-xl hover:bg-gray-100">
+                        <button onClick={onClose} className="mt-4 w-full py-2 text-gray-500 hover:text-[var(--color-text)] border border-gray-300 rounded-xl hover:bg-gray-100">
                             取消
                         </button>
                     </div>
@@ -662,29 +680,29 @@
             return (
                 <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-[100] p-4 backdrop-blur-sm">
                     {/* 調整 Modal 背景色 */}
-                    <div className="glass-panel rounded-2xl p-6 w-full max-w-sm bg-white/90 text-[#333333] border border-gray-200 flex flex-col max-h-[85vh]">
-                        <h3 className="font-bold text-lg mb-4 text-[#333333] shrink-0">{currentEditingSpot.name}</h3>
+                    <div className="glass-panel rounded-2xl p-6 w-full max-w-sm bg-white/90 text-[var(--color-text)] border border-gray-200 flex flex-col max-h-[85vh]">
+                        <h3 className="font-bold text-lg mb-4 text-[var(--color-text)] shrink-0">{currentEditingSpot.name}</h3>
                         
                         <div className="flex-1 overflow-y-auto pr-1 -mr-1">
-                            <input type="text" value={expenseForm.note} onChange={e => setExpenseForm({...expenseForm, note: e.target.value})} className="w-full bg-gray-100 p-3 rounded-xl mb-4 text-sm text-[#333333] border border-gray-300 outline-none focus:border-[#FFC8DD]" placeholder="備註/摘要 (例如: 商店名)" />
+                            <input type="text" value={expenseForm.note} onChange={e => setExpenseForm({...expenseForm, note: e.target.value})} className="w-full bg-gray-100 p-3 rounded-xl mb-4 text-sm text-[var(--color-text)] border border-gray-300 outline-none focus:border-[var(--accent-pink)]" placeholder="備註/摘要 (例如: 商店名)" />
                             <div className="relative mb-4">
-                                {/* 乾燥玫瑰粉 focus */}
-                                <input type="number" value={expenseForm.amount} onChange={e => setExpenseForm({...expenseForm, amount: e.target.value})} className="w-full bg-gray-100 p-3 rounded-xl text-xl font-mono text-[#333333] border border-gray-300 outline-none focus:border-[#FFC8DD] pr-32" placeholder="金額" autoFocus />
+                                {/* 使用 Accent-Pink focus */}
+                                <input type="number" value={expenseForm.amount} onChange={e => setExpenseForm({...expenseForm, amount: e.target.value})} className="w-full bg-gray-100 p-3 rounded-xl text-xl font-mono text-[var(--color-text)] border border-gray-300 outline-none focus:border-[var(--accent-pink)] pr-32" placeholder="金額" autoFocus />
                                 <div className="absolute right-12 top-1/2 -translate-y-1/2 flex items-center gap-2 z-10 pointer-events-none">
                                     <div className="relative pointer-events-auto"><input type="file" accept="image/*" id="gallery-upload" className="hidden" multiple onChange={handleImageUpload}/><label htmlFor="gallery-upload" className={`p-1.5 rounded-lg cursor-pointer flex items-center justify-center transition-colors ${isAnalyzingReceipt ? 'text-gray-400 cursor-not-allowed' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'}`}><Icons.Image size={20} /></label></div>
-                                    {/* 乾燥玫瑰粉 pulse */}
-                                    <div className="relative pointer-events-auto"><input type="file" accept="image/*" capture="environment" id="camera-upload" className="hidden" onChange={handleImageUpload}/><label htmlFor="camera-upload" className={`p-1.5 rounded-lg cursor-pointer flex items-center justify-center transition-colors ${isAnalyzingReceipt ? 'text-[#E07A5F] animate-pulse' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'}`}>{isAnalyzingReceipt ? <Icons.Loader2 size={20} className="animate-spin" /> : <Icons.Camera size={20} />}</label></div>
+                                    {/* 使用 Accent-Pink-Dark pulse */}
+                                    <div className="relative pointer-events-auto"><input type="file" accept="image/*" capture="environment" id="camera-upload" className="hidden" onChange={handleImageUpload}/><label htmlFor="camera-upload" className={`p-1.5 rounded-lg cursor-pointer flex items-center justify-center transition-colors ${isAnalyzingReceipt ? 'text-[var(--accent-pink-dark)] animate-pulse' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'}`}>{isAnalyzingReceipt ? <Icons.Loader2 size={20} className="animate-spin" /> : <Icons.Camera size={20} />}</label></div>
                                 </div>
                             </div>
                             {safePendingReceipts.length > 0 && (
                                 <div className="mb-4 space-y-2">
-                                    {/* 莫蘭迪灰藍 */}
-                                    <div className="flex justify-between items-center"><div className="text-xs font-bold text-[#A0B7C6] flex items-center gap-1"><Icons.Sparkles size={12} className="text-[#A0B7C6]"/> AI 辨識結果 ({safePendingReceipts.filter(p=>p.isChecked).length})</div><div className={`text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1 ${quotaStatus.type === 'error' ? 'bg-red-500/20 text-red-600' : 'bg-green-500/20 text-green-600'}`}><div className={`w-1.5 h-1.5 rounded-full ${quotaStatus.type === 'error' ? 'bg-red-500 animate-pulse' : 'bg-green-500'}`}></div>{quotaStatus.text}</div></div>
-                                    <div className="bg-gray-100 rounded-xl p-2 border border-[#A0B7C6]/30 space-y-2 max-h-40 overflow-y-auto">
+                                    {/* 使用 Accent-Blue */}
+                                    <div className="flex justify-between items-center"><div className="text-xs font-bold text-[var(--accent-blue)] flex items-center gap-1"><Icons.Sparkles size={12} className="text-[var(--accent-blue)]"/> AI 辨識結果 ({safePendingReceipts.filter(p=>p.isChecked).length})</div><div className={`text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1 ${quotaStatus.type === 'error' ? 'bg-red-500/20 text-red-600' : 'bg-green-500/20 text-green-600'}`}><div className={`w-1.5 h-1.5 rounded-full ${quotaStatus.type === 'error' ? 'bg-red-500 animate-pulse' : 'bg-green-500'}`}></div>{quotaStatus.text}</div></div>
+                                    <div className="bg-gray-100 rounded-xl p-2 border border-[var(--accent-blue)]/30 space-y-2 max-h-40 overflow-y-auto">
                                         {safePendingReceipts.map(item => (
-                                            <div key={item.id} className={`flex items-center gap-3 p-2 rounded-lg transition-colors ${item.isChecked ? 'bg-[#A0B7C6]/10' : 'opacity-50'}`}>
-                                                <input type="checkbox" checked={item.isChecked} onChange={() => togglePendingReceipt(item.id)} className="w-4 h-4 rounded border-gray-400 accent-[#A0B7C6] cursor-pointer shrink-0" />
-                                                <div className="flex-1 min-w-0">{item.isAnalyzing ? (<div className="flex items-center gap-2 text-xs text-gray-500"><Icons.Loader2 size={12} className="animate-spin"/> {item.note}</div>) : (<><div className={`font-bold text-sm truncate ${item.note.includes('額度') || item.note.includes('失敗') ? 'text-red-500' : 'text-[#333333]'}`}>{item.note || '未命名'}</div>{item.amount > 0 && <div className="text-xs text-[#A0B7C6] font-mono">NT${item.amount}</div>}</>)}</div>
+                                            <div key={item.id} className={`flex items-center gap-3 p-2 rounded-lg transition-colors ${item.isChecked ? 'bg-[var(--accent-blue)]/10' : 'opacity-50'}`}>
+                                                <input type="checkbox" checked={item.isChecked} onChange={() => togglePendingReceipt(item.id)} className="w-4 h-4 rounded border-gray-400 accent-[var(--accent-blue)] cursor-pointer shrink-0" />
+                                                <div className="flex-1 min-w-0">{item.isAnalyzing ? (<div className="flex items-center gap-2 text-xs text-gray-500"><Icons.Loader2 size={12} className="animate-spin"/> {item.note}</div>) : (<><div className={`font-bold text-sm truncate ${item.note.includes('額度') || item.note.includes('失敗') ? 'text-red-500' : 'text-[var(--color-text)]'}`}>{item.note || '未命名'}</div>{item.amount > 0 && <div className="text-xs text-[var(--accent-blue)] font-mono">NT${item.amount}</div>}</>)}</div>
                                                 <button onClick={() => removePendingReceipt(item.id)} className="text-gray-500 hover:text-red-500 p-1"><Icons.X size={14} /></button>
                                             </div>
                                         ))}
@@ -696,16 +714,16 @@
                                 <div className="space-y-2">
                                     {(expenses[currentEditingSpot.id] || []).map(record => {
                                         const dateMatch = record.note ? record.note.match(/^(\d{4}[-/]\d{2}[-/]\d{2}\s+\d{2}:\d{2})\s+(.*)$/) : null;
-                                        return (<div key={record.id} className="flex justify-between items-center text-sm bg-gray-100 p-3 rounded-xl border border-gray-300 shadow-sm"><div className="flex flex-col">{dateMatch ? <><span className="text-[10px] text-gray-500 block mb-0.5">{dateMatch[1]}</span><span className="font-bold text-[#333333] text-base">{dateMatch[2]}</span></> : <span className="font-bold text-[#333333]">{record.note || "消費"}</span>}</div><div className="flex items-center gap-3"><span className="font-mono font-bold text-[#333333]">NT${record.amount}</span><button onClick={() => deleteExpense(currentEditingSpot.id, record.id)} className="text-gray-500 hover:text-red-500"><Icons.X size={16} /></button></div></div>);
+                                        return (<div key={record.id} className="flex justify-between items-center text-sm bg-gray-100 p-3 rounded-xl border border-gray-300 shadow-sm"><div className="flex flex-col">{dateMatch ? <><span className="text-[10px] text-gray-500 block mb-0.5">{dateMatch[1]}</span><span className="font-bold text-[var(--color-text)] text-base">{dateMatch[2]}</span></> : <span className="font-bold text-[var(--color-text)]">{record.note || "消費"}</span>}</div><div className="flex items-center gap-3"><span className="font-mono font-bold text-[var(--color-text)]">NT${record.amount}</span><button onClick={() => deleteExpense(currentEditingSpot.id, record.id)} className="text-gray-500 hover:text-red-500"><Icons.X size={16} /></button></div></div>);
                                     })}
                                 </div>
                             </div>
                         </div>
-                        <div className="flex gap-2 mt-4 shrink-0"><button onClick={onClose} className="flex-1 py-3 text-gray-500 hover:text-[#333333]">取消</button>
-                        {/* 乾燥玫瑰粉儲存按鈕 */}
+                        <div className="flex gap-2 mt-4 shrink-0"><button onClick={onClose} className="flex-1 py-3 text-gray-500 hover:text-[var(--color-text)]">取消</button>
+                        {/* 使用 Accent-Pink 儲存按鈕 */}
                         <button 
                             onClick={saveExpense} 
-                            className="flex-1 bg-[#FFC8DD] text-[#333333] rounded-xl font-bold py-3 shadow-[0_4px_0px_#E6A7C6] active:translate-y-[2px] active:shadow-none"
+                            className="flex-1 bg-[var(--accent-pink)] text-[var(--color-text)] rounded-xl font-bold py-3 shadow-[0_4px_0px_var(--accent-pink-dark)] active:translate-y-[2px] active:shadow-none"
                         >
                             {((safePendingReceipts).filter(p => p.isChecked).length > 0 || expenseForm.amount) 
                                 ? `儲存 (${((safePendingReceipts).filter(p => p.isChecked).length) + (expenseForm.amount ? 1 : 0)}筆)` 
@@ -722,16 +740,16 @@
             if (!isOpen) return null;
             return (
                 <div className="fixed inset-0 bg-stone-900/80 backdrop-blur-sm flex items-center justify-center z-[130] p-4 animate-in fade-in duration-200">
-                    <div className="glass-panel rounded-2xl p-6 w-full max-w-sm shadow-2xl bg-white/90 text-[#333333] border border-gray-200">
-                        {/* 莫蘭迪灰藍 */}
-                        <h3 className="font-bold text-lg mb-2 text-[#333333] flex items-center gap-2"><Icons.Mail size={20} className="text-[#A0B7C6]" /> 寄送花費報表</h3>
+                    <div className="glass-panel rounded-2xl p-6 w-full max-w-sm shadow-2xl bg-white/90 text-[var(--color-text)] border border-gray-200">
+                        {/* 使用 Accent-Blue */}
+                        <h3 className="font-bold text-lg mb-2 text-[var(--color-text)] flex items-center gap-2"><Icons.Mail size={20} className="text-[var(--accent-blue)]" /> 寄送花費報表</h3>
                         <p className="text-xs text-gray-500 mb-4">將本次旅程的所有花費明細製作成表格，寄送到您的信箱。</p>
                         <label className="block text-xs font-bold text-gray-600 mb-1">收件人信箱</label>
-                        {/* 莫蘭迪灰藍 focus */}
-                        <input type="email" value={emailInput} onChange={(e) => setEmailInput(e.target.value)} placeholder="your@email.com" className="w-full bg-gray-100 p-3 rounded-xl mb-6 text-sm text-[#333333] border border-gray-300 outline-none focus:border-[#A0B7C6]" />
-                        <div className="flex gap-2"><button onClick={onClose} className="flex-1 py-2 text-gray-500 hover:text-[#333333] transition-colors" disabled={isSendingEmail}>取消</button>
-                        {/* 莫蘭迪灰藍按鈕 */}
-                        <button onClick={handleSendEmail} className="flex-1 bg-[#A0B7C6] text-white rounded-xl font-bold py-2 shadow-lg hover:bg-[#86A2B3] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2" disabled={isSendingEmail}>{isSendingEmail ? <><Icons.Loader2 size={16} className="animate-spin" /> 發送中...</> : '確認發送'}</button></div>
+                        {/* 使用 Accent-Blue focus */}
+                        <input type="email" value={emailInput} onChange={(e) => setEmailInput(e.target.value)} placeholder="your@email.com" className="w-full bg-gray-100 p-3 rounded-xl mb-6 text-sm text-[var(--color-text)] border border-gray-300 outline-none focus:border-[var(--accent-blue)]" />
+                        <div className="flex gap-2"><button onClick={onClose} className="flex-1 py-2 text-gray-500 hover:text-[var(--color-text)] transition-colors" disabled={isSendingEmail}>取消</button>
+                        {/* 使用 Accent-Blue 按鈕 */}
+                        <button onClick={handleSendEmail} className="flex-1 bg-[var(--accent-blue)] text-white rounded-xl font-bold py-2 shadow-lg hover:bg-[var(--accent-blue-dark)] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2" disabled={isSendingEmail}>{isSendingEmail ? <><Icons.Loader2 size={16} className="animate-spin" /> 發送中...</> : '確認發送'}</button></div>
                     </div>
                 </div>
             );
@@ -750,20 +768,20 @@
                         <select 
                             value={selectedCurrency.code}
                             onChange={handleCurrencyChange}
-                            className={`bg-transparent outline-none cursor-pointer text-[#333333] text-sm font-bold w-16 appearance-none pr-6 focus:ring-0 ${isRateLoading ? 'animate-pulse text-red-500' : ''}`}
+                            className={`bg-transparent outline-none cursor-pointer text-[var(--color-text)] text-sm font-bold w-16 appearance-none pr-6 focus:ring-0 ${isRateLoading ? 'animate-pulse text-red-500' : ''}`}
                             disabled={isRateLoading}
                         >
                             {CURRENCY_OPTIONS.map(c => (
                                 <option key={c.code} value={c.code} className="bg-white">{c.code}</option>
                             ))}
                         </select>
-                        {/* 乾燥玫瑰粉 hover */}
-                        <Icons.ArrowDown size={14} className="absolute right-1 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400 group-hover:text-[#FFC8DD] transition-colors"/>
+                        {/* 使用 Accent-Pink hover */}
+                        <Icons.ArrowDown size={14} className="absolute right-1 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400 group-hover:text-[var(--accent-pink)] transition-colors"/>
                     </div>
                     {/* 手機上隱藏匯率細節，只顯示選擇框 */}
                     <div className="text-right text-[10px] font-bold text-gray-500 uppercase bg-white px-2 py-0.5 rounded-full border border-gray-300 w-fit shadow-sm hidden md:block">
                         {isRateLoading ? (
-                            <span className="flex items-center text-[#A0B7C6]">
+                            <span className="flex items-center text-[var(--accent-blue)]">
                                 <Icons.Loader2 className="w-3 h-3 mr-1 animate-spin" /> 查詢中...
                             </span>
                         ) : rateError ? (
@@ -785,21 +803,21 @@
             return (
                 <div className="animate-in fade-in slide-in-from-bottom-6 duration-700">
                     {/* 調整背景色 */}
-                    <div className="flex flex-wrap gap-3 mb-8 justify-center sticky top-24 z-40 py-2 bg-[#F5F5F5]/90 backdrop-blur rounded-2xl border border-gray-200 shadow-lg">
-                        <button onClick={() => setSelectedDay('all')} className={`px-5 py-2 rounded-xl text-sm font-bold border transition-all shadow-sm ${selectedDay === 'all' ? 'bg-white text-[#E07A5F] border-[#E07A5F]' : 'bg-white text-gray-600 border-gray-300 hover:border-[#FFC8DD]'}`}>全部</button>
-                        {tripData.map(day => (<button key={day.dayId} onClick={() => setSelectedDay(day.dayId)} className={`px-5 py-2 rounded-xl text-sm font-bold border transition-all shadow-sm ${selectedDay === day.dayId ? `${day.themeColor} border-transparent shadow-md` : 'bg-white text-gray-600 border-gray-300 hover:border-[#FFC8DD]'}`}>{day.date.split(' ')[0]}</button>))}
+                    <div className="flex flex-wrap gap-3 mb-8 justify-center sticky top-24 z-40 py-2 bg-[var(--bg-main)]/90 backdrop-blur rounded-2xl border border-gray-200 shadow-lg">
+                        <button onClick={() => setSelectedDay('all')} className={`px-5 py-2 rounded-xl text-sm font-bold border transition-all shadow-sm ${selectedDay === 'all' ? 'bg-white text-[var(--accent-pink-dark)] border-[var(--accent-pink-dark)]' : 'bg-white text-gray-600 border-gray-300 hover:border-[var(--accent-pink)]'}`}>全部</button>
+                        {tripData.map(day => (<button key={day.dayId} onClick={() => setSelectedDay(day.dayId)} className={`px-5 py-2 rounded-xl text-sm font-bold border transition-all shadow-sm ${selectedDay === day.dayId ? `${day.themeColor} border-transparent shadow-md` : 'bg-white text-gray-600 border-gray-300 hover:border-[var(--accent-pink)]'}`}>{day.date.split(' ')[0]}</button>))}
                     </div>
                     <div className="space-y-12">
                         {filteredTripData.map((day) => (
                             <div key={day.dayId} className="relative">
                                 <div className="flex items-center gap-4 mb-6">
                                     {/* 調整為莫蘭迪色 Day 區塊 */}
-                                    <div className={`${day.themeColor} w-16 h-16 rounded-2xl flex flex-col items-center justify-center text-[#333333] shadow-[0_4px_10px_rgba(0,0,0,0.1)] border-2 border-white -rotate-2`}>
+                                    <div className={`${day.themeColor} w-16 h-16 rounded-2xl flex flex-col items-center justify-center text-[var(--color-text)] shadow-[0_4px_10px_rgba(0,0,0,0.1)] border-2 border-white -rotate-2`}>
                                         <span className="text-xs font-bold uppercase">Day</span>
                                         <span className="text-2xl font-black leading-none">{day.dayId.replace('day','')}</span>
                                     </div>
                                     <div className="glass-panel px-6 py-2 rounded-r-2xl rounded-bl-2xl shadow-sm border border-gray-200 flex-1">
-                                        <div className="text-2xl font-black text-[#333333]">{day.date}</div>
+                                        <div className="text-2xl font-black text-[var(--color-text)]">{day.date}</div>
                                         <div className="text-lg font-bold text-gray-500">{day.title}</div>
                                     </div>
                                 </div>
@@ -812,45 +830,45 @@
                                         const totalCostDisplay = spotTotal + ticketTotal;
                                         return (
                                             <div key={spot.id} className="relative group">
-                                                {/* 調整圓點顏色：乾燥玫瑰粉邊框 */}
-                                                <div className="absolute -left-[29px] top-6 w-5 h-5 rounded-full bg-[#F5F5F5] border-4 border-[#FFC8DD] z-10 shadow-[0_0_10px_rgba(255,200,221,0.5)]"></div>
-                                                <div className="glass-panel rounded-[2rem] p-6 md:p-8 shadow-lg border border-gray-200 transition-all hover:-translate-y-1 hover:border-[#FFC8DD]/50 hover:shadow-[0_10px_30px_rgba(0,0,0,0.15)] bg-white/90">
+                                                {/* 調整圓點顏色：使用 Accent-Pink 邊框 */}
+                                                <div className="absolute -left-[29px] top-6 w-5 h-5 rounded-full bg-[var(--bg-main)] border-4 border-[var(--accent-pink)] z-10 shadow-[0_0_10px_var(--accent-pink)]/50"></div>
+                                                <div className="glass-panel rounded-[2rem] p-6 md:p-8 shadow-lg border border-gray-200 transition-all hover:-translate-y-1 hover:border-[var(--accent-pink)]/50 hover:shadow-[0_10px_30px_rgba(0,0,0,0.15)] bg-white/90">
                                                     <div className="flex flex-col md:flex-row justify-between items-start gap-4 mb-4">
                                                         <div className="flex-1 w-full">
                                                             <div className="flex items-center justify-between mb-3">
-                                                                {/* 莫蘭迪灰藍色時間區塊 */}
-                                                                <div className="relative group/time flex items-center gap-2 bg-gray-100 rounded-xl px-3 py-1 border border-gray-300 shadow-sm text-[#A0B7C6] transform -rotate-1 hover:scale-105 transition-all w-fit">
-                                                                    {index === 0 ? <><span className="text-sm font-bold font-mono text-[#333333] shrink-0">抵達</span><input type="time" value={dayStartTimes[day.dayId] || "09:00"} onChange={(e) => handleDayStartTimeChange(day.dayId, e.target.value)} className="bg-white text-[#333333] rounded px-2 py-0.5 outline-none font-bold text-sm font-mono border border-gray-300 focus:border-[#FFC8DD]" /></> : <><span className="text-sm font-bold font-mono text-[#E07A5F] shrink-0">抵達</span><span className="text-lg font-bold font-mono text-[#E07A5F]">{spot.time}</span></>}
+                                                                {/* 使用 Accent-Blue 時間區塊 */}
+                                                                <div className="relative group/time flex items-center gap-2 bg-gray-100 rounded-xl px-3 py-1 border border-gray-300 shadow-sm text-[var(--accent-blue)] transform -rotate-1 hover:scale-105 transition-all w-fit">
+                                                                    {index === 0 ? <><span className="text-sm font-bold font-mono text-[var(--color-text)] shrink-0">抵達</span><input type="time" value={dayStartTimes[day.dayId] || "09:00"} onChange={(e) => handleDayStartTimeChange(day.dayId, e.target.value)} className="bg-white text-[var(--color-text)] rounded px-2 py-0.5 outline-none font-bold text-sm font-mono border border-gray-300 focus:border-[var(--accent-pink)]" /></> : <><span className="text-sm font-bold font-mono text-[var(--accent-pink-dark)] shrink-0">抵達</span><span className="text-lg font-bold font-mono text-[var(--accent-pink-dark)]">{spot.time}</span></>}
                                                                 </div>
-                                                                {/* 確認動身按鈕：已動身 (灰藍), 未動身 (乾燥玫瑰粉) */}
-                                                                <button onClick={() => handleDepartureToggle(spot.id)} className={`flex items-center gap-2 px-4 py-2 rounded-full font-bold text-xs transition-all shadow-md active:scale-95 ${spot.isDeparted ? 'bg-[#A0B7C6]/20 text-[#A0B7C6] border border-[#A0B7C6]' : 'bg-[#FFC8DD] text-[#333333] hover:bg-[#E6A7C6]'}`}>{spot.isDeparted ? <><Icons.Check size={14} />已動身 {spot.actualDepTime}</> : <><Icons.Navigation2 size={14} />確認動身</>}</button>
+                                                                {/* 確認動身按鈕：已動身 (Accent-Blue), 未動身 (Accent-Pink) */}
+                                                                <button onClick={() => handleDepartureToggle(spot.id)} className={`flex items-center gap-2 px-4 py-2 rounded-full font-bold text-xs transition-all shadow-md active:scale-95 ${spot.isDeparted ? 'bg-[var(--accent-blue)]/20 text-[var(--accent-blue)] border border-[var(--accent-blue)]' : 'bg-[var(--accent-pink)] text-[var(--color-text)] hover:bg-[var(--accent-pink-dark)]/50'}`}>{spot.isDeparted ? <><Icons.Check size={14} />已動身 {spot.actualDepTime}</> : <><Icons.Navigation2 size={14} />確認動身</>}</button>
                                                             </div>
-                                                            <h3 className="text-2xl font-black text-[#333333] mb-2">{spot.name}</h3>
+                                                            <h3 className="text-2xl font-black text-[var(--color-text)] mb-2">{spot.name}</h3>
                                                             <div className="flex items-center gap-4 text-sm font-bold text-gray-500 mb-4 bg-gray-100 w-fit px-3 py-1 rounded-lg border border-gray-300">
-                                                                <span className="flex items-center gap-1"><WeatherIcon type={spot.weather} /> {spot.temp}</span><span className="w-1.5 h-1.5 rounded-full bg-gray-400"></span><span className="flex items-center gap-1">停留 <select value={spot.stay} onChange={(e) => handleStayChangeNew(spot.id, e.target.value)} className="bg-transparent outline-none cursor-pointer border-b border-dashed border-gray-500 hover:border-[#FFC8DD] hover:text-[#E07A5F] transition-colors ml-1 appearance-none text-center">{STAY_OPTIONS.map(opt => <option key={opt} value={opt} className="bg-white text-[#333333]">{opt}</option>)}</select></span>
+                                                                <span className="flex items-center gap-1"><WeatherIcon type={spot.weather} /> {spot.temp}</span><span className="w-1.5 h-1.5 rounded-full bg-gray-400"></span><span className="flex items-center gap-1">停留 <select value={spot.stay} onChange={(e) => handleStayChangeNew(spot.id, e.target.value)} className="bg-transparent outline-none cursor-pointer border-b border-dashed border-gray-500 hover:border-[var(--accent-pink)] hover:text-[var(--accent-pink-dark)] transition-colors ml-1 appearance-none text-center">{STAY_OPTIONS.map(opt => <option key={opt} value={opt} className="bg-white text-[var(--color-text)]">{opt}</option>)}</select></span>
                                                             </div>
                                                             <div className="text-lg font-bold text-gray-700 leading-relaxed mb-6 relative"><span className="text-4xl absolute -top-4 -left-2 text-gray-300 z-0">“</span><p className="relative z-10">{spot.desc}</p></div>
                                                             <div className="flex flex-wrap gap-2 mb-4">
-                                                                {/* 莫蘭迪灰藍色圖示 */}
-                                                                <div className="bg-gray-100 border border-gray-300 px-3 py-1.5 rounded-xl text-xs font-bold text-gray-500 flex items-center gap-1"><Icons.MapPin size={12} className="text-[#A0B7C6]" /> {spot.mapcodeLabel}: <span className="font-mono text-[#333333]">{spot.mapcodeDisplay}</span></div>
-                                                                {/* 莫蘭迪灰藍色按鈕 */}
-                                                                <a href={spot.gmapLink} target="_blank" rel="noreferrer" className="bg-[#A0B7C6] text-white hover:bg-[#86A2B3] px-3 py-1.5 rounded-xl text-xs font-bold transition-colors flex items-center gap-1 shadow-[0_2px_10px_rgba(160,183,198,0.3)] active:translate-y-[1px] active:shadow-none">打開地圖 <Icons.ExternalLink size={10} className="text-white"/></a>
+                                                                {/* 使用 Accent-Blue 圖示 */}
+                                                                <div className="bg-gray-100 border border-gray-300 px-3 py-1.5 rounded-xl text-xs font-bold text-gray-500 flex items-center gap-1"><Icons.MapPin size={12} className="text-[var(--accent-blue)]" /> {spot.mapcodeLabel}: <span className="font-mono text-[var(--color-text)]">{spot.mapcodeDisplay}</span></div>
+                                                                {/* 使用 Accent-Blue 按鈕 */}
+                                                                <a href={spot.gmapLink} target="_blank" rel="noreferrer" className="bg-[var(--accent-blue)] text-white hover:bg-[var(--accent-blue-dark)] px-3 py-1.5 rounded-xl text-xs font-bold transition-colors flex items-center gap-1 shadow-[0_2px_10px_var(--accent-blue)]/30 active:translate-y-[1px] active:shadow-none">打開地圖 <Icons.ExternalLink size={10} className="text-white"/></a>
                                                             </div>
                                                         </div>
-                                                        {/* 乾燥玫瑰粉按鈕 */}
-                                                        <button onClick={() => openExpenseModal(spot)} className="self-start md:self-center bg-[#FFC8DD] text-[#333333] p-4 rounded-2xl transition-all shadow-[0_4px_15px_rgba(255,200,221,0.3)] hover:-translate-y-1 hover:bg-[#E6A7C6] active:translate-y-0 border border-white/5"><Icons.Wallet size={24} strokeWidth={2.5} className="text-[#E07A5F]"/></button>
+                                                        {/* 使用 Accent-Pink 按鈕 */}
+                                                        <button onClick={() => openExpenseModal(spot)} className="self-start md:self-center bg-[var(--accent-pink)] text-[var(--color-text)] p-4 rounded-2xl transition-all shadow-[0_4px_15px_var(--accent-pink)]/30 hover:-translate-y-1 hover:bg-[var(--accent-pink-dark)]/50 active:translate-y-0 border border-white/5"><Icons.Wallet size={24} strokeWidth={2.5} className="text-[var(--accent-pink-dark)]"/></button>
                                                     </div>
-                                                    {(spotTotal > 0 || ticketTotal > 0) && (<div className="mt-4 pt-4 border-t border-dashed border-gray-300 flex justify-end items-center gap-2"><span className="text-xs font-bold text-gray-500 uppercase bg-white px-2 py-0.5 rounded border border-gray-300">Estimated Total</span>{/* 柔和深粉 */}
-                                                    <span className="text-xl font-mono font-black text-[#E07A5F]">NT${totalCostDisplay.toLocaleString()}</span></div>)}
+                                                    {(spotTotal > 0 || ticketTotal > 0) && (<div className="mt-4 pt-4 border-t border-dashed border-gray-300 flex justify-end items-center gap-2"><span className="text-xs font-bold text-gray-500 uppercase bg-white px-2 py-0.5 rounded border border-gray-300">Estimated Total</span>{/* 使用 Accent-Pink-Dark */}
+                                                    <span className="text-xl font-mono font-black text-[var(--accent-pink-dark)]">NT${totalCostDisplay.toLocaleString()}</span></div>)}
                                                 </div>
                                                 {spot.nextStop && (
                                                     <div className="relative flex flex-col items-center my-6 gap-3">
                                                         <div className="absolute top-0 bottom-0 w-0.5 bg-gray-300 -z-10"></div>
-                                                        <div className="bg-white border border-gray-300 px-4 py-2 rounded-2xl flex flex-col items-center gap-1 text-xs text-gray-500 shadow-lg z-10"><span className="font-bold text-[#333333]">前往：{spot.nextStop.name}</span><div className="flex items-center gap-3"><span className="font-mono text-[#A0B7C6]">{spot.nextStop.distance}</span><span className="w-px h-3 bg-gray-400"></span><button onClick={() => handleTransportToggle(spot.id)} className="flex items-center gap-1 hover:text-[#A0B7C6] transition-colors font-bold">{transportModes[spot.id] === 'walk' ? <><Icons.Footprints size={12} className="text-[#FFC8DD]"/> {spot.nextStop.walkTime}</> : <><Icons.Car size={12} className="text-[#A0B7C6]"/> {spot.nextStop.driveTime}</>}</button></div></div>
-                                                        {/* 莫蘭迪灰藍色導航按鈕 */}
-                                                        <a href={spot.nextStop.navLink} target="_blank" rel="noreferrer" className="bg-[#A0B7C6] text-white px-4 py-2 rounded-full text-xs font-bold shadow-[0_0_15px_rgba(160,183,198,0.4)] hover:bg-[#86A2B3] hover:scale-105 transition-all flex items-center gap-1 z-10 border border-white/10"><Icons.Navigation size={14} className="text-white"/> Google 導航</a>
+                                                        <div className="bg-white border border-gray-300 px-4 py-2 rounded-2xl flex flex-col items-center gap-1 text-xs text-gray-500 shadow-lg z-10"><span className="font-bold text-[var(--color-text)]">前往：{spot.nextStop.name}</span><div className="flex items-center gap-3"><span className="font-mono text-[var(--accent-blue)]">{spot.nextStop.distance}</span><span className="w-px h-3 bg-gray-400"></span><button onClick={() => handleTransportToggle(spot.id)} className="flex items-center gap-1 hover:text-[var(--accent-blue)] transition-colors font-bold">{transportModes[spot.id] === 'walk' ? <><Icons.Footprints size={12} className="text-[var(--accent-pink)]"/> {spot.nextStop.walkTime}</> : <><Icons.Car size={12} className="text-[var(--accent-blue)]"/> {spot.nextStop.driveTime}</>}</button></div></div>
+                                                        {/* 使用 Accent-Blue 導航按鈕 */}
+                                                        <a href={spot.nextStop.navLink} target="_blank" rel="noreferrer" className="bg-[var(--accent-blue)] text-white px-4 py-2 rounded-full text-xs font-bold shadow-[0_0_15px_var(--accent-blue)]/40 hover:bg-[var(--accent-blue-dark)] hover:scale-105 transition-all flex items-center gap-1 z-10 border border-white/10"><Icons.Navigation size={14} className="text-white"/> Google 導航</a>
                                                         <div className="text-gray-400 mt-1"><Icons.ArrowDown size={20} /></div>
-                                                        <div className="text-xs text-gray-500 mt-1">預計抵達下一站: <span className="text-[#A0B7C6] font-bold font-mono">{spot.departureTime}</span> 後 + {transportModes[spot.id] === 'walk' ? spot.nextStop.walkTime : spot.nextStop.driveTime}</div>
+                                                        <div className="text-xs text-gray-500 mt-1">預計抵達下一站: <span className="text-[var(--accent-blue)] font-bold font-mono">{spot.departureTime}</span> 後 + {transportModes[spot.id] === 'walk' ? spot.nextStop.walkTime : spot.nextStop.driveTime}</div>
                                                     </div>
                                                 )}
                                             </div>
@@ -869,14 +887,14 @@
             return (
                 <div className="animate-in fade-in slide-in-from-bottom-6 duration-700 space-y-8">
                     <div className="glass-panel rounded-2xl border border-gray-200 shadow-2xl overflow-hidden">
-                        {/* 莫蘭迪灰藍色標題 */}
-                        <div className="p-6 md:p-8 border-b border-gray-300 flex items-center gap-4"><div className="bg-[#A0B7C6]/10 p-3 rounded-xl border border-[#A0B7C6]/20 shadow-[0_0_15px_rgba(160,183,198,0.15)]"><Icons.Navigation size={28} className="text-[#A0B7C6]" /></div><div><h1 className="text-2xl font-bold text-[#333333] tracking-wide">實用導航 & 周邊機能</h1><p className="text-gray-500 text-sm mt-1">一鍵搜尋周邊生活機能</p></div></div>
+                        {/* 使用 Accent-Blue 標題 */}
+                        <div className="p-6 md:p-8 border-b border-gray-300 flex items-center gap-4"><div className="bg-[var(--accent-blue)]/10 p-3 rounded-xl border border-[var(--accent-blue)]/20 shadow-[0_0_15px_var(--accent-blue)]/15"><Icons.Navigation size={28} className="text-[var(--accent-blue)]" /></div><div><h1 className="text-2xl font-bold text-[var(--color-text)] tracking-wide">實用導航 & 周邊機能</h1><p className="text-gray-500 text-sm mt-1">一鍵搜尋周邊生活機能</p></div></div>
                         <div className="p-6 md:p-8 bg-white/90">
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
                                 {NAV_BUTTONS_NEW.map((btn, index) => (
-                                    <button key={index} onClick={() => { const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(btn.query)}`; window.open(url, '_blank'); }} className="group relative flex items-center p-4 rounded-xl bg-gray-100/50 border border-gray-300 hover:border-[#A0B7C6]/50 hover:bg-gray-100 transition-all duration-300 text-left shadow-sm">
-                                        <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-gray-200/50 flex items-center justify-center text-gray-600 group-hover:text-[#A0B7C6] group-hover:scale-110 group-hover:bg-gray-200 transition-all duration-300"><btn.icon size={24} /></div>
-                                        <div className="ml-4 flex-grow"><h3 className="text-[#333333] font-medium group-hover:text-black transition-colors">{btn.title}</h3><p className="text-xs text-gray-500 mt-0.5 group-hover:text-[#A0B7C6]/80 transition-colors flex items-center gap-1">開啟地圖 <Icons.MapPin size={10} /></p></div>
+                                    <button key={index} onClick={() => { const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(btn.query)}`; window.open(url, '_blank'); }} className="group relative flex items-center p-4 rounded-xl bg-gray-100/50 border border-gray-300 hover:border-[var(--accent-blue)]/50 hover:bg-gray-100 transition-all duration-300 text-left shadow-sm">
+                                        <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-gray-200/50 flex items-center justify-center text-gray-600 group-hover:text-[var(--accent-blue)] group-hover:scale-110 group-hover:bg-gray-200 transition-all duration-300"><btn.icon size={24} /></div>
+                                        <div className="ml-4 flex-grow"><h3 className="text-[var(--color-text)] font-medium group-hover:text-black transition-colors">{btn.title}</h3><p className="text-xs text-gray-500 mt-0.5 group-hover:text-[var(--accent-blue)]/80 transition-colors flex items-center gap-1">開啟地圖 <Icons.MapPin size={10} /></p></div>
                                         <div className="opacity-0 group-hover:opacity-100 transition-opacity absolute right-3 top-3 text-gray-400"><Icons.ExternalLink size={14} /></div>
                                     </button>
                                 ))}
@@ -885,34 +903,34 @@
                     </div>
                     
                     <div className="glass-panel rounded-[2rem] p-8 shadow-lg border border-gray-200">
-                        {/* 莫蘭迪灰藍色標題 */}
-                        <h3 className="text-2xl font-black text-[#333333] mb-6 flex items-center gap-2"><span className="bg-[#A0B7C6] p-2 rounded-xl text-white rotate-3 shadow-lg"><Icons.Car size={20} /></span>車程預估</h3>
+                        {/* 使用 Accent-Blue 標題 */}
+                        <h3 className="text-2xl font-black text-[var(--color-text)] mb-6 flex items-center gap-2"><span className="bg-[var(--accent-blue)] p-2 rounded-xl text-white rotate-3 shadow-lg"><Icons.Car size={20} /></span>車程預估</h3>
                         <div className="space-y-6">
-                            {/* 莫蘭迪淺藍色塊 (去程) */}
-                            <div className="bg-[#A0B7C6]/30 p-6 rounded-3xl border border-[#A0B7C6]/50 relative overflow-hidden backdrop-blur-sm">
-                                <div className="flex justify-between items-center mb-4 relative z-10"><span className="bg-[#A0B7C6] text-white text-xs font-black px-3 py-1 rounded-full shadow-md">去程</span><span className="font-bold text-[#333333]">{FLIGHT_INFO.outbound.date}</span></div>
-                                <div className="flex justify-between items-center text-center relative z-10"><div><div className="text-4xl font-black text-[#333333]">{FLIGHT_INFO.outbound.dep}</div><div className="text-sm font-bold text-gray-500">{FLIGHT_INFO.outbound.from}</div></div><div className="flex-1 px-4 flex flex-col items-center"><div className="text-xs font-bold text-gray-500 mb-1">{FLIGHT_INFO.outbound.duration}</div><div className="w-full border-t border-dashed border-gray-400 relative my-2"><Icons.Car size={16} className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[#FFC8DD] bg-[#A0B7C6]/30 px-1 rounded-full" /></div><div className="text-xs font-bold text-[#FFC8DD] mt-1">{FLIGHT_INFO.outbound.flight}</div></div><div><div className="text-4xl font-black text-[#333333]">{FLIGHT_INFO.outbound.arr}</div><div className="text-sm font-bold text-gray-500">{FLIGHT_INFO.inbound.to}</div></div></div>
+                            {/* 使用 Accent-Blue 淺藍色塊 (去程) */}
+                            <div className="bg-[var(--accent-blue)]/30 p-6 rounded-3xl border border-[var(--accent-blue)]/50 relative overflow-hidden backdrop-blur-sm">
+                                <div className="flex justify-between items-center mb-4 relative z-10"><span className="bg-[var(--accent-blue)] text-white text-xs font-black px-3 py-1 rounded-full shadow-md">去程</span><span className="font-bold text-[var(--color-text)]">{FLIGHT_INFO.outbound.date}</span></div>
+                                <div className="flex justify-between items-center text-center relative z-10"><div><div className="text-4xl font-black text-[var(--color-text)]">{FLIGHT_INFO.outbound.dep}</div><div className="text-sm font-bold text-gray-500">{FLIGHT_INFO.outbound.from}</div></div><div className="flex-1 px-4 flex flex-col items-center"><div className="text-xs font-bold text-gray-500 mb-1">{FLIGHT_INFO.outbound.duration}</div><div className="w-full border-t border-dashed border-gray-400 relative my-2"><Icons.Car size={16} className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[var(--accent-pink)] bg-[var(--accent-blue)]/30 px-1 rounded-full" /></div><div className="text-xs font-bold text-[var(--accent-pink)] mt-1">{FLIGHT_INFO.outbound.flight}</div></div><div><div className="text-4xl font-black text-[var(--color-text)]">{FLIGHT_INFO.outbound.arr}</div><div className="text-sm font-bold text-gray-500">{FLIGHT_INFO.inbound.to}</div></div></div>
                             </div>
-                            {/* 莫蘭迪淺粉色塊 (回程) */}
-                            <div className="bg-[#FFC8DD]/30 p-6 rounded-3xl border border-[#FFC8DD]/50 relative overflow-hidden backdrop-blur-sm">
-                                <div className="flex justify-between items-center mb-4 relative z-10"><span className="bg-[#FFC8DD] text-[#333333] text-xs font-black px-3 py-1 rounded-full shadow-md">回程</span><span className="font-bold text-[#333333]">{FLIGHT_INFO.inbound.date}</span></div>
-                                <div className="flex justify-between items-center text-center relative z-10"><div><div className="text-4xl font-black text-[#333333]">{FLIGHT_INFO.inbound.dep}</div><div className="text-sm font-bold text-gray-500">{FLIGHT_INFO.inbound.from}</div></div><div className="flex-1 px-4 flex flex-col items-center"><div className="text-xs font-bold text-gray-500 mb-1">{FLIGHT_INFO.inbound.duration}</div><div className="w-full border-t border-dashed border-gray-400 relative my-2"><Icons.Car size={16} className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[#E07A5F] bg-[#FFC8DD]/30 px-1 rounded-full" /></div><div className="text-xs font-bold text-[#E07A5F] mt-1">{FLIGHT_INFO.inbound.flight}</div></div><div><div className="text-4xl font-black text-[#333333]">{FLIGHT_INFO.inbound.arr}</div><div className="text-sm font-bold text-gray-500">{FLIGHT_INFO.inbound.to}</div></div></div>
+                            {/* 使用 Accent-Pink 淺粉色塊 (回程) */}
+                            <div className="bg-[var(--accent-pink)]/30 p-6 rounded-3xl border border-[var(--accent-pink)]/50 relative overflow-hidden backdrop-blur-sm">
+                                <div className="flex justify-between items-center mb-4 relative z-10"><span className="bg-[var(--accent-pink)] text-[var(--color-text)] text-xs font-black px-3 py-1 rounded-full shadow-md">回程</span><span className="font-bold text-[var(--color-text)]">{FLIGHT_INFO.inbound.date}</span></div>
+                                <div className="flex justify-between items-center text-center relative z-10"><div><div className="text-4xl font-black text-[var(--color-text)]">{FLIGHT_INFO.inbound.dep}</div><div className="text-sm font-bold text-gray-500">{FLIGHT_INFO.inbound.from}</div></div><div className="flex-1 px-4 flex flex-col items-center"><div className="text-xs font-bold text-gray-500 mb-1">{FLIGHT_INFO.inbound.duration}</div><div className="w-full border-t border-dashed border-gray-400 relative my-2"><Icons.Car size={16} className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[var(--accent-pink-dark)] bg-[var(--accent-pink)]/30 px-1 rounded-full" /></div><div className="text-xs font-bold text-[var(--accent-pink-dark)] mt-1">{FLIGHT_INFO.inbound.flight}</div></div><div><div className="text-4xl font-black text-[var(--color-text)]">{FLIGHT_INFO.inbound.arr}</div><div className="text-sm font-bold text-gray-500">{FLIGHT_INFO.inbound.to}</div></div></div>
                             </div>
                         </div>
                     </div>
-                    {/* 🚗 Rental Car Info Block (莫蘭迪灰藍) */}
+                    {/* 🚗 Rental Car Info Block (使用 Accent-Blue) */}
                     <div className="glass-panel rounded-[2rem] p-8 shadow-lg border border-gray-200">
-                        <h3 className="text-2xl font-black text-[#333333] mb-6 flex items-center gap-2"><span className="bg-[#A0B7C6] p-2 rounded-xl text-white rotate-1 shadow-lg"><Icons.Car size={20} /></span>行車檢查清單<span className="text-xs bg-gray-300 text-gray-700 px-2 py-1 rounded ml-2">出發前確認</span></h3>
-                        <div className="bg-gray-100 p-6 rounded-2xl border border-gray-300 font-mono text-sm leading-relaxed text-gray-700"><ul className="space-y-2 list-disc list-inside">{RENTAL_INFO_LIST.map((item, idx) => (<li key={idx} className="break-words"><span className="font-bold text-[#333333]">{item.label}：</span>{item.value}</li>))}</ul></div>
+                        <h3 className="text-2xl font-black text-[var(--color-text)] mb-6 flex items-center gap-2"><span className="bg-[var(--accent-blue)] p-2 rounded-xl text-white rotate-1 shadow-lg"><Icons.Car size={20} /></span>行車檢查清單<span className="text-xs bg-gray-300 text-gray-700 px-2 py-1 rounded ml-2">出發前確認</span></h3>
+                        <div className="bg-gray-100 p-6 rounded-2xl border border-gray-300 font-mono text-sm leading-relaxed text-gray-700"><ul className="space-y-2 list-disc list-inside">{RENTAL_INFO_LIST.map((item, idx) => (<li key={idx} className="break-words"><span className="font-bold text-[var(--color-text)]">{item.label}：</span>{item.value}</li>))}</ul></div>
                     </div>
                     <div className="glass-panel rounded-[2rem] p-8 shadow-lg border border-gray-200">
-                        {/* 乾燥玫瑰粉標題 */}
-                        <h3 className="text-2xl font-black text-[#333333] mb-6 flex items-center gap-2"><span className="bg-[#FFC8DD] p-2 rounded-xl text-[#E07A5F] -rotate-2 shadow-lg"><Icons.Hotel size={20} /></span>住宿安排</h3>
-                        <div className="grid gap-4">{HOTEL_INFO.map((hotel, idx) => (<div key={idx} className="flex gap-4 p-4 rounded-2xl hover:bg-gray-100 transition-colors border border-gray-200 hover:border-[#FFC8DD]/50 group bg-white/90"><div className="bg-gray-200 text-[#333333] font-bold text-sm h-10 w-12 rounded-xl flex items-center justify-center shrink-0 shadow-md group-hover:bg-[#FFC8DD] group-hover:text-[#E07A5F] transition-colors">{hotel.day}</div><div className="flex-1"><h4 className="font-bold text-lg text-[#333333]">{hotel.name}</h4><p className="text-sm font-bold text-gray-500 mt-1">{hotel.location} • {hotel.desc}</p></div><a href={hotel.link} target="_blank" rel="noreferrer" className="self-center bg-gray-100 border border-gray-300 p-2 rounded-full text-gray-500 hover:text-[#FFC8DD] hover:border-[#FFC8DD] transition-colors"><Icons.Navigation size={20} /></a></div>))}</div>
+                        {/* 使用 Accent-Pink 標題 */}
+                        <h3 className="text-2xl font-black text-[var(--color-text)] mb-6 flex items-center gap-2"><span className="bg-[var(--accent-pink)] p-2 rounded-xl text-[var(--accent-pink-dark)] -rotate-2 shadow-lg"><Icons.Hotel size={20} /></span>住宿安排</h3>
+                        <div className="grid gap-4">{HOTEL_INFO.map((hotel, idx) => (<div key={idx} className="flex gap-4 p-4 rounded-2xl hover:bg-gray-100 transition-colors border border-gray-200 hover:border-[var(--accent-pink)]/50 group bg-white/90"><div className="bg-gray-200 text-[var(--color-text)] font-bold text-sm h-10 w-12 rounded-xl flex items-center justify-center shrink-0 shadow-md group-hover:bg-[var(--accent-pink)] group-hover:text-[var(--accent-pink-dark)] transition-colors">{hotel.day}</div><div className="flex-1"><h4 className="font-bold text-lg text-[var(--color-text)]">{hotel.name}</h4><p className="text-sm font-bold text-gray-500 mt-1">{hotel.location} • {hotel.desc}</p></div><a href={hotel.link} target="_blank" rel="noreferrer" className="self-center bg-gray-100 border border-gray-300 p-2 rounded-full text-gray-500 hover:text-[var(--accent-pink)] hover:border-[var(--accent-pink)] transition-colors"><Icons.Navigation size={20} /></a></div>))}</div>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="glass-panel rounded-[2rem] p-6 shadow-lg border border-gray-200"><h3 className="text-lg font-black text-[#333333] mb-4">緊急聯絡</h3><div className="space-y-4"><a href="tel:119" className="flex items-center justify-between p-4 bg-[#FEE2E2]/50 rounded-2xl text-red-600 font-bold hover:bg-[#FEE2E2] transition-colors border border-red-300"><span>🚑 救護車/火警</span><span className="2xl font-black">119</span></a><a href="tel:110" className="flex items-center justify-between p-4 bg-[#DBEAFE]/50 rounded-2xl text-blue-600 font-bold hover:bg-[#DBEAFE] transition-colors border border-blue-300"><span>🚓 警察局</span><span className="2xl font-black">110</span></a></div></div>
-                        <div className="glass-panel rounded-[2rem] p-6 shadow-lg border border-gray-200"><h3 className="text-lg font-black text-[#333333] mb-4">實用連結</h3><div className="space-y-3"><a href="https://www.google.com/maps" target="_blank" rel="noreferrer" className="block w-full text-center py-3 bg-gray-200 border border-gray-300 text-gray-700 font-bold rounded-xl hover:bg-gray-300 active:bg-gray-400 transition-colors">Google Maps</a><a href="https://www.cwa.gov.tw/V8/C/" target="_blank" rel="noreferrer" className="block w-full text-center py-3 bg-blue-100 border border-blue-300 text-blue-700 font-bold rounded-xl hover:bg-blue-200 active:bg-blue-300 transition-colors">中央氣象署</a></div></div>
+                        <div className="glass-panel rounded-[2rem] p-6 shadow-lg border border-gray-200"><h3 className="text-lg font-black text-[var(--color-text)] mb-4">緊急聯絡</h3><div className="space-y-4"><a href="tel:119" className="flex items-center justify-between p-4 bg-[#FEE2E2]/50 rounded-2xl text-red-600 font-bold hover:bg-[#FEE2E2] transition-colors border border-red-300"><span>🚑 救護車/火警</span><span className="2xl font-black">119</span></a><a href="tel:110" className="flex items-center justify-between p-4 bg-[#DBEAFE]/50 rounded-2xl text-blue-600 font-bold hover:bg-[#DBEAFE] transition-colors border border-blue-300"><span>🚓 警察局</span><span className="2xl font-black">110</span></a></div></div>
+                        <div className="glass-panel rounded-[2rem] p-6 shadow-lg border border-gray-200"><h3 className="text-lg font-black text-[var(--color-text)] mb-4">實用連結</h3><div className="space-y-3"><a href="https://www.google.com/maps" target="_blank" rel="noreferrer" className="block w-full text-center py-3 bg-gray-200 border border-gray-300 text-gray-700 font-bold rounded-xl hover:bg-gray-300 active:bg-gray-400 transition-colors">Google Maps</a><a href="https://www.cwa.gov.tw/V8/C/" target="_blank" rel="noreferrer" className="block w-full text-center py-3 bg-blue-100 border border-blue-300 text-blue-700 font-bold rounded-xl hover:bg-blue-200 active:bg-blue-300 transition-colors">中央氣象署</a></div></div>
                     </div>
                 </div>
             );
@@ -936,19 +954,19 @@
             return (
                 <div className="animate-in fade-in slide-in-from-bottom-6 duration-700 space-y-8">
                     
-                    {/* Currency Rate Info Block (莫蘭迪灰藍) */}
-                    <div className="glass-panel p-5 rounded-2xl border border-[#A0B7C6]/50 shadow-lg">
-                        <h4 className="text-lg font-bold text-[#A0B7C6] flex items-center gap-2 mb-4">
+                    {/* Currency Rate Info Block (使用 Accent-Blue) */}
+                    <div className="glass-panel p-5 rounded-2xl border border-[var(--accent-blue)]/50 shadow-lg">
+                        <h4 className="text-lg font-bold text-[var(--accent-blue)] flex items-center gap-2 mb-4">
                             <Icons.Calculator size={20}/> 貨幣匯率資訊
                         </h4>
                         <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-3 sm:space-y-0 sm:space-x-4 p-3 bg-gray-100 rounded-xl border border-gray-300">
                             <span className="text-gray-600 font-medium whitespace-nowrap">
                                 當前目標幣別:
                             </span>
-                            <span className="text-xl font-bold text-[#E07A5F]">{selectedCurrency.name} ({selectedCurrency.code})</span>
+                            <span className="text-xl font-bold text-[var(--accent-pink-dark)]">{selectedCurrency.name} ({selectedCurrency.code})</span>
                             <div className="text-sm text-gray-500 whitespace-nowrap">
                                 {isRateLoading ? (
-                                    <span className="flex items-center text-[#A0B7C6]">
+                                    <span className="flex items-center text-[var(--accent-blue)]">
                                         <Icons.Loader2 className="w-3 h-3 mr-1 animate-spin" /> 查詢中...
                                     </span>
                                 ) : rateError ? (
@@ -963,28 +981,28 @@
                     </div>
                     {/* END Currency Rate Info Block */}
 
-                    {/* 相簿搜尋連結 (莫蘭迪灰藍色漸層) */}
+                    {/* 相簿搜尋連結 (使用 Accent-Blue 漸層) */}
                     <div className="glass-panel rounded-[2rem] overflow-hidden shadow-lg border border-gray-200">
-                        <div className="bg-gradient-to-r from-[#A0B7C6] to-[#C9D9E4] p-4 text-center relative shadow-md">
-                            <h1 className="text-[#333333] text-lg font-bold flex items-center gap-2"><Icons.CameraOff size={24} className="text-[#FFC8DD] stroke-2.5" /> 相簿複合搜尋</h1>
+                        <div className="bg-gradient-to-r from-[var(--accent-blue)] to-[var(--accent-blue)]/50 p-4 text-center relative shadow-md">
+                            <h1 className="text-[var(--color-text)] text-lg font-bold flex items-center gap-2"><Icons.CameraOff size={24} className="text-[var(--accent-pink)] stroke-2.5" /> 相簿複合搜尋</h1>
                             <p className="text-gray-700 text-xs mt-1 opacity-80">點擊前往獨立搜尋頁面 (https://oliver603-juang.github.io/photo-map/)</p>
                         </div>
                         <div className="p-6">
-                            <a href="https://oliver603-juang.github.io/photo-map/" target="_blank" rel="noreferrer" className="w-full bg-[#A0B7C6] hover:bg-[#86A2B3] text-white font-bold py-3.5 rounded-xl shadow-lg transition transform active:scale-95 flex items-center justify-center gap-2 text-lg border border-[#A0B7C6]/30">
+                            <a href="https://oliver603-juang.github.io/photo-map/" target="_blank" rel="noreferrer" className="w-full bg-[var(--accent-blue)] hover:bg-[var(--accent-blue-dark)] text-white font-bold py-3.5 rounded-xl shadow-lg transition transform active:scale-95 flex items-center justify-center gap-2 text-lg border border-[var(--accent-blue)]/30">
                                 <Icons.UpRightFromSquare size={20} />
                                 <span>開啟相簿搜尋器</span>
                             </a>
                         </div>
                     </div>
 
-                    {/* AI 智慧購物車方框 (乾燥玫瑰粉漸層) */}
+                    {/* AI 智慧購物車方框 (使用 Accent-Pink 漸層) */}
                     <div className="glass-panel rounded-[2rem] overflow-hidden shadow-lg border border-gray-200">
-                        <div className="bg-gradient-to-r from-[#FFC8DD] to-[#E6A7C6] p-4 text-center relative shadow-md">
-                            <h1 className="text-[#333333] text-lg font-bold flex items-center gap-2"><Icons.ShoppingBag size={24} className="text-[#A0B7C6] stroke-2.5" /> AI 智慧購物車</h1>
+                        <div className="bg-gradient-to-r from-[var(--accent-pink)] to-[var(--accent-pink-dark)]/50 p-4 text-center relative shadow-md">
+                            <h1 className="text-[var(--color-text)] text-lg font-bold flex items-center gap-2"><Icons.ShoppingBag size={24} className="text-[var(--accent-blue)] stroke-2.5" /> AI 智慧購物車</h1>
                             <p className="text-gray-700 text-xs mt-1 opacity-80">點擊前往購物清單 AI 助理頁面</p>
                         </div>
                         <div className="p-6">
-                            <a href="https://oliver603-juang.github.io/shopping-cart-ai/" target="_blank" rel="noreferrer" className="w-full bg-[#FFC8DD] hover:bg-[#E6A7C6] text-[#333333] font-bold py-3.5 rounded-xl shadow-lg transition transform active:scale-95 flex items-center justify-center gap-2 text-lg border border-[#FFC8DD]/30">
+                            <a href="https://oliver603-juang.github.io/shopping-cart-ai/" target="_blank" rel="noreferrer" className="w-full bg-[var(--accent-pink)] hover:bg-[var(--accent-pink-dark)]/80 text-[var(--color-text)] font-bold py-3.5 rounded-xl shadow-lg transition transform active:scale-95 flex items-center justify-center gap-2 text-lg border border-[var(--accent-pink)]/30">
                                 <Icons.UpRightFromSquare size={20} />
                                 <span>開啟購物助理</span>
                             </a>
@@ -994,39 +1012,39 @@
 
                     <div className="space-y-4">
                         <div className="flex items-center justify-between">
-                            {/* 乾燥玫瑰粉星號 */}
-                            <h3 className="text-xl font-black text-[#333333] ml-2 flex items-center gap-2"><Icons.Star className="text-[#FFC8DD]" fill="#FFC8DD" /> 每日花費</h3>
-                            {/* 莫蘭迪灰藍色按鈕 */}
-                            <button onClick={handleOpenEmailClick} className="text-xs font-bold text-white bg-[#A0B7C6] px-3 py-1.5 rounded-full hover:bg-[#86A2B3] transition-colors flex items-center gap-1 shadow-md"><Icons.Mail size={14} className="text-white"/> 發送報表</button>
+                            {/* 使用 Accent-Pink 星號 */}
+                            <h3 className="text-xl font-black text-[var(--color-text)] ml-2 flex items-center gap-2"><Icons.Star className="text-[var(--accent-pink)]" fill="var(--accent-pink)" /> 每日花費</h3>
+                            {/* 使用 Accent-Blue 按鈕 */}
+                            <button onClick={handleOpenEmailClick} className="text-xs font-bold text-white bg-[var(--accent-blue)] px-3 py-1.5 rounded-full hover:bg-[var(--accent-blue-dark)] transition-colors flex items-center gap-1 shadow-md"><Icons.Mail size={14} className="text-white"/> 發送報表</button>
                         </div>
                         {dailyStats.map((day) => (
-                            <div key={day.dayId} onClick={() => handleOpenDailyDetail(day)} className="bg-white/90 p-5 rounded-2xl shadow-md border border-gray-200 flex justify-between items-center transition-transform hover:-translate-y-1 hover:border-[#FFC8DD] cursor-pointer">
+                            <div key={day.dayId} onClick={() => handleOpenDailyDetail(day)} className="bg-white/90 p-5 rounded-2xl shadow-md border border-gray-200 flex justify-between items-center transition-transform hover:-translate-y-1 hover:border-[var(--accent-pink)] cursor-pointer">
                                 <div className="flex items-center gap-4">
-                                    <div className={`${day.themeColor} px-3 py-1 rounded-lg text-xs font-black text-[#333333] shadow-sm`}>{day.date}</div>
-                                    <div className="font-bold text-[#333333]">{day.title}</div>
+                                    <div className={`${day.themeColor} px-3 py-1 rounded-lg text-xs font-black text-[var(--color-text)] shadow-sm`}>{day.date}</div>
+                                    <div className="font-bold text-[var(--color-text)]">{day.title}</div>
                                 </div>
                                 <div className="text-right">
                                     <div className="text-[10px] font-bold text-gray-500 uppercase">Total ({selectedCurrency.code})</div>
-                                    {/* 柔和深粉 */}
-                                    <div className="text-lg font-mono font-black text-[#E07A5F]">{selectedCurrency.symbol} {(day.totalTwd * exchangeRate).toFixed(0).toLocaleString()}</div>
+                                    {/* 使用 Accent-Pink-Dark */}
+                                    <div className="text-lg font-mono font-black text-[var(--accent-pink-dark)]">{selectedCurrency.symbol} {(day.totalTwd * exchangeRate).toFixed(0).toLocaleString()}</div>
                                 </div>
                             </div>
                         ))}
                     </div>
-                    {/* 總費用摘要 (點擊觸發總明細) - 乾燥玫瑰粉/灰藍 */}
+                    {/* 總費用摘要 (點擊觸發總明細) - 使用 Accent-Pink/Accent-Blue */}
                     <div 
-                        className="glass-panel p-5 rounded-[2rem] border border-[#FFC8DD]/50 shadow-lg mt-8 cursor-pointer hover:bg-white/70 transition-colors"
+                        className="glass-panel p-5 rounded-[2rem] border border-[var(--accent-pink)]/50 shadow-lg mt-8 cursor-pointer hover:bg-white/70 transition-colors"
                         onClick={handleTotalSummaryClick}
                     >
                         <div className="flex justify-between items-center">
-                            {/* 乾燥玫瑰粉 */}
-                            <h4 className="text-lg font-bold text-[#FFC8DD] flex items-center gap-2">
-                                <Icons.Wallet size={20} className="text-[#E07A5F]"/> 總花費估算
+                            {/* 使用 Accent-Pink */}
+                            <h4 className="text-lg font-bold text-[var(--accent-pink)] flex items-center gap-2">
+                                <Icons.Wallet size={20} className="text-[var(--accent-pink-dark)]"/> 總花費估算
                             </h4>
                             <div className="text-right">
                                 <div className="text-sm font-bold text-gray-500">總計 (TWD): NT$ {stats.totalJpy.toLocaleString()}</div>
-                                {/* 莫蘭迪灰藍色霓虹文字 */}
-                                <div className="text-2xl font-mono font-black text-[#A0B7C6] neon-text-blue">
+                                {/* 使用 Accent-Blue 霓虹文字 */}
+                                <div className="text-2xl font-mono font-black text-[var(--accent-blue)] neon-text-blue">
                                     {selectedCurrency.symbol} {convertedTotal.toLocaleString()} ({selectedCurrency.code})
                                 </div>
                             </div>
@@ -1128,42 +1146,43 @@
 
             return (
                 <div className="animate-in fade-in slide-in-from-bottom-6 duration-700 space-y-8">
-                    <h1 className="text-3xl font-black text-[#333333] flex items-center gap-3 mb-6 px-2">
-                        <Icons.Shield className="w-8 h-8 text-[#E07A5F]" strokeWidth={2.5} /> AI 旅遊防雷
+                    <h1 className="text-3xl font-black text-[var(--color-text)] flex items-center gap-3 mb-6 px-2">
+                        <Icons.Shield className="w-8 h-8 text-[var(--accent-pink-dark)]" strokeWidth={2.5} /> AI 旅遊防雷
                     </h1>
 
                     {/* 1. 航班/車程檢查 */}
                     <section className="glass-panel p-6 rounded-[2rem] border border-gray-200">
-                        {/* 莫蘭迪灰藍 */}
-                        <h3 className="font-bold text-[#A0B7C6] mb-4 flex items-center gap-2 text-xl"><Icons.Plane className="text-[#A0B7C6] w-5 h-5"/> 交通防雷</h3>
+                        {/* 使用 Accent-Blue */}
+                        <h3 className="font-bold text-[var(--accent-blue)] mb-4 flex items-center gap-2 text-xl"><Icons.Plane className="text-[var(--accent-blue)] w-5 h-5"/> 交通防雷</h3>
                         <div className="bg-gray-100 p-4 rounded-xl mb-4 border border-gray-300">
-                            <div className="flex justify-between text-sm text-[#333333] mb-2 font-mono">
+                            <div className="flex justify-between text-sm text-[var(--color-text)] mb-2 font-mono">
                                 <span className="text-xs text-gray-500">去程 ({flightInfo.outbound.flight})</span><span>{flightInfo.outbound.date}</span>
                             </div>
-                            <div className="flex justify-between text-sm text-[#333333] font-mono">
+                            <div className="flex justify-between text-sm text-[var(--color-text)] font-mono">
                                 <span className="text-xs text-gray-500">回程 ({flightInfo.inbound.flight})</span><span>{flightInfo.inbound.date}</span>
                             </div>
                         </div>
-                        {flightAnalysis && <div className="ai-result-box p-4 rounded-xl mb-4 border border-[#A0B7C6]/50">{flightAnalysis}</div>}
-                        <button onClick={checkFlight} disabled={aiLoading} className="w-full bg-[#A0B7C6] hover:bg-[#86A2B3] text-white py-3 rounded-xl font-bold flex justify-center items-center gap-2 transition-colors shadow-[0_4px_0px_#86A2B3] active:translate-y-[2px] active:shadow-none">
+                        {/* 使用 Accent-Blue/Accent-Pink-Dark 邊框 */}
+                        {flightAnalysis && <div className="ai-result-box p-4 rounded-xl mb-4 border border-[var(--accent-blue)]/50">{flightAnalysis}</div>}
+                        <button onClick={checkFlight} disabled={aiLoading} className="w-full bg-[var(--accent-blue)] hover:bg-[var(--accent-blue-dark)] text-white py-3 rounded-xl font-bold flex justify-center items-center gap-2 transition-colors shadow-[0_4px_0px_var(--accent-blue-dark)] active:translate-y-[2px] active:shadow-none">
                             {aiLoading ? <Icons.Loader2 className="animate-spin w-5 h-5"/> : <Icons.Search size={18} className="text-white"/>} AI 驗證車程/航班
                         </button>
                     </section>
 
                     {/* 2. 住宿檢查 */}
                     <section className="glass-panel p-6 rounded-[2rem] border border-gray-200">
-                        {/* 乾燥玫瑰粉 */}
-                        <h3 className="font-bold text-[#FFC8DD] mb-4 flex items-center gap-2 text-xl"><Icons.Hotel className="text-[#E07A5F] w-5 h-5"/> 住宿防雷</h3>
+                        {/* 使用 Accent-Pink */}
+                        <h3 className="font-bold text-[var(--accent-pink)] mb-4 flex items-center gap-2 text-xl"><Icons.Hotel className="text-[var(--accent-pink-dark)] w-5 h-5"/> 住宿防雷</h3>
                         <div className="space-y-4">
                             {hotelInfo.map((h,i) => (
                                 <div key={i} className="bg-gray-100 p-4 rounded-xl border border-gray-300">
                                     <div className="flex justify-between items-start mb-2">
                                         <div>
-                                            <div className="font-bold text-[#333333] text-base">{h.name}</div>
+                                            <div className="font-bold text-[var(--color-text)] text-base">{h.name}</div>
                                             <div className="text-xs text-gray-500 mt-1">{h.location}</div>
                                         </div>
-                                        <button onClick={()=>checkHotel(h.name, h.location)} disabled={aiLoading} className="text-xs bg-[#FFC8DD] text-[#333333] px-3 py-1.5 rounded-full border border-[#FFC8DD] hover:bg-[#E6A7C6] transition-colors font-bold shrink-0 shadow-sm">
-                                            {aiLoading ? <Icons.Loader2 size={12} className="animate-spin text-[#E07A5F]"/> : <Icons.Search size={12} className="text-[#E07A5F]"/>} 掃雷
+                                        <button onClick={()=>checkHotel(h.name, h.location)} disabled={aiLoading} className="text-xs bg-[var(--accent-pink)] text-[var(--color-text)] px-3 py-1.5 rounded-full border border-[var(--accent-pink)] hover:bg-[var(--accent-pink-dark)]/50 transition-colors font-bold shrink-0 shadow-sm">
+                                            {aiLoading ? <Icons.Loader2 size={12} className="animate-spin text-[var(--accent-pink-dark)]"/> : <Icons.Search size={12} className="text-[var(--accent-pink-dark)]"/>} 掃雷
                                         </button>
                                     </div>
                                     {hotelAnalysis[h.name] && <div className="ai-result-box p-3 rounded-xl mt-2">{hotelAnalysis[h.name]}</div>}
@@ -1174,19 +1193,19 @@
 
                     {/* 3. 景點檢查 */}
                     <section className="space-y-4">
-                        <h3 className="text-2xl font-black text-[#333333] flex items-center gap-2 px-2">
-                            <Icons.MapPin className="w-6 h-6 text-[#A0B7C6]" />
+                        <h3 className="text-2xl font-black text-[var(--color-text)] flex items-center gap-2 px-2">
+                            <Icons.MapPin className="w-6 h-6 text-[var(--accent-blue)]" />
                             每日行程防雷
                         </h3>
                         
                         {allSpots.map((spot) => (
-                            <div key={spot.id} className="glass-panel rounded-[2rem] p-6 guard-card hover:border-l-[#FFC8DD] transition-all">
+                            <div key={spot.id} className="glass-panel rounded-[2rem] p-6 guard-card hover:border-l-[var(--accent-pink)] transition-all">
                                 <div className="flex items-start gap-4">
-                                    <div className="w-10 h-10 bg-[#FFC8DD] rounded-full flex items-center justify-center text-[#333333] shrink-0 shadow-md">
-                                        <span className="text-lg font-bold text-[#E07A5F]">{spot.dayDate}</span>
+                                    <div className="w-10 h-10 bg-[var(--accent-pink)] rounded-full flex items-center justify-center text-[var(--color-text)] shrink-0 shadow-md">
+                                        <span className="text-lg font-bold text-[var(--accent-pink-dark)]">{spot.dayDate}</span>
                                     </div>
                                     <div className="flex-1">
-                                        <h4 className="font-black text-xl text-[#333333]">{spot.name}</h4>
+                                        <h4 className="font-black text-xl text-[var(--color-text)]">{spot.name}</h4>
                                         <p className="text-sm text-gray-500 mb-3">{spot.time} 抵達</p>
 
                                         {/* AI Result */}
@@ -1194,14 +1213,14 @@
                                             <div className="ai-result-box p-3 rounded-xl mb-3">{spotAnalysis[spot.id]}</div>
                                         )}
 
-                                        <p className="text-xs font-bold text-[#A0B7C6]">達人筆記 (行程規劃者備註):</p>
+                                        <p className="text-xs font-bold text-[var(--accent-blue)]">達人筆記 (行程規劃者備註):</p>
                                         <p className="text-sm text-gray-700 mb-4">{spot.desc}</p>
 
 
                                         <button 
                                             onClick={() => checkSpot(spot)}
                                             disabled={aiLoading}
-                                            className="w-full py-2 bg-[#A0B7C6] hover:bg-[#86A2B3] text-white rounded-xl text-sm font-bold transition-colors shadow-[0_4px_0px_#86A2B3] active:translate-y-[2px] active:shadow-none"
+                                            className="w-full py-2 bg-[var(--accent-blue)] hover:bg-[var(--accent-blue-dark)] text-white rounded-xl text-sm font-bold transition-colors shadow-[0_4px_0px_var(--accent-blue-dark)] active:translate-y-[2px] active:shadow-none"
                                         >
                                             {aiLoading ? <Icons.Loader2 className="animate-spin w-4 h-4"/> : <Icons.Shield size={14}/>}
                                             AI 景點掃雷驗證 ({spot.time})
@@ -1214,10 +1233,10 @@
 
                     {/* 4. 通用檢查 */}
                     <section className="glass-panel p-6 rounded-[2rem] border border-gray-200">
-                        {/* 莫蘭迪灰綠 */}
-                        <h3 className="font-bold text-[#333333] mb-4 flex items-center gap-2 text-xl"><Icons.Bot className="text-[#A0B7C6] w-5 h-5"/> 通用情報分析</h3>
-                        <textarea value={aiInput} onChange={e=>setAiInput(e.target.value)} placeholder="貼上網路上找到的攻略、注意事項或餐廳評論，讓 AI 幫您檢查是否有風險或過時資訊..." className="w-full h-32 bg-gray-100 rounded-xl p-3 text-sm text-[#333333] outline-none focus:ring-2 focus:ring-[#A0B7C6] mb-3 border border-gray-300 resize-none"/>
-                        <button onClick={analyzeGeneral} disabled={aiLoading||!aiInput} className="w-full bg-[#A0B7C6] hover:bg-[#86A2B3] text-white py-3 rounded-xl font-bold transition-colors shadow-[0_4px_0px_#86A2B3] active:translate-y-[2px] active:shadow-none">開始分析</button>
+                        {/* 使用 Accent-Blue */}
+                        <h3 className="font-bold text-[var(--color-text)] mb-4 flex items-center gap-2 text-xl"><Icons.Bot className="text-[var(--accent-blue)] w-5 h-5"/> 通用情報分析</h3>
+                        <textarea value={aiInput} onChange={e=>setAiInput(e.target.value)} placeholder="貼上網路上找到的攻略、注意事項或餐廳評論，讓 AI 幫您檢查是否有風險或過時資訊..." className="w-full h-32 bg-gray-100 rounded-xl p-3 text-sm text-[var(--color-text)] outline-none focus:ring-2 focus:ring-[var(--accent-blue)] mb-3 border border-gray-300 resize-none"/>
+                        <button onClick={analyzeGeneral} disabled={aiLoading||!aiInput} className="w-full bg-[var(--accent-blue)] hover:bg-[var(--accent-blue-dark)] text-white py-3 rounded-xl font-bold transition-colors shadow-[0_4px_0px_var(--accent-blue-dark)] active:translate-y-[2px] active:shadow-none">開始分析</button>
                         {aiGeneralResult && <div className="mt-4 p-4 ai-result-box rounded-xl">{aiGeneralResult}</div>}
                     </section>
 
@@ -1386,7 +1405,7 @@
                             let travelMinutes = 0;
                             if (index < day.spots.length - 1) {
                                 const nextSpot = day.spots[index + 1];
-                                const dist = getDistanceFromLatLonInKm(rawSpot.lat, rawSpot.lon, nextSpot.lat, nextSpot.lon); // 修正: nextStop.lon -> nextSpot.lon
+                                const dist = getDistanceFromLatLonInKm(rawSpot.lat, rawSpot.lon, nextSpot.lat, nextSpot.lon); // 修正: nextStop.lon -> nextStop.lon
                                 const mode = transportModes[spotId] || 'car';
                                 const speed = mode === 'car' ? 40 : 4; 
                                 travelMinutes = Math.round((dist / speed) * 60);
@@ -1404,11 +1423,20 @@
                             return { ...rawSpot, id: spotId, time: arrivalTimeStr, stay: stayStr, departureTime: departureTimeStr, isDeparted: isDeparted, actualDepTime: actualDepTime, mapcodeDisplay: rawSpot.mapCode || "GPS", weather: ["sunny", "cloudy"][Math.floor(Math.random()*2)], temp: "16°C", gmapLink: `https://www.google.com/maps/search/?api=1&query=${rawSpot.lat},${rawSpot.lon}`, nextStop: nextStopInfo, ticket: rawSpot.ticket || null };
                         });
                         // NOTE: 更新日期的主題色以符合當前主題的配色（這裡使用 RAW_KML_DATA 預設的顏色類名）
-                        const themeColorClass = day.dayId === "day1" ? "bg-[#FFC8DD]" : "bg-[#A0B7C6]"; 
+                        // 確保主題色變數適應新的顏色
+                        let themeColorClass;
+                        if (currentTheme.name === 'GreenMorandi') {
+                           // GreenMorandi: Day 1 (Pink) Day 2 (Green)
+                            themeColorClass = day.dayId === "day1" ? "bg-[#E4C7C2]" : "bg-[#A8B5A3]"; 
+                        } else {
+                           // PinkMorandi (Default): Day 1 (Pink) Day 2 (Blue)
+                           themeColorClass = day.dayId === "day1" ? "bg-[#FFC8DD]" : "bg-[#A0B7C6]";
+                        }
+
                         return { ...day, spots: processedSpots, themeColor: themeColorClass };
                     });
                 });
-            }, [dayStartTimes, actualDepartures, transportModes, stays]);
+            }, [dayStartTimes, actualDepartures, transportModes, stays, currentTheme.name]);
 
             const handleTransportToggle = (spotId) => { setTransportModes(prev => ({ ...prev, [spotId]: prev[spotId] === 'walk' ? 'car' : 'walk' })); };
             const handleStayChangeNew = (spotId, newStay) => { setStays(prev => ({ ...prev, [spotId]: newStay })); };
@@ -1494,7 +1522,7 @@
                         });
                     });
                     // 更改 Email 主題顏色和總計顏色
-                    const htmlMessage = `<h2 style="color: #333;">${tripTitle} - 花費明細</h2><table style="width:100%; border-collapse: collapse; font-family: sans-serif; border: 1px solid #ddd;"><thead><tr style="background-color: #FFC8DD; color: #333333;"><th style="border: 1px solid #ddd; padding: 12px;">日期</th><th style="border: 1px solid #ddd; padding: 12px;">地點/項目</th><th style="border: 1px solid #ddd; padding: 12px;">備註</th><th style="border: 1px solid #ddd; padding: 12px;">金額 (NT$)</th></tr></thead><tbody>${tableRows}</tbody><tfoot><tr style="background-color: #f5f5f5;"><td colspan="3" style="border: 1px solid #ddd; padding: 12px; text-align: right; font-weight: bold; color: #333;">總計</td><td style="border: 1px solid #ddd; padding: 12px; font-weight: bold; color: #E07A5F;">NT$ ${grandTotal.toLocaleString()}</td></tr></tfoot></table><p style="font-size: 12px; color: #666; margin-top: 20px;">本信件由旅遊規劃 App 自動發送。</p>`;
+                    const htmlMessage = `<h2 style="color: #333;">${tripTitle} - 花費明細</h2><table style="width:100%; border-collapse: collapse; font-family: sans-serif; border: 1px solid #ddd;"><thead><tr style="background-color: var(--accent-pink); color: var(--color-text);"><th style="border: 1px solid #ddd; padding: 12px;">日期</th><th style="border: 1px solid #ddd; padding: 12px;">地點/項目</th><th style="border: 1px solid #ddd; padding: 12px;">備註</th><th style="border: 1px solid #ddd; padding: 12px;">金額 (NT$)</th></tr></thead><tbody>${tableRows}</tbody><tfoot><tr style="background-color: #f5f5f5;"><td colspan="3" style="border: 1px solid #ddd; padding: 12px; text-align: right; font-weight: bold; color: #333;">總計</td><td style="border: 1px solid #ddd; padding: 12px; font-weight: bold; color: var(--accent-pink-dark);">NT$ ${grandTotal.toLocaleString()}</td></tr></tfoot></table><p style="font-size: 12px; color: #666; margin-top: 20px;">本信件由旅遊規劃 App 自動發送。</p>`;
                     const params = { email: emailInput, to_email: emailInput, recipient: emailInput, subject: `${tripTitle} 花費報表_${new Date().toLocaleDateString()}`, message: htmlMessage }; 
                     await window.emailjs.send("service_5yh7x6g", "template_dlbyml8", params);
                     alert("✅ 發送成功！\n\n注意：若信件中顯示的是 HTML 原始碼，請至 EmailJS 後台將 Content 變數改為 {{{message}}}（三個大括號）。"); setIsEmailModalOpen(false);
@@ -1561,25 +1589,24 @@
             return (
                 <div className="min-h-screen pb-24">
                     {/* 調整 Nav Bar 背景色 */}
-                    <nav className="sticky top-0 z-50 bg-[#F5F5F5]/90 backdrop-blur-md border-b border-gray-200 shadow-sm">
+                    <nav className="sticky top-0 z-50 bg-[var(--bg-main)]/90 backdrop-blur-md border-b border-gray-200 shadow-sm">
                         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                             <div className="flex justify-between items-center h-20">
                                 <div className="flex items-center gap-3">
-                                    {/* 1. 導覽列左側圖示區塊 (參考右圖風格) */}
-                                    <div className="w-12 h-12 rounded-full bg-[#FFC8DD]/20 border-2 border-[#FFC8DD] flex items-center justify-center shadow-lg shrink-0">
-                                        <Icons.Pin size={24} strokeWidth={2} className="text-[#E07A5F] rotate-12"/>
+                                    {/* 1. 導覽列左側圖示區塊 (使用 Accent-Pink) */}
+                                    <div className="w-12 h-12 rounded-full bg-[var(--accent-pink)]/20 border-2 border-[var(--accent-pink)] flex items-center justify-center shadow-lg shrink-0">
+                                        <Icons.Pin size={24} strokeWidth={2} className="text-[var(--accent-pink-dark)] rotate-12"/>
                                     </div>
                                     <div className="flex flex-col justify-center">
                                         {/* 動態主標題 */}
-                                        <div className="font-extrabold text-2xl tracking-tight text-[#333333] flex items-center gap-2 neon-text">{tripTitle} <Icons.Smile className="text-[#E07A5F]" size={20}/></div>
-                                        {/* 莫蘭迪灰藍色副標題 - 使用圓角按鈕樣式 */}
+                                        <div className="font-extrabold text-2xl tracking-tight text-[var(--color-text)] flex items-center gap-2 neon-text">{tripTitle} <Icons.Smile className="text-[var(--accent-pink-dark)]" size={20}/></div>
+                                        {/* 使用 Accent-Blue 副標題 - 使用圓角按鈕樣式 */}
                                         <div className="text-xs font-bold text-gray-700 tracking-widest uppercase bg-gray-200 px-3 py-0.5 rounded-full inline-block border border-gray-300 w-fit mt-0.5">STYLE TRIP PLANNER</div>
                                     </div>
                                 </div>
-                                <div className="flex items-center gap-4 navbar-actions">
+                                <div className="flex items-center gap-2 navbar-actions">
                                     
-                                    {/* NEW: Global Currency Switcher (PC/Mobile) - 不再隱藏 */}
-                                    {/* 調整為在小螢幕時自動換行和調整大小 */}
+                                    {/* NEW: Global Currency Switcher (PC/Mobile) - 移到頂部，取代舊的 PC 專用區塊 */}
                                     <div className="hidden sm:block">
                                         <CurrencySwitcher 
                                             selectedCurrency={selectedCurrency}
@@ -1590,28 +1617,43 @@
                                         />
                                     </div>
                                     
+                                    {/* NEW: Mobile/Tablet Currency Switcher & Total (Small Screen Only) */}
+                                    <div className="sm:hidden flex items-center gap-2">
+                                        <CurrencySwitcher 
+                                            selectedCurrency={selectedCurrency}
+                                            exchangeRate={exchangeRate}
+                                            isRateLoading={isRateLoading}
+                                            rateError={rateError}
+                                            setSelectedCurrency={setSelectedCurrency}
+                                        />
+                                        <div className="text-right">
+                                            <div className="text-[10px] font-bold text-gray-500 uppercase bg-gray-100 px-2 rounded-full border border-gray-300">總計 ({selectedCurrency.code})</div>
+                                            <div className="font-mono font-bold text-[var(--accent-pink-dark)] text-lg">{selectedCurrency.symbol} {(stats.totalJpy * exchangeRate).toFixed(0).toLocaleString()}</div>
+                                        </div>
+                                    </div>
+
                                     {/* NEW: 風格切換按鈕 (PC/Mobile) */}
                                     <button 
                                         onClick={() => setIsThemeModalOpen(true)}
-                                        className="p-2.5 rounded-full bg-gray-100 hover:bg-gray-200 text-[#E07A5F] border border-gray-300 transition-colors"
+                                        className="p-2.5 rounded-full bg-gray-100 hover:bg-gray-200 text-[var(--accent-pink-dark)] border border-gray-300 transition-colors hidden sm:flex"
                                     >
                                         <Icons.Sparkles size={20} />
                                     </button>
                                     
-                                    {/* NEW: 導航按鈕 (PC/Mobile) - 不再隱藏 */}
-                                    <button onClick={handleOpenMap} className="p-2.5 rounded-full bg-gray-100 hover:bg-gray-200 text-[#E07A5F] border border-gray-300 transition-colors">
+                                    {/* NEW: 導航按鈕 (PC/Mobile) */}
+                                    <button onClick={handleOpenMap} className="p-2.5 rounded-full bg-gray-100 hover:bg-gray-200 text-[var(--accent-pink-dark)] border border-gray-300 transition-colors">
                                         <Icons.Map size={20} />
                                     </button>
                                     
                                     {/* NEW: 設定按鈕 (PC/Mobile) */}
-                                    <button onClick={() => setIsKeyModalOpen(true)} className="p-2.5 rounded-full bg-gray-100 hover:bg-gray-200 text-[#A0B7C6] border border-gray-300 transition-colors">
+                                    <button onClick={() => setIsKeyModalOpen(true)} className="p-2.5 rounded-full bg-gray-100 hover:bg-gray-200 text-[var(--accent-blue)] border border-gray-300 transition-colors">
                                         <Icons.Settings size={20} />
                                     </button>
                                     
                                     <div className="text-right hidden sm:block">
                                         <div className="text-[10px] font-bold text-gray-500 uppercase bg-gray-100 px-2 rounded-full border border-gray-300">總計 ({selectedCurrency.code})</div>
-                                        {/* 柔和深粉總花費 */}
-                                        <div className="font-mono font-bold text-[#E07A5F] text-lg">{selectedCurrency.symbol} {(stats.totalJpy * exchangeRate).toFixed(0).toLocaleString()}</div>
+                                        {/* 使用 Accent-Pink-Dark 總花費 */}
+                                        <div className="font-mono font-bold text-[var(--accent-pink-dark)] text-lg">{selectedCurrency.symbol} {(stats.totalJpy * exchangeRate).toFixed(0).toLocaleString()}</div>
                                     </div>
                                 </div>
                             </div>
@@ -1659,36 +1701,21 @@
                     </main>
 
                     {/* Footer Navigation (調整背景色和切換按鈕整合) */}
-                    <div className="fixed bottom-0 w-full bg-[#F5F5F5]/95 backdrop-blur-md border-t border-gray-300 pb-safe z-40 flex justify-around py-3 text-xs font-bold text-gray-500">
+                    <div className="fixed bottom-0 w-full bg-[var(--bg-main)]/95 backdrop-blur-md border-t border-gray-300 pb-safe z-40 flex justify-around py-3 text-xs font-bold text-gray-500">
                         
                         {/* 行程 */}
-                        <button onClick={() => setActiveTab('itinerary')} className={`flex flex-col items-center gap-1 nav-button-wrapper ${activeTab === 'itinerary' ? 'text-[#E07A5F]' : 'hover:text-gray-700'}`}><Icons.List size={22} /> 行程</button>
+                        <button onClick={() => setActiveTab('itinerary')} className={`flex flex-col items-center gap-1 nav-button-wrapper ${activeTab === 'itinerary' ? 'text-[var(--accent-pink-dark)]' : 'hover:text-gray-700'}`}><Icons.List size={22} /> 行程</button>
                         
                         {/* 資訊 */}
-                        <button onClick={() => setActiveTab('info')} className={`flex flex-col items-center gap-1 nav-button-wrapper ${activeTab === 'info' ? 'text-[#A0B7C6]' : 'hover:text-gray-700'}`}><Icons.LayoutGrid size={22} /> 資訊</button>
+                        <button onClick={() => setActiveTab('info')} className={`flex flex-col items-center gap-1 nav-button-wrapper ${activeTab === 'info' ? 'text-[var(--accent-blue)]' : 'hover:text-gray-700'}`}><Icons.LayoutGrid size={22} /> 資訊</button>
                         
                         {/* 統計 */}
-                        <button onClick={() => setActiveTab('stats')} className={`flex flex-col items-center gap-1 nav-button-wrapper ${activeTab === 'stats' ? 'text-[#E07A5F]' : 'hover:text-gray-700'}`}><Icons.Calculator size={22} /> 統計</button>
+                        <button onClick={() => setActiveTab('stats')} className={`flex flex-col items-center gap-1 nav-button-wrapper ${activeTab === 'stats' ? 'text-[var(--accent-pink-dark)]' : 'hover:text-gray-700'}`}><Icons.Calculator size={22} /> 統計</button>
                         
                         {/* 防雷 */}
-                        <button onClick={() => setActiveTab('guard')} className={`flex flex-col items-center gap-1 nav-button-wrapper ${activeTab === 'guard' ? 'text-[#A0B7C6]' : 'hover:text-gray-700'}`}><Icons.Shield size={22} /> 防雷</button>
+                        <button onClick={() => setActiveTab('guard')} className={`flex flex-col items-center gap-1 nav-button-wrapper ${activeTab === 'guard' ? 'text-[var(--accent-blue)]' : 'hover:text-gray-700'}`}><Icons.Shield size={22} /> 防雷</button>
                         
                     </div>
-
-                    {/* Mobile Only: Currency Switcher & Map - 移除浮動區塊，改為整合到頂部導航列 */}
-                    {/* <div className="fixed bottom-24 right-4 flex flex-col gap-3 z-50 sm:hidden">
-                        <div>
-                            <CurrencySwitcher 
-                                selectedCurrency={selectedCurrency}
-                                exchangeRate={exchangeRate}
-                                isRateLoading={isRateLoading}
-                                rateError={rateError}
-                                setSelectedCurrency={setSelectedCurrency}
-                            />
-                        </div>
-                        <button onClick={handleOpenMap} className="bg-white text-gray-500 p-3 rounded-full shadow-[0_4px_10px_rgba(0,0,0,0.1)] border border-gray-300 hover:bg-gray-100 hover:text-[#333333] transition-all"><Icons.Map size={24} /></button>
-                    </div> 
-                    */}
 
                     {/* Modal Definitions */}
                     <ApiKeyModal isOpen={isKeyModalOpen} onClose={() => setIsKeyModalOpen(false)} /> 
